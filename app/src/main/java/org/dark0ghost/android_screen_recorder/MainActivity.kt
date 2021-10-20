@@ -46,9 +46,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun pause(checked: Boolean) {
-        if (speechService != null) {
-            speechService.setPause(checked)
-        }
+        speechService?.setPause(checked)
     }
 
     override fun onRequestPermissionsResult(
@@ -71,8 +69,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
     }
 
 }
