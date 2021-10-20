@@ -2,26 +2,36 @@ package org.dark0ghost.android_screen_recorder
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.ColorSpace.Model
 import android.os.Bundle
-import android.widget.TextView
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.dark0ghost.android_screen_recorder.state.BaseState
 import org.dark0ghost.android_screen_recorder.utils.Settings.PERMISSIONS_REQUEST_RECORD_AUDIO
+import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.android.SpeechService
 import org.vosk.android.SpeechStreamService
+import org.vosk.android.StorageService
+import java.io.IOException
 
 
 class MainActivity : AppCompatActivity() {
 
-    private val model: Model? = null
-    private val speechService: SpeechService? = null
-    private val speechStreamService: SpeechStreamService? = null
-    private val resultView: TextView? = null
+    private lateinit var model: org.vosk.Model
+    private lateinit var speechService: SpeechService
+    private lateinit var  speechStreamService: SpeechStreamService
 
     private fun initModel() {
-
+        val callbackModelInit = { models: org.vosk.Model ->
+            model = models
+            setUiState(BaseState.READY)
+        }
+        StorageService.unpack(
+            this, "model-en-us", "model", callbackModelInit
+        ) { exception: IOException ->
+            Log.e("init-model-fn","Failed to unpack the model ${exception.message}" )
+        }
     }
 
     private fun startRecordingVoice() {
@@ -46,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun pause(checked: Boolean) {
-        speechService?.setPause(checked)
+        speechService.setPause(checked)
     }
 
     override fun onRequestPermissionsResult(
