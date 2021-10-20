@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.dark0ghost.android_screen_recorder.utils.Settings.PERMISSIONS_REQUEST_RECORD_AUDIO
+import org.vosk.android.SpeechService
+import org.vosk.android.SpeechStreamService
 
 
 class MainActivity : AppCompatActivity() {

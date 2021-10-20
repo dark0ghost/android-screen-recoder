@@ -13,8 +13,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url 'https://alphacephei.com/maven/'
+        }
     }
 }
 rootProject.name = "android-screen-recorder"
-include ':model'
+include ':models'
 include ':app'
