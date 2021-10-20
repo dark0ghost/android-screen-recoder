@@ -3,6 +3,9 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven {
+            url 'https://alphacephei.com/maven/'
+        }
     }
 }
 dependencyResolutionManagement {
@@ -12,5 +15,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "android-screen-recoder"
+rootProject.name = "android-screen-recorder"
 include ':app'
+include ':model'
