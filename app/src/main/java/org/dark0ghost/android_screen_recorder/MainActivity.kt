@@ -67,9 +67,9 @@ class MainActivity : AppCompatActivity(), RListener {
     }
 
     private fun recognizeMicrophone() {
-        if (speechService != null) {
+        speechService?.let {
             setUiState(BaseState.DONE)
-            speechService!!.stop()
+            it.stop()
             speechService = null
             return
         }
@@ -77,7 +77,9 @@ class MainActivity : AppCompatActivity(), RListener {
         try {
             val rec = Recognizer(model, 16000.0f)
             speechService = SpeechService(rec, 16000.0f)
-            speechService!!.startListening(this)
+            speechService?.apply {
+                startListening(this@MainActivity)
+            }
         } catch (e: IOException) {
             e.message?.let { Log.e("recognizeFile", it) }
         }
@@ -100,7 +102,6 @@ class MainActivity : AppCompatActivity(), RListener {
             return
         }
         initModel()
-        recognizeFile()
     }
 
 
