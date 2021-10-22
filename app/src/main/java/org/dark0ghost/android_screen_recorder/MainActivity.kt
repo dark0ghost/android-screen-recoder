@@ -7,8 +7,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import org.dark0ghost.android_screen_recorder.state.BaseState
-import org.dark0ghost.android_screen_recorder.utils.Settings.PERMISSIONS_REQUEST_RECORD_AUDIO
+import org.dark0ghost.android_screen_recorder.states.BaseState
+import org.dark0ghost.android_screen_recorder.utils.Settings.RecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
 import org.vosk.LogLevel

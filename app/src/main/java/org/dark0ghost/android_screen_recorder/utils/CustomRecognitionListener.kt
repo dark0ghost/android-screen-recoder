@@ -1,7 +1,7 @@
 package org.dark0ghost.android_screen_recorder.utils
 
 import android.util.Log
-import org.dark0ghost.android_screen_recorder.state.BaseState
+import org.dark0ghost.android_screen_recorder.states.BaseState
 import java.lang.Exception
 import org.vosk.android.RecognitionListener as RListener
 
