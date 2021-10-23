@@ -39,8 +39,7 @@ class MainActivity : AppCompatActivity(), RListener {
     private val connection: ServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val metrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(metrics)
+            val metrics = resources.displayMetrics
             val binder = service as RecordBinder
             recordService = binder.getRecordService()
             recordService?.setConfig(metrics.widthPixels, metrics.heightPixels, metrics.densityDpi)
