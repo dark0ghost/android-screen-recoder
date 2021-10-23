@@ -1,14 +1,25 @@
 package org.dark0ghost.android_screen_recorder
 
 import android.Manifest
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.os.IBinder
+import android.provider.MediaStore
+import android.util.DisplayMetrics
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.dark0ghost.android_screen_recorder.services.RecordService
+import org.dark0ghost.android_screen_recorder.services.RecordService.RecordBinder
 import org.dark0ghost.android_screen_recorder.states.BaseState
-import org.dark0ghost.android_screen_recorder.utils.Settings.RecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
+import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
 import org.vosk.LogLevel
@@ -25,10 +36,37 @@ class MainActivity : AppCompatActivity(), RListener {
 
     private val buffer: MutableList<String> = mutableListOf()
 
-    private lateinit var model: org.vosk.Model
+    private val connection: ServiceConnection = object : ServiceConnection {
 
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val metrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(metrics)
+            val binder = service as RecordBinder
+            recordService = binder.getRecordService()
+            recordService?.setConfig(metrics.widthPixels, metrics.heightPixels, metrics.densityDpi)
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {}
+    }
+
+    private lateinit var model: org.vosk.Model
+    private lateinit var projectionManager: MediaProjectionManager
+    private lateinit var mediaProjectionMain: MediaProjection
+
+    private var recordService: RecordService? = null
     private var speechService: SpeechService? = null
     private var speechStreamService: SpeechStreamService? = null
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        // There are no request codes
+        val data: Intent? = result.data
+        if (result.resultCode == RESULT_OK && data != null) {
+            mediaProjectionMain = projectionManager.getMediaProjection(result.resultCode, data);
+            recordService?.apply {
+                this@apply.mediaProjection = mediaProjectionMain
+                startRecord()
+            }
+        }
+    }
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -108,17 +146,26 @@ class MainActivity : AppCompatActivity(), RListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         setUiState(BaseState.START)
 
         LibVosk.setLogLevel(LogLevel.INFO)
 
         checkPermissionsOrInitialize()
+
+        resultLauncher.launch(intent)
+
+        val intentService = Intent(this, RecordService::class.java)
+        bindService(intentService, connection, BIND_AUTO_CREATE)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        speechService?.stop()
-        speechService?.shutdown()
+        unbindService(connection)
+        speechService?.apply {
+            stop()
+            shutdown()
+        }
         speechStreamService?.stop()
     }
 
