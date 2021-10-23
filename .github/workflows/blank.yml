@@ -30,7 +30,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build --stacktrace
     - name: Android Github Action
       uses: Vukan-Markovic/Github-Android-Action@1.2
     - name: Build Debug APK
