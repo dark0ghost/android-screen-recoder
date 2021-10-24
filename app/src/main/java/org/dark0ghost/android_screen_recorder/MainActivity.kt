@@ -1,6 +1,7 @@
 package org.dark0ghost.android_screen_recorder
 
 import android.Manifest
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
@@ -9,9 +10,8 @@ import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.MediaStore
-import android.util.DisplayMetrics
 import android.util.Log
+import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -35,7 +35,6 @@ import org.vosk.android.RecognitionListener as RListener
 class MainActivity : AppCompatActivity(), RListener {
 
     private val buffer: MutableList<String> = mutableListOf()
-
     private val connection: ServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
@@ -43,29 +42,50 @@ class MainActivity : AppCompatActivity(), RListener {
             val binder = service as RecordBinder
             recordService = binder.getRecordService()
             recordService?.setConfig(metrics.widthPixels, metrics.heightPixels, metrics.densityDpi)
+            Log.e("onServiceConnected", "init recordService${recordService.hashCode()}")
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {}
     }
 
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            // There are no request codes
+            result.data?.let { data ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    mediaProjectionMain =
+                        projectionManager.getMediaProjection(result.resultCode, data)
+                    recordService?.apply {
+                        this@apply.mediaProjection = mediaProjectionMain
+                        startRecord()
+                    }
+                }
+            }
+        }
+
+    private val resultButtonLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.data?.let { data ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    mediaProjectionMain =
+                        projectionManager.getMediaProjection(result.resultCode, data)
+                    recordService?.apply {
+                        this@apply.mediaProjection = mediaProjectionMain
+                        startRecord()
+                    }
+                }
+            }
+        }
+
+
     private lateinit var model: org.vosk.Model
     private lateinit var projectionManager: MediaProjectionManager
     private lateinit var mediaProjectionMain: MediaProjection
+    private lateinit var startRecorder: Button
 
     private var recordService: RecordService? = null
     private var speechService: SpeechService? = null
     private var speechStreamService: SpeechStreamService? = null
-    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        // There are no request codes
-        val data: Intent? = result.data
-        if (result.resultCode == RESULT_OK && data != null) {
-            mediaProjectionMain = projectionManager.getMediaProjection(result.resultCode, data);
-            recordService?.apply {
-                this@apply.mediaProjection = mediaProjectionMain
-                startRecord()
-            }
-        }
-    }
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -123,10 +143,6 @@ class MainActivity : AppCompatActivity(), RListener {
 
     }
 
-    private fun startRecordingScreen() {
-
-    }
-
     private fun checkPermissionsOrInitialize() {
         val permissionCheck =
             ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.RECORD_AUDIO)
@@ -147,6 +163,21 @@ class MainActivity : AppCompatActivity(), RListener {
         setContentView(R.layout.activity_main)
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         setUiState(BaseState.START)
+
+        startRecorder = findViewById(R.id.start_record)
+        startRecorder.setOnClickListener {
+            recordService?.apply {
+                if (running) {
+                    stopRecord()
+                    return@setOnClickListener
+                }
+                val captureIntent = projectionManager.createScreenCaptureIntent()
+                Log.d("start captureIntent", resultButtonLauncher.hashCode().toString())
+                resultButtonLauncher.launch(captureIntent)
+                return@setOnClickListener
+            }
+            Log.e("setOnClickListener", "recordService is null")
+        }
 
         LibVosk.setLogLevel(LogLevel.INFO)
 
@@ -207,5 +238,4 @@ class MainActivity : AppCompatActivity(), RListener {
     override fun onTimeout() {
         setUiState(BaseState.DONE)
     }
-
 }

@@ -12,9 +12,4 @@ object Settings {
       const val SERVICE_THREAD_NAME = "service_thread"
    }
 
-   object RequestCodeSettings{
-      const val RECORD_REQUEST_CODE = 101
-      const val STORAGE_REQUEST_CODE = 102
-      const val AUDIO_REQUEST_CODE = 103
-   }
 }
