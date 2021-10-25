@@ -10,6 +10,7 @@ import android.os.Binder
 import android.os.HandlerThread
 import android.os.IBinder
 import android.os.Process
+import android.util.Log
 import android.widget.Toast
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR
@@ -21,8 +22,9 @@ import java.io.IOException
 
 open class RecordService: Service() {
 
-    private var virtualDisplay: VirtualDisplay? = null
+    private val binder = RecordBinder()
 
+    private var virtualDisplay: VirtualDisplay? = null
     private var mediaRecorder: MediaRecorder? = null
     private var width = 720
     private var height = 1080
@@ -118,13 +120,11 @@ open class RecordService: Service() {
             }
     }
 
-    override fun onBind(intent: Intent): IBinder {
-        return RecordBinder()
-    }
+    override fun onBind(intent: Intent): IBinder = binder
+
 
     inner class RecordBinder : Binder() {
-        fun getRecordService(): RecordService {
-            return this@RecordService
-        }
+        fun getRecordService(): RecordService = this@RecordService
+
     }
 }

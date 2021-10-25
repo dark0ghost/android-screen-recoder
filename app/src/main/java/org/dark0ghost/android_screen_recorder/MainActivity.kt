@@ -41,13 +41,15 @@ class MainActivity : AppCompatActivity(), RListener {
             val metrics = resources.displayMetrics
             val binder = service as RecordBinder
             recordService = binder.getRecordService()
-            recordService?.setConfig(metrics.widthPixels, metrics.heightPixels, metrics.densityDpi)
-            Log.e("onServiceConnected", "init recordService${recordService.hashCode()}")
+            recordService.setConfig(metrics.widthPixels, metrics.heightPixels, metrics.densityDpi)
+            Log.d("onServiceConnected", "init recordService{${recordService.hashCode()}}")
+            mBound = true
         }
 
-        override fun onServiceDisconnected(arg0: ComponentName) {}
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            mBound = false
+        }
     }
-
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             // There are no request codes
@@ -55,7 +57,7 @@ class MainActivity : AppCompatActivity(), RListener {
                 if (result.resultCode == Activity.RESULT_OK) {
                     mediaProjectionMain =
                         projectionManager.getMediaProjection(result.resultCode, data)
-                    recordService?.apply {
+                    recordService.apply {
                         this@apply.mediaProjection = mediaProjectionMain
                         startRecord()
                     }
@@ -69,7 +71,7 @@ class MainActivity : AppCompatActivity(), RListener {
                 if (result.resultCode == Activity.RESULT_OK) {
                     mediaProjectionMain =
                         projectionManager.getMediaProjection(result.resultCode, data)
-                    recordService?.apply {
+                    recordService.apply {
                         this@apply.mediaProjection = mediaProjectionMain
                         startRecord()
                     }
@@ -82,10 +84,12 @@ class MainActivity : AppCompatActivity(), RListener {
     private lateinit var projectionManager: MediaProjectionManager
     private lateinit var mediaProjectionMain: MediaProjection
     private lateinit var startRecorder: Button
+    private lateinit var recordService: RecordService
 
-    private var recordService: RecordService? = null
     private var speechService: SpeechService? = null
     private var speechStreamService: SpeechStreamService? = null
+
+    private var mBound: Boolean = false
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -144,16 +148,36 @@ class MainActivity : AppCompatActivity(), RListener {
     }
 
     private fun checkPermissionsOrInitialize() {
-        val permissionCheck =
+        val permissionCheckRecordAudio =
             ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.RECORD_AUDIO)
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+        var arrayPermission = arrayOf(
+            Manifest.permission.RECORD_AUDIO,
+        )
+        var checkPermission = permissionCheckRecordAudio != PackageManager.PERMISSION_GRANTED
+        Log.e("check permission", (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P).toString())
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+            val permissionCheckForegroundService =
+                ContextCompat.checkSelfPermission(
+                    applicationContext,
+                    Manifest.permission.FOREGROUND_SERVICE
+                )
+            arrayPermission = arrayOf(
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.FOREGROUND_SERVICE
+            )
+            checkPermission =
+                permissionCheckRecordAudio != PackageManager.PERMISSION_GRANTED || permissionCheckForegroundService != PackageManager.PERMISSION_GRANTED
+            Log.e("check permission", checkPermission.toString())
+        }
+        if (checkPermission) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.RECORD_AUDIO),
+                arrayPermission,
                 PERMISSIONS_REQUEST_RECORD_AUDIO
             )
             return
         }
+
         initModel()
     }
 
@@ -166,17 +190,20 @@ class MainActivity : AppCompatActivity(), RListener {
 
         startRecorder = findViewById(R.id.start_record)
         startRecorder.setOnClickListener {
-            recordService?.apply {
-                if (running) {
-                    stopRecord()
+            try {
+                recordService.apply {
+                    if (running) {
+                        stopRecord()
+                        return@setOnClickListener
+                    }
+                    val captureIntent = projectionManager.createScreenCaptureIntent()
+                    Log.d("start captureIntent", resultButtonLauncher.hashCode().toString())
+                    resultButtonLauncher.launch(captureIntent)
                     return@setOnClickListener
                 }
-                val captureIntent = projectionManager.createScreenCaptureIntent()
-                Log.d("start captureIntent", resultButtonLauncher.hashCode().toString())
-                resultButtonLauncher.launch(captureIntent)
-                return@setOnClickListener
+            }catch (e: java.lang.Exception){
+                Log.e("setOnClickListener", "recordService: $e")
             }
-            Log.e("setOnClickListener", "recordService is null")
         }
 
         LibVosk.setLogLevel(LogLevel.INFO)
@@ -184,9 +211,14 @@ class MainActivity : AppCompatActivity(), RListener {
         checkPermissionsOrInitialize()
 
         resultLauncher.launch(intent)
+    }
 
-        val intentService = Intent(this, RecordService::class.java)
-        bindService(intentService, connection, BIND_AUTO_CREATE)
+    override fun onStart() {
+        super.onStart()
+        // Bind to Service
+        Intent(this, RecordService::class.java).also {
+            bindService(it, connection, BIND_AUTO_CREATE)
+        }
     }
 
     override fun onDestroy() {
