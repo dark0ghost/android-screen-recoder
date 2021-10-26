@@ -3,15 +3,19 @@ package org.dark0ghost.android_screen_recorder
 import android.Manifest
 import android.app.Activity
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.widget.Button
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -50,33 +54,30 @@ class MainActivity : AppCompatActivity(), RListener {
             mBound = false
         }
     }
-    private val resultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            // There are no request codes
-            result.data?.let { data ->
-                if (result.resultCode == Activity.RESULT_OK) {
+
+    private fun startRecordInLauncher(result: ActivityResult) {
+        result.data?.let { data ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                Handler(Looper.getMainLooper()).postDelayed({
                     mediaProjectionMain =
                         projectionManager.getMediaProjection(result.resultCode, data)
                     recordService.apply {
-                        this@apply.mediaProjection = mediaProjectionMain
+                        mediaProjection = mediaProjectionMain
                         startRecord()
                     }
-                }
+                }, 1000)
             }
+        }
+    }
+
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            startRecordInLauncher(result)
         }
 
     private val resultButtonLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            result.data?.let { data ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    mediaProjectionMain =
-                        projectionManager.getMediaProjection(result.resultCode, data)
-                    recordService.apply {
-                        this@apply.mediaProjection = mediaProjectionMain
-                        startRecord()
-                    }
-                }
-            }
+            startRecordInLauncher(result)
         }
 
 
@@ -216,8 +217,13 @@ class MainActivity : AppCompatActivity(), RListener {
     override fun onStart() {
         super.onStart()
         // Bind to Service
-        Intent(this, RecordService::class.java).also {
+        RecordService.intent(this).also {
             bindService(it, connection, BIND_AUTO_CREATE)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                startForegroundService(it)
+                return
+            }
+            startService(it)
         }
     }
 

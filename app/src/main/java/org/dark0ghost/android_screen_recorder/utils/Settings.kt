@@ -12,4 +12,12 @@ object Settings {
       const val SERVICE_THREAD_NAME = "service_thread"
    }
 
+   object NotificationSettings{
+      const val CHANNEL_ID = "recorder"
+      const val CONTENT_TITTLE = "DataRecorder"
+      const val CONTENT_TEXT = "Your screen is being recorded and saved to your phone."
+      const val TICKER_NAME = "Tickertext"
+      const val FOREGROUND_ID = 1
+   }
+
 }
