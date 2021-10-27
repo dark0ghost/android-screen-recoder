@@ -7,7 +7,7 @@ object Settings {
 
    object MediaRecordSettings{
       const val BIT_RATE = 5 * 1024 * 1024
-      const val VIDEO_FRAME_RATE = 30
+      const val VIDEO_FRAME_RATE = 60
       const val NAME_DIR = "ScreenRecord"
       const val SERVICE_THREAD_NAME = "service_thread"
    }
@@ -16,7 +16,6 @@ object Settings {
       const val CHANNEL_ID = "recorder"
       const val CONTENT_TITTLE = "DataRecorder"
       const val CONTENT_TEXT = "Your screen is being recorded and saved to your phone."
-      const val TICKER_NAME = "Tickertext"
       const val FOREGROUND_ID = 1
    }
 

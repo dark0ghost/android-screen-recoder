@@ -155,7 +155,10 @@ class MainActivity : AppCompatActivity(), RListener {
             Manifest.permission.RECORD_AUDIO,
         )
         var checkPermission = permissionCheckRecordAudio != PackageManager.PERMISSION_GRANTED
-        Log.e("check permission", (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P).toString())
+        Log.e(
+            "check permission",
+            (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P).toString()
+        )
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
             val permissionCheckForegroundService =
                 ContextCompat.checkSelfPermission(
@@ -202,7 +205,7 @@ class MainActivity : AppCompatActivity(), RListener {
                     resultButtonLauncher.launch(captureIntent)
                     return@setOnClickListener
                 }
-            }catch (e: java.lang.Exception){
+            } catch (e: java.lang.Exception) {
                 Log.e("setOnClickListener", "recordService: $e")
             }
         }

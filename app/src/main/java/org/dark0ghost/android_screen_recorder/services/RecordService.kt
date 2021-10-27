@@ -13,7 +13,6 @@ import android.media.projection.MediaProjection
 import android.os.*
 import android.widget.Toast
 import androidx.drawerlayout.R
-import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.SERVICE_THREAD_NAME
@@ -138,7 +137,7 @@ open class RecordService: Service() {
         serviceThread.start()
         running = false
         mediaRecorder =
-            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 MediaRecorder(this)
             } else {
                 MediaRecorder()
