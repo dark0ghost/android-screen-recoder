@@ -12,7 +12,7 @@ import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.os.*
 import android.widget.Toast
-import androidx.drawerlayout.R
+import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.HEIGHT
@@ -83,14 +83,13 @@ open class RecordService: Service() {
                 Notification.Builder(this, CHANNEL_ID).apply {
                     setContentTitle(CONTENT_TITTLE)
                     setContentText(CONTENT_TEXT)
-                    setSmallIcon(R.drawable.notification_icon_background)
+                    setSmallIcon(R.drawable.ic_notification_custom)
                 }
             } else {
                 Notification.Builder(this).apply {
                     setContentTitle(CONTENT_TITTLE)
                     setContentText(CONTENT_TEXT)
-                    setPriority(Notification.PRIORITY_DEFAULT)
-                    setSmallIcon(R.drawable.notification_icon_background)
+                    setSmallIcon(R.drawable.ic_stat_cast_connected)
                 }
             }
         return notificationBuilder.build()

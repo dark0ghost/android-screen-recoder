@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ManagedVirtualDevice
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -36,7 +38,7 @@ android {
 
     testOptions {
         devices {
-            pixel5api30 (com.android.build.api.dsl.ManagedVirtualDevice) {
+            pixel5api30 (ManagedVirtualDevice) {
                 // Use device profiles you typically see in Android Studio
                 device = "Pixel 5"
                 // ATDs currently support only API level 30.

@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Androidscreenrecoder"
         tools:targetApi="31">
+
         <activity
             android:name="org.dark0ghost.android_screen_recorder.MainActivity"
             android:exported="true">
