@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.RelativeLayout
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.R
+import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 
 class ButtonService: Service() {
     private lateinit var windowManager: WindowManager
@@ -55,8 +56,8 @@ class ButtonService: Service() {
         windowManager.removeView(topView)
     }
 
-    companion object {
-        fun intent(context: Context): Intent {
+    companion object: GetIntent {
+        override fun intent(context: Context): Intent {
             return Intent(context, Button::class.java).apply {
                 flags = FLAG_ACTIVITY_NEW_TASK
             }

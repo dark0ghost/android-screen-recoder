@@ -13,6 +13,7 @@ import android.media.projection.MediaProjection
 import android.os.*
 import android.widget.Toast
 import androidx.drawerlayout.R
+import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.HEIGHT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR
@@ -166,8 +167,8 @@ open class RecordService: Service() {
         fun getRecordService(): RecordService = this@RecordService
     }
 
-    companion object {
-        fun intent(context: Context): Intent {
+    companion object: GetIntent {
+        override fun intent(context: Context): Intent {
             return Intent(context, RecordService::class.java)
         }
     }
