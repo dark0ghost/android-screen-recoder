@@ -13,11 +13,13 @@ import android.media.projection.MediaProjection
 import android.os.*
 import android.widget.Toast
 import androidx.drawerlayout.R
-import org.dark0ghost.android_screen_recorder.utils.Settings
+import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.HEIGHT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.SERVICE_THREAD_NAME
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.VIDEO_FRAME_RATE
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.WIDTH
 import org.dark0ghost.android_screen_recorder.utils.Settings.NotificationSettings.CHANNEL_ID
 import org.dark0ghost.android_screen_recorder.utils.Settings.NotificationSettings.CONTENT_TEXT
 import org.dark0ghost.android_screen_recorder.utils.Settings.NotificationSettings.CONTENT_TITTLE
@@ -32,8 +34,8 @@ open class RecordService: Service() {
 
     private var virtualDisplay: VirtualDisplay? = null
     private var mediaRecorder: MediaRecorder? = null
-    private var width = 720
-    private var height = 1080
+    private var width = WIDTH
+    private var height = HEIGHT
     private var dpi = 0
 
     private fun createVirtualDisplay() {
@@ -138,7 +140,7 @@ open class RecordService: Service() {
         serviceThread.start()
         running = false
         mediaRecorder =
-            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 MediaRecorder(this)
             } else {
                 MediaRecorder()
@@ -165,8 +167,8 @@ open class RecordService: Service() {
         fun getRecordService(): RecordService = this@RecordService
     }
 
-    companion object {
-        fun intent(context: Context): Intent {
+    companion object: GetIntent {
+        override fun intent(context: Context): Intent {
             return Intent(context, RecordService::class.java)
         }
     }
