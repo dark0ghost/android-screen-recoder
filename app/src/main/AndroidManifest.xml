@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -33,6 +34,11 @@
             android:stopWithTask="true"
             android:foregroundServiceType="mediaProjection"
             />
+
+        <service
+            android:name="org.dark0ghost.android_screen_recorder.services.ButtonService"
+            android:enabled="true"
+            android:exported="false"/>
     </application>
 
 </manifest>

@@ -198,15 +198,16 @@ class MainActivity : AppCompatActivity(), RListener {
         setUiState(BaseState.START)
 
         buttonService = ButtonService()
-
+        val intentButtonService: Intent
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && !Settings.canDrawOverlays(this)) {
-            val intent = Intent(
+            intentButtonService = Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:$packageName")
             )
-            startActivity(intent)
-        }else{
-            startActivity(ButtonService.intent(this))
+            startActivity(intentButtonService)
+        }else {
+            intentButtonService = ButtonService.intent(this)
+            startService(intentButtonService)
         }
 
         startRecorder = findViewById(R.id.start_record)
@@ -231,7 +232,7 @@ class MainActivity : AppCompatActivity(), RListener {
 
         checkPermissionsOrInitialize()
 
-        resultLauncher.launch(intent)
+        resultLauncher.launch(this@MainActivity.intent)
     }
 
     override fun onStart() {
