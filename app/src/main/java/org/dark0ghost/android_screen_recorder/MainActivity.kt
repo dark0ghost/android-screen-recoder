@@ -9,10 +9,12 @@ import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.widget.Button
 import androidx.activity.result.ActivityResult
@@ -20,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.services.RecordService
 import org.dark0ghost.android_screen_recorder.services.RecordService.RecordBinder
 import org.dark0ghost.android_screen_recorder.states.BaseState
@@ -86,6 +89,7 @@ class MainActivity : AppCompatActivity(), RListener {
     private lateinit var mediaProjectionMain: MediaProjection
     private lateinit var startRecorder: Button
     private lateinit var recordService: RecordService
+    private lateinit var buttonService: ButtonService
 
     private var speechService: SpeechService? = null
     private var speechStreamService: SpeechStreamService? = null
@@ -189,8 +193,22 @@ class MainActivity : AppCompatActivity(), RListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        supportActionBar?.hide()
+
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         setUiState(BaseState.START)
+
+        buttonService = ButtonService()
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && !Settings.canDrawOverlays(this)) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivity(intent)
+        }else{
+            startActivity(ButtonService.intent(this))
+        }
 
         startRecorder = findViewById(R.id.start_record)
         startRecorder.setOnClickListener {
