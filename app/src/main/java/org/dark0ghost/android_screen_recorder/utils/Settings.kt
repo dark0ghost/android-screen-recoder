@@ -1,5 +1,8 @@
 package org.dark0ghost.android_screen_recorder.utils
 
+import android.graphics.Color
+import android.util.Log
+
 object Settings {
    object AudioRecordSettings {
       const val PERMISSIONS_REQUEST_RECORD_AUDIO = 1
@@ -24,5 +27,8 @@ object Settings {
    object InlineButtonSettings {
       const val WIDTH = 400
       const val HEIGHT = 400
+      const val START_COLOR = Color.RED
+      const val STOP_COLOR  = Color.BLUE
+      var callbackForStartRecord: () -> Unit = { Log.e("InlineButtonSettings", "fn not init") }
    }
 }

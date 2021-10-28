@@ -11,6 +11,7 @@ import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.os.*
+import android.view.Surface
 import android.widget.Toast
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
@@ -32,17 +33,28 @@ open class RecordService: Service() {
     private val binder = RecordBinder()
 
     private var virtualDisplay: VirtualDisplay? = null
-    private var mediaRecorder: MediaRecorder? = null
     private var width = WIDTH
     private var height = HEIGHT
     private var dpi = 0
 
+    private lateinit var mediaRecorder: MediaRecorder
+
     private fun createVirtualDisplay() {
-        mediaProjection?.let {
-            virtualDisplay = it.createVirtualDisplay(
-                "MainScreen", width, height, dpi,
-                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mediaRecorder!!.surface, null, null
-            )
+        try {
+            mediaProjection?.let {
+                virtualDisplay = it.createVirtualDisplay(
+                    "MainScreen",
+                    width,
+                    height,
+                    dpi,
+                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                    mediaRecorder.surface,
+                    null,
+                    null
+                )
+            }
+        }catch (e: IllegalStateException){
+            e.printStackTrace()
         }
     }
 
@@ -58,7 +70,7 @@ open class RecordService: Service() {
     }
 
     private fun initRecorder() {
-        mediaRecorder?.apply {
+        mediaRecorder.apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
@@ -110,7 +122,7 @@ open class RecordService: Service() {
         }
         initRecorder()
         createVirtualDisplay()
-        mediaRecorder?.start()
+        mediaRecorder.start()
         running = true
         return true
     }
@@ -120,7 +132,7 @@ open class RecordService: Service() {
             return false
         }
         running = false
-        mediaRecorder?.apply {
+        mediaRecorder.apply {
             stop()
             reset()
         }

@@ -4,21 +4,29 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.RelativeLayout
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
+import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.START_COLOR
+import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.STOP_COLOR
+import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 
 class ButtonService: Service() {
+    private var colorBound = true
+
     private lateinit var windowManager: WindowManager
     private lateinit var params: WindowManager.LayoutParams
     private lateinit var topView: RelativeLayout
     private lateinit var buttonStartRecorder: Button
+
 
     override fun onCreate() {
         super.onCreate();
@@ -48,7 +56,18 @@ class ButtonService: Service() {
         windowManager.addView(topView, params)
 
         buttonStartRecorder.setOnClickListener { _ ->
-            println("click")
+            Log.i("buttonStartRecorder", "callback is start")
+            callbackForStartRecord()
+            if(colorBound){
+                buttonStartRecorder.setBackgroundColor(START_COLOR)
+                colorBound = false
+                Log.i("buttonStartRecorder", "start recorder")
+                return@setOnClickListener
+            }
+            buttonStartRecorder.setBackgroundColor(STOP_COLOR)
+            colorBound = true
+            Log.i("buttonStartRecorder", "stop recorder")
+            return@setOnClickListener
         }
 
     }

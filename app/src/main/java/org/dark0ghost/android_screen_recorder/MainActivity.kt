@@ -26,6 +26,7 @@ import org.dark0ghost.android_screen_recorder.services.RecordService
 import org.dark0ghost.android_screen_recorder.services.RecordService.RecordBinder
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
+import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
 import org.vosk.LogLevel
@@ -189,6 +190,24 @@ class MainActivity : AppCompatActivity(), RListener {
         initModel()
     }
 
+    private fun startRecord(){
+        try {
+            recordService.apply {
+                if (running) {
+                    Log.i("startRecord", "running is true")
+                    stopRecord()
+                    return
+                }
+                val captureIntent = projectionManager.createScreenCaptureIntent()
+                Log.d("start captureIntent", resultButtonLauncher.hashCode().toString())
+                resultButtonLauncher.launch(captureIntent)
+                return
+            }
+        } catch (e: java.lang.Exception) {
+            Log.e("startRecorder", "recordService: $e")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -230,22 +249,11 @@ class MainActivity : AppCompatActivity(), RListener {
             return@setOnClickListener
         }
 
+        callbackForStartRecord = { startRecord() }
+
         startRecorder = findViewById(R.id.start_record)
         startRecorder.setOnClickListener {
-            try {
-                recordService.apply {
-                    if (running) {
-                        stopRecord()
-                        return@setOnClickListener
-                    }
-                    val captureIntent = projectionManager.createScreenCaptureIntent()
-                    Log.d("start captureIntent", resultButtonLauncher.hashCode().toString())
-                    resultButtonLauncher.launch(captureIntent)
-                    return@setOnClickListener
-                }
-            } catch (e: java.lang.Exception) {
-                Log.e("setOnClickListener", "recordService: $e")
-            }
+           startRecord()
         }
 
         LibVosk.setLogLevel(LogLevel.INFO)
@@ -276,6 +284,7 @@ class MainActivity : AppCompatActivity(), RListener {
             shutdown()
         }
         speechStreamService?.stop()
+        stopService(intentButtonService)
     }
 
     override fun onRequestPermissionsResult(
