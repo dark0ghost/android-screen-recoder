@@ -166,8 +166,6 @@ open class RecordService: Service() {
     }
 
     companion object: GetIntent {
-        override fun intent(context: Context): Intent {
-            return Intent(context, RecordService::class.java)
-        }
+        override fun intent(context: Context): Intent = Intent(context, RecordService::class.java)
     }
 }

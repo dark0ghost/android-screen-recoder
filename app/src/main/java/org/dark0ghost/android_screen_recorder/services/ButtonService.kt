@@ -63,10 +63,9 @@ class ButtonService: Service() {
     }
 
     companion object : GetIntent {
-        override fun intent(context: Context): Intent {
-            return Intent(context, ButtonService::class.java).apply {
+        override fun intent(context: Context): Intent =
+            Intent(context, ButtonService::class.java).apply {
                 flags = FLAG_ACTIVITY_NEW_TASK
             }
-        }
     }
 }
