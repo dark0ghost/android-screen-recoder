@@ -202,11 +202,13 @@ class MainActivity : AppCompatActivity(), RListener {
         buttonStartInlineButton = findViewById(R.id.start_inline_button)
 
         buttonStartInlineButton.setOnClickListener {
-            Log.d("buttonStartInlineButton", if (boundInlineButton){
-                "build button"
-            }else{
-                "deleted button"
-            })
+            Log.d(
+                "buttonStartInlineButton", if (boundInlineButton) {
+                    "build button"
+                } else {
+                    "deleted button"
+                }
+            )
             if (boundInlineButton) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && !Settings.canDrawOverlays(
                         this
