@@ -21,9 +21,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import org.dark0ghost.android_screen_recorder.data_class.TextFromVoice
 import org.dark0ghost.android_screen_recorder.listeners.RListener
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.services.RecordService
@@ -42,18 +39,17 @@ import java.io.IOException
 
 
 class MainActivity : AppCompatActivity() {
-    private val rListener: RListener = RListener.Builder().apply {
-        setCallbackOnFinalResult {
+    private val rListener: RListener = RListener.Builder()
+        .setCallbackOnFinalResult {
             setUiState(BaseState.DONE)
         }
-
-        setCallbackOnTimeout {
+        .setCallbackOnTimeout {
             setUiState(BaseState.DONE);
             if (speechStreamService != null) {
                 speechStreamService = null
             }
         }
-    }.build()
+        .build()
     private val connection: ServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
