@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             setUiState(BaseState.DONE)
         }
         .setCallbackOnTimeout {
-            setUiState(BaseState.DONE);
+            setUiState(BaseState.DONE)
             if (speechStreamService != null) {
                 speechStreamService = null
             }
