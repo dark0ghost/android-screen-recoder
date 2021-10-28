@@ -5,7 +5,7 @@ object Settings {
       const val PERMISSIONS_REQUEST_RECORD_AUDIO = 1
    }
 
-   object MediaRecordSettings{
+   object MediaRecordSettings {
       const val BIT_RATE = 5 * 1024 * 1024
       const val VIDEO_FRAME_RATE = 60
       const val NAME_DIR = "ScreenRecord"
@@ -14,7 +14,7 @@ object Settings {
       const val HEIGHT = 1080
    }
 
-   object NotificationSettings{
+   object NotificationSettings {
       const val CHANNEL_ID = "recorder"
       const val CONTENT_TITTLE = "DataRecorder"
       const val CONTENT_TEXT = "Your screen is being recorded and saved to your phone."
@@ -25,5 +25,4 @@ object Settings {
       const val WIDTH = 400
       const val HEIGHT = 400
    }
-
 }

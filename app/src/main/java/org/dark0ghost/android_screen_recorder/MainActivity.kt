@@ -39,7 +39,6 @@ import org.vosk.android.RecognitionListener as RListener
 
 
 class MainActivity : AppCompatActivity(), RListener {
-
     private val buffer: MutableList<String> = mutableListOf()
     private val connection: ServiceConnection = object : ServiceConnection {
 
@@ -81,7 +80,6 @@ class MainActivity : AppCompatActivity(), RListener {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             startRecordInLauncher(result)
         }
-
 
     private lateinit var model: org.vosk.Model
     private lateinit var projectionManager: MediaProjectionManager
@@ -188,7 +186,6 @@ class MainActivity : AppCompatActivity(), RListener {
         initModel()
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -199,13 +196,16 @@ class MainActivity : AppCompatActivity(), RListener {
 
         buttonService = ButtonService()
         val intentButtonService: Intent
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && !Settings.canDrawOverlays(this)) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && !Settings.canDrawOverlays(
+                this
+            )
+        ) {
             intentButtonService = Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:$packageName")
             )
             startActivity(intentButtonService)
-        }else {
+        } else {
             intentButtonService = ButtonService.intent(this)
             startService(intentButtonService)
         }

@@ -29,7 +29,6 @@ import java.io.IOException
 
 
 open class RecordService: Service() {
-
     private val binder = RecordBinder()
 
     private var virtualDisplay: VirtualDisplay? = null
