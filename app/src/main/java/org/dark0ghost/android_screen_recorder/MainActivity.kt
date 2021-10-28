@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.dark0ghost.android_screen_recorder.data_class.TextFromVoice
+import org.dark0ghost.android_screen_recorder.listeners.RListener
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.services.RecordService
 import org.dark0ghost.android_screen_recorder.services.RecordService.RecordBinder
@@ -38,12 +39,21 @@ import org.vosk.android.SpeechService
 import org.vosk.android.SpeechStreamService
 import org.vosk.android.StorageService
 import java.io.IOException
-import java.io.InputStream
-import org.vosk.android.RecognitionListener as RListener
 
 
-class MainActivity : AppCompatActivity(), RListener {
-    private val buffer: MutableList<String> = mutableListOf()
+class MainActivity : AppCompatActivity() {
+    private val rListener: RListener = RListener.Builder().apply {
+        setCallbackOnFinalResult {
+            setUiState(BaseState.DONE)
+        }
+
+        setCallbackOnTimeout {
+            setUiState(BaseState.DONE);
+            if (speechStreamService != null) {
+                speechStreamService = null
+            }
+        }
+    }.build()
     private val connection: ServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
@@ -123,9 +133,7 @@ class MainActivity : AppCompatActivity(), RListener {
         try {
             val rec = Recognizer(model, 16000.0f)
             speechService = SpeechService(rec, 16000.0f)
-            speechService?.apply {
-                startListening(this@MainActivity)
-            }
+            speechService?.startListening(rListener)
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -279,35 +287,5 @@ class MainActivity : AppCompatActivity(), RListener {
             }
             finish()
         }
-    }
-
-    // RListener
-
-    override fun onPartialResult(p0: String) {
-        // buffer.add(p0)
-        Log.e("word/onPartialResult", p0)
-    }
-
-    override fun onResult(p0: String) {
-        val obj = Json.decodeFromString<TextFromVoice>(p0)
-        buffer.add(obj.partial)
-
-        Log.e("word/onResult", p0)
-    }
-
-    override fun onFinalResult(p0: String) {
-        buffer.add(p0)
-        setUiState(BaseState.DONE);
-        if (speechStreamService != null) {
-            speechStreamService = null
-        }
-    }
-
-    override fun onError(p0: Exception) {
-        Log.e(this::class.toString(), p0.message.orEmpty())
-    }
-
-    override fun onTimeout() {
-        setUiState(BaseState.DONE)
     }
 }
