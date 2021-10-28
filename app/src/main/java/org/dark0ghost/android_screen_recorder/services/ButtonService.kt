@@ -58,7 +58,7 @@ class ButtonService: Service() {
         buttonStartRecorder.setOnClickListener { _ ->
             Log.i("buttonStartRecorder", "callback is start")
             callbackForStartRecord()
-            if(colorBound){
+            if (colorBound) {
                 buttonStartRecorder.setBackgroundColor(START_COLOR)
                 colorBound = false
                 Log.i("buttonStartRecorder", "start recorder")

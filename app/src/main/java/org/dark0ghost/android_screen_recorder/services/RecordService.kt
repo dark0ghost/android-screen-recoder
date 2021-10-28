@@ -53,7 +53,7 @@ open class RecordService: Service() {
                     null
                 )
             }
-        }catch (e: IllegalStateException){
+        } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
     }
@@ -178,7 +178,7 @@ open class RecordService: Service() {
         fun getRecordService(): RecordService = this@RecordService
     }
 
-    companion object: GetIntent {
+    companion object : GetIntent {
         override fun intent(context: Context): Intent = Intent(context, RecordService::class.java)
     }
 }

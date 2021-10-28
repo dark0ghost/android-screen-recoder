@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity(), RListener {
         initModel()
     }
 
-    private fun startRecord(){
+    private fun startRecord() {
         try {
             recognizeMicrophone()
             recordService.apply {
@@ -230,7 +230,7 @@ class MainActivity : AppCompatActivity(), RListener {
 
         startRecorder = findViewById(R.id.start_record)
         startRecorder.setOnClickListener {
-           startRecord()
+            startRecord()
         }
 
         LibVosk.setLogLevel(LogLevel.INFO)
