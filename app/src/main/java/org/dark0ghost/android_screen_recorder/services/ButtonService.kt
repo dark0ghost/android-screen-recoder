@@ -18,7 +18,7 @@ class ButtonService: Service() {
     private lateinit var windowManager: WindowManager
     private lateinit var params: WindowManager.LayoutParams
     private lateinit var topView: RelativeLayout
-    private lateinit var button: Button
+    private lateinit var buttonStartRecorder: Button
 
     override fun onCreate() {
         super.onCreate();
@@ -26,7 +26,7 @@ class ButtonService: Service() {
         val nullParent: ViewGroup? = null
         topView = LayoutInflater.from(this).inflate(R.layout.revolt, nullParent) as RelativeLayout
         topView.visibility = View.VISIBLE
-        button = topView.findViewById(R.id.grub)
+        buttonStartRecorder = topView.findViewById(R.id.grub)
         params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams(
                 Settings.InlineButtonSettings.WIDTH,
@@ -47,15 +47,13 @@ class ButtonService: Service() {
         params.gravity = Gravity.TOP or Gravity.END
         windowManager.addView(topView, params)
 
-        button.setOnClickListener { _ ->
+        buttonStartRecorder.setOnClickListener { _ ->
             println("click")
         }
 
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
+    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
         super.onDestroy()

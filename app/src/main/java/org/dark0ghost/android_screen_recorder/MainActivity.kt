@@ -56,21 +56,6 @@ class MainActivity : AppCompatActivity(), RListener {
         }
     }
 
-    private fun startRecordInLauncher(result: ActivityResult) {
-        result.data?.let { data ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    mediaProjectionMain =
-                        projectionManager.getMediaProjection(result.resultCode, data)
-                    recordService.apply {
-                        mediaProjection = mediaProjectionMain
-                        startRecord()
-                    }
-                }, 1000)
-            }
-        }
-    }
-
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             startRecordInLauncher(result)
@@ -87,11 +72,29 @@ class MainActivity : AppCompatActivity(), RListener {
     private lateinit var startRecorder: Button
     private lateinit var recordService: RecordService
     private lateinit var buttonService: ButtonService
+    private lateinit var buttonStartInlineButton: Button
+    private lateinit var intentButtonService: Intent
 
     private var speechService: SpeechService? = null
     private var speechStreamService: SpeechStreamService? = null
 
     private var mBound: Boolean = false
+    private var boundInlineButton: Boolean = true
+
+    private fun startRecordInLauncher(result: ActivityResult) {
+        result.data?.let { data ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    mediaProjectionMain =
+                        projectionManager.getMediaProjection(result.resultCode, data)
+                    recordService.apply {
+                        mediaProjection = mediaProjectionMain
+                        startRecord()
+                    }
+                }, 1000)
+            }
+        }
+    }
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -192,22 +195,37 @@ class MainActivity : AppCompatActivity(), RListener {
         supportActionBar?.hide()
 
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        intentButtonService = ButtonService.intent(this)
         setUiState(BaseState.START)
 
         buttonService = ButtonService()
-        val intentButtonService: Intent
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && !Settings.canDrawOverlays(
-                this
-            )
-        ) {
-            intentButtonService = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
-            )
-            startActivity(intentButtonService)
-        } else {
-            intentButtonService = ButtonService.intent(this)
-            startService(intentButtonService)
+        buttonStartInlineButton = findViewById(R.id.start_inline_button)
+
+        buttonStartInlineButton.setOnClickListener {
+            Log.d("buttonStartInlineButton", if (boundInlineButton){
+                "build button"
+            }else{
+                "deleted button"
+            })
+            if (boundInlineButton) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && !Settings.canDrawOverlays(
+                        this
+                    )
+                ) {
+                    intentButtonService = Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:$packageName")
+                    )
+                    startActivity(intentButtonService)
+                    return@setOnClickListener
+                }
+                startService(intentButtonService)
+                boundInlineButton = false
+                return@setOnClickListener
+            }
+            stopService(intentButtonService)
+            boundInlineButton = true
+            return@setOnClickListener
         }
 
         startRecorder = findViewById(R.id.start_record)
