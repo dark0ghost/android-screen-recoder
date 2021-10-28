@@ -109,30 +109,6 @@ class MainActivity : AppCompatActivity(), RListener {
         }
     }
 
-    private fun recognizeFile() {
-        if (speechStreamService != null) {
-            setUiState(BaseState.DONE)
-            speechStreamService!!.stop()
-            speechStreamService = null
-        } else {
-            setUiState(BaseState.FILE)
-            try {
-                val rec = Recognizer(
-                    model, 16000f, "[\"one zero zero zero one\", " +
-                            "\"oh zero one two three four five six seven eight nine\", \"[unk]\"]"
-                )
-                val ais: InputStream = assets.open(
-                    "10001-90210-01803.wav"
-                )
-                if (ais.skip(44) != 44L) throw IOException("File too short")
-                speechStreamService = SpeechStreamService(rec, ais, 16000F)
-                speechStreamService!!.start(this)
-            } catch (e: IOException) {
-                e.message?.let { Log.e("recognizeFile", it) }
-            }
-        }
-    }
-
     private fun recognizeMicrophone() {
         speechService?.let {
             setUiState(BaseState.DONE)
@@ -148,7 +124,7 @@ class MainActivity : AppCompatActivity(), RListener {
                 startListening(this@MainActivity)
             }
         } catch (e: IOException) {
-            e.message?.let { Log.e("recognizeFile", it) }
+            e.printStackTrace()
         }
 
     }
@@ -192,6 +168,7 @@ class MainActivity : AppCompatActivity(), RListener {
 
     private fun startRecord(){
         try {
+            recognizeMicrophone()
             recordService.apply {
                 if (running) {
                     Log.i("startRecord", "running is true")

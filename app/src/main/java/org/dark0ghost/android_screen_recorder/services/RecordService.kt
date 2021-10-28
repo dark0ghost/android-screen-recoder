@@ -69,25 +69,6 @@ open class RecordService: Service() {
 
     }
 
-    private fun initRecorder() {
-        mediaRecorder.apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            setOutputFile("${getsDirectory()}${System.currentTimeMillis()}.mp4")
-            setVideoSize(width, height)
-            setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-            setVideoEncodingBitRate(BIT_RATE)
-            setVideoFrameRate(VIDEO_FRAME_RATE)
-            try {
-                prepare()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
     private fun initNotification(): Notification {
         val notificationBuilder =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -104,6 +85,31 @@ open class RecordService: Service() {
                 }
             }
         return notificationBuilder.build()
+    }
+
+    private fun initRecorder() {
+        mediaRecorder =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                MediaRecorder(this)
+            } else {
+                MediaRecorder()
+            }
+        mediaRecorder.apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            setOutputFile("${getsDirectory()}${System.currentTimeMillis()}.mp4")
+            setVideoSize(width, height)
+            setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            setVideoEncodingBitRate(BIT_RATE)
+            setVideoFrameRate(VIDEO_FRAME_RATE)
+            try {
+                prepare()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
     open var running = false
@@ -135,6 +141,7 @@ open class RecordService: Service() {
         mediaRecorder.apply {
             stop()
             reset()
+            release()
         }
         virtualDisplay?.release()
         mediaProjection?.stop()
@@ -149,12 +156,6 @@ open class RecordService: Service() {
         )
         serviceThread.start()
         running = false
-        mediaRecorder =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                MediaRecorder(this)
-            } else {
-                MediaRecorder()
-            }
     }
 
     override fun onBind(intent: Intent): IBinder = binder
