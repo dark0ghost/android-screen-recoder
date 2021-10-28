@@ -21,6 +21,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import org.dark0ghost.android_screen_recorder.data_class.TextFromVoice
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.services.RecordService
 import org.dark0ghost.android_screen_recorder.services.RecordService.RecordBinder
@@ -281,11 +284,15 @@ class MainActivity : AppCompatActivity(), RListener {
     // RListener
 
     override fun onPartialResult(p0: String) {
-        buffer.add(p0)
+        // buffer.add(p0)
+        Log.e("word/onPartialResult", p0)
     }
 
     override fun onResult(p0: String) {
-        buffer.add(p0)
+        val obj = Json.decodeFromString<TextFromVoice>(p0)
+        buffer.add(obj.partial)
+
+        Log.e("word/onResult", p0)
     }
 
     override fun onFinalResult(p0: String) {
