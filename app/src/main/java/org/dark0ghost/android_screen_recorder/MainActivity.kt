@@ -28,6 +28,7 @@ import org.dark0ghost.android_screen_recorder.services.RecordService.RecordBinde
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
+import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.FILE_NAME_FORMAT
 import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
 import org.vosk.LogLevel
@@ -35,13 +36,24 @@ import org.vosk.Recognizer
 import org.vosk.android.SpeechService
 import org.vosk.android.SpeechStreamService
 import org.vosk.android.StorageService
+import java.io.File
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
     private val rListener: RListener = RListener.Builder()
         .setCallbackOnFinalResult {
             setUiState(BaseState.DONE)
+            val textFile = File(
+                getOutputDirectory(),
+                SimpleDateFormat(
+                    FILE_NAME_FORMAT, Locale.US
+                ).format(System.currentTimeMillis()) + ".txt"
+            )
+            textFile.writeText(buffer.toString())
+            buffer.clear()
         }
         .setCallbackOnTimeout {
             setUiState(BaseState.DONE)
@@ -104,6 +116,15 @@ class MainActivity : AppCompatActivity() {
                 }, 1000)
             }
         }
+    }
+
+    private fun getOutputDirectory(): File {
+        val mediaDir = externalMediaDirs.firstOrNull()?.let {
+            File(it, packageName.replace("org.dark0ghost.", "")).apply {
+                mkdirs()
+            }
+        }
+        return if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
     }
 
     private fun initModel() {

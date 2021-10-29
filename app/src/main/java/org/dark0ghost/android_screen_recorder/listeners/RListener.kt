@@ -6,26 +6,23 @@ import kotlinx.serialization.json.Json
 import org.dark0ghost.android_screen_recorder.data_class.TextFromVoice
 import org.vosk.android.RecognitionListener
 
-open class RListener(private var callbackOnTimeout: () -> Unit, private var callbackOnFinalResult: () -> Unit): RecognitionListener {
+open class RListener(private var callbackOnTimeout: RListener.() -> Unit, private var callbackOnFinalResult: RListener.() -> Unit): RecognitionListener {
 
-    open val buffer: MutableList<TextFromVoice> = mutableListOf()
+    open val buffer: MutableList<String> = mutableListOf()
 
     override fun onPartialResult(p0: String) {
         val obj = Json.decodeFromString<TextFromVoice>(p0)
-        //buffer.add(obj)
         Log.e("word/onPartialResult", obj.toString())
     }
 
     override fun onResult(p0: String) {
         val obj = Json.decodeFromString<TextFromVoice>(p0)
-        buffer.add(obj)
-
+        buffer.add(obj.text)
         Log.e("word/onResult", obj.toString())
     }
 
     override fun onFinalResult(p0: String) {
         val obj = Json.decodeFromString<TextFromVoice>(p0)
-        buffer.add(obj)
         Log.e("word/onFinalResult", obj.toString())
         callbackOnFinalResult()
     }
@@ -39,14 +36,14 @@ open class RListener(private var callbackOnTimeout: () -> Unit, private var call
     }
 
     data class Builder(
-        private var callbackOnTimeout: () -> Unit = {},
-        private var callbackOnFinalResult: () -> Unit = {}
+        private var callbackOnTimeout: RListener.() -> Unit = {},
+        private var callbackOnFinalResult: RListener.() -> Unit = {}
     ) {
-        fun setCallbackOnTimeout(callback: () -> Unit) = apply {
+        fun setCallbackOnTimeout(callback: RListener.() -> Unit) = apply {
             callbackOnTimeout = callback
         }
 
-        fun setCallbackOnFinalResult(callback: () -> Unit) = apply {
+        fun setCallbackOnFinalResult(callback: RListener.() -> Unit) = apply {
             callbackOnFinalResult = callback
         }
 

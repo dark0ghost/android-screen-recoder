@@ -5,30 +5,34 @@ import android.util.Log
 
 object Settings {
    object AudioRecordSettings {
-      const val PERMISSIONS_REQUEST_RECORD_AUDIO = 1
+      const val PERMISSIONS_REQUEST_RECORD_AUDIO: Int = 1
    }
 
    object MediaRecordSettings {
-      const val BIT_RATE = 5 * 1024 * 1024
-      const val VIDEO_FRAME_RATE = 60
-      const val NAME_DIR = "ScreenRecord"
-      const val SERVICE_THREAD_NAME = "service_thread"
-      const val WIDTH = 1920
-      const val HEIGHT = 1080
+      const val BIT_RATE: Int = 5 * 1024 * 1024
+      const val VIDEO_FRAME_RATE: Int = 60
+      const val NAME_DIR: String = "ScreenRecord"
+      const val SERVICE_THREAD_NAME: String = "service_thread"
+      const val WIDTH: Int = 1920
+      const val HEIGHT: Int = 1080
    }
 
    object NotificationSettings {
-      const val CHANNEL_ID = "recorder"
-      const val CONTENT_TITTLE = "DataRecorder"
-      const val CONTENT_TEXT = "Your screen is being recorded and saved to your phone."
-      const val FOREGROUND_ID = 1
+      const val CHANNEL_ID: String = "recorder"
+      const val CONTENT_TITTLE: String = "DataRecorder"
+      const val CONTENT_TEXT: String = "Your screen is being recorded and saved to your phone."
+      const val FOREGROUND_ID: Int = 1
    }
 
    object InlineButtonSettings {
-      const val WIDTH = 400
-      const val HEIGHT = 400
-      const val START_COLOR = Color.RED
-      const val STOP_COLOR  = Color.BLUE
+      const val WIDTH: Int = 400
+      const val HEIGHT: Int = 400
+      const val START_COLOR: Int = Color.RED
+      const val STOP_COLOR: Int = Color.BLUE
       var callbackForStartRecord: () -> Unit = { Log.e("InlineButtonSettings", "fn not init") }
+   }
+
+   object MainActivitySettings {
+      const val FILE_NAME_FORMAT: String = "yyyy-MM-dd-HH-mm-ss-SSS"
    }
 }
