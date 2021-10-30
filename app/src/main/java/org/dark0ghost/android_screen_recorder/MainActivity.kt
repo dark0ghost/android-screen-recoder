@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                 ).format(System.currentTimeMillis()) + ".txt"
             )
             textFile.writeText(buffer.toString())
+            Log.e("File/OnFinalResult", textFile.absoluteFile.toString())
             buffer.clear()
         }
         .setCallbackOnTimeout {
@@ -111,7 +112,13 @@ class MainActivity : AppCompatActivity() {
                         projectionManager.getMediaProjection(result.resultCode, data)
                     recordService.apply {
                         mediaProjection = mediaProjectionMain
-                        startRecord()
+                        Log.i(
+                            "Start recorder", if (startRecord()) {
+                                "Success"
+                            } else {
+                                "Error"
+                            }
+                        )
                     }
                 }, 1000)
             }
@@ -245,7 +252,12 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intentButtonService)
                     return@setOnClickListener
                 }
-                startService(intentButtonService)
+                try {
+                    startService(intentButtonService)
+                } catch (e: java.lang.IllegalArgumentException) {
+                    e.printStackTrace()
+                    return@setOnClickListener
+                }
                 boundInlineButton = false
                 return@setOnClickListener
             }

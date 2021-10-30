@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">android-screen-recoder</string>
+    <string name="app_name">screen recorder</string>
     <string name="button">start record</string>
 </resources>

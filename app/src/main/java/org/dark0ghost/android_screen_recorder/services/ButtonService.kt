@@ -27,7 +27,6 @@ class ButtonService: Service() {
     private lateinit var topView: RelativeLayout
     private lateinit var buttonStartRecorder: Button
 
-
     override fun onCreate() {
         super.onCreate();
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager

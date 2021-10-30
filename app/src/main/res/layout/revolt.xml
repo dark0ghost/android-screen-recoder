@@ -2,16 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    >
-
+    android:background="#000000">
     <Button
         android:id="@+id/grub"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/rounded_button"
-        android:contentDescription="@string/button"
-        >
-
+        android:contentDescription="@string/button">
     </Button>
 </RelativeLayout>
