@@ -127,12 +127,7 @@ open class RecordService: Service() {
         }
         initRecorder()
         createVirtualDisplay()
-        try {
-            mediaRecorder.start()
-        } catch (e: java.lang.IllegalStateException) {
-            e.printStackTrace()
-            return false
-        }
+        mediaRecorder.start()
         running = true
         return true
     }

@@ -112,13 +112,7 @@ class MainActivity : AppCompatActivity() {
                         projectionManager.getMediaProjection(result.resultCode, data)
                     recordService.apply {
                         mediaProjection = mediaProjectionMain
-                        Log.i(
-                            "Start recorder", if (startRecord()) {
-                                "Success"
-                            } else {
-                                "Error"
-                            }
-                        )
+                        startRecord()
                     }
                 }, 1000)
             }

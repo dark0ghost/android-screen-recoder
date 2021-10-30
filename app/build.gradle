@@ -10,7 +10,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "org.dark0ghost.android_screen_recoder"
+        applicationId "org.dark0ghost.android_screen_recorder"
         minSdk 21
         targetSdk 31
         versionCode 1
@@ -39,22 +39,27 @@ android {
 
     testOptions {
         devices {
-            pixel5api30 (ManagedVirtualDevice) {
+            pixel5api30(ManagedVirtualDevice) {
                 // Use device profiles you typically see in Android Studio
                 device = "Pixel 5"
                 // ATDs currently support only API level 30.
                 apiLevel = 30
                 // You can also specify "google-atd"
                 // if you require Google Play Services.
-                systemImageSource = "aosp-atd"
+               // systemImageSource = "aosp-atd"
                 abi = "x86"
             }
         }
     }
 
+    packagingOptions {
+        exclude 'META-INF/*'
+    }
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.31"
+
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
@@ -69,5 +74,5 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
 }
