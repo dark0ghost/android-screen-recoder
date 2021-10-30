@@ -246,12 +246,7 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intentButtonService)
                     return@setOnClickListener
                 }
-                try {
-                    startService(intentButtonService)
-                } catch (e: java.lang.IllegalArgumentException) {
-                    e.printStackTrace()
-                    return@setOnClickListener
-                }
+                startService(intentButtonService)
                 boundInlineButton = false
                 return@setOnClickListener
             }
