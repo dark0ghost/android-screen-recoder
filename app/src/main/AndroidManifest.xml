@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.dark0ghost.android_screen_recorder">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Androidscreenrecoder"
         tools:targetApi="31">
+
         <activity
             android:name="org.dark0ghost.android_screen_recorder.MainActivity"
             android:exported="true">
@@ -22,6 +28,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name="org.dark0ghost.android_screen_recorder.services.RecordService"
+            android:enabled="true"
+            android:exported="false"
+            android:stopWithTask="true"
+            android:foregroundServiceType="mediaProjection"
+            />
+
+        <service
+            android:name="org.dark0ghost.android_screen_recorder.services.ButtonService"
+            android:enabled="true"
+            android:exported="false"/>
     </application>
 
 </manifest>
