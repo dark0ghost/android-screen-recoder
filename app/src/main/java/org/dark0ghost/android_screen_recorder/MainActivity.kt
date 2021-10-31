@@ -9,10 +9,7 @@ import android.content.pm.PackageManager
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.net.Uri
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
 import android.provider.Settings
 import android.util.Log
 import android.widget.Button
@@ -156,7 +153,6 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
     }
 
     private fun checkPermissionsOrInitialize() {
@@ -198,7 +194,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun startRecord() {
         try {
-            //recognizeMicrophone()
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+                recognizeMicrophone()
+            }
             recordService.apply {
                 if (running) {
                     Log.i("startRecord", "running is true")
