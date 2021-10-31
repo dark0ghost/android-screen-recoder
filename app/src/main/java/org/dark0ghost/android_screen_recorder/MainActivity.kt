@@ -266,7 +266,7 @@ class MainActivity : AppCompatActivity() {
         checkPermissionsOrInitialize()
 
         resultLauncher.launch(this@MainActivity.intent)
-    }            set
+    }
 
     override fun onStart() {
         super.onStart()
