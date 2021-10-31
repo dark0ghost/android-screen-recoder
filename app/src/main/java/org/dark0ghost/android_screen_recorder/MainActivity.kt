@@ -198,7 +198,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startRecord() {
         try {
-            recognizeMicrophone()
+            //recognizeMicrophone()
             recordService.apply {
                 if (running) {
                     Log.i("startRecord", "running is true")
@@ -268,7 +268,7 @@ class MainActivity : AppCompatActivity() {
         checkPermissionsOrInitialize()
 
         resultLauncher.launch(this@MainActivity.intent)
-    }
+    }            set
 
     override fun onStart() {
         super.onStart()
