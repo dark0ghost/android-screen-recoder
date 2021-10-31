@@ -134,10 +134,11 @@ class MainActivity : AppCompatActivity() {
             setUiState(BaseState.READY)
         }
         StorageService.unpack(
-            this, "model_ru", "model", callbackModelInit
+            this@MainActivity, "model_ru", "models", callbackModelInit
         ) { exception: IOException ->
-            Log.e("init-model-fn", "Failed to unpack the model ${exception.message}")
+            Log.e("init-model-fn", "Failed to unpack the model ${exception.printStackTrace()}")
         }
+        Log.d("initModel", "run complete")
     }
 
     private fun recognizeMicrophone() {
@@ -220,7 +221,6 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        intentButtonService = ButtonService.intent(this)
         setUiState(BaseState.START)
 
         buttonService = ButtonService()
@@ -246,6 +246,7 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intentButtonService)
                     return@setOnClickListener
                 }
+                intentButtonService = ButtonService.intent(this)
                 startService(intentButtonService)
                 boundInlineButton = false
                 return@setOnClickListener

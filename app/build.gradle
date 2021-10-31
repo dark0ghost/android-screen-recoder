@@ -23,6 +23,15 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    sourceSets {
+        test {
+            resources.srcDirs += ['models']
+        }
+        androidTest {
+            resources.srcDirs += ['models']
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -50,6 +59,7 @@ android {
                 abi = "x86"
             }
         }
+        animationsDisabled = true
     }
 
     packagingOptions {
@@ -58,6 +68,11 @@ android {
 }
 
 dependencies {
+    implementation fileTree(
+            dir: 'libs',
+            include: ['*.jar']
+    )
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.31"
 
     implementation 'androidx.core:core-ktx:1.7.0'
