@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
@@ -51,7 +50,7 @@ class ButtonService: Service() {
         }
         params.x = 10
         params.y = 500 // service position
-        params.gravity = Gravity.TOP or Gravity.END
+        params.gravity =  Gravity.END or Gravity.TOP
         windowManager.addView(topView, params)
 
         buttonStartRecorder.setOnClickListener { _ ->
@@ -67,6 +66,16 @@ class ButtonService: Service() {
             colorBound = true
             Log.i("buttonStartRecorder", "stop recorder")
             return@setOnClickListener
+        }
+
+        buttonStartRecorder.setOnTouchListener { _, motionEvent ->
+            if (motionEvent.action == MotionEvent.ACTION_MOVE) {
+                params.y = motionEvent.rawY.toInt()
+                params.x = motionEvent.rawX.toInt()
+                Log.e("change position", "x: ${params.x}, y: ${params.y}")
+                windowManager.updateViewLayout(topView, params)
+            }
+            return@setOnTouchListener true
         }
 
     }
