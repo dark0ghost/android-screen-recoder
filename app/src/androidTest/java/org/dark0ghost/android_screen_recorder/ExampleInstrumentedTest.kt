@@ -32,28 +32,4 @@ class ExampleInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("org.dark0ghost.android_screen_recorder", appContext.packageName)
     }
-
-    @Test
-    fun clickStartInlineButton() {
-        onData(
-            withId(R.id.start_inline_button)
-        )
-            .perform(
-                click()
-            )
-
-    }
-
-    @Test
-    fun clickStartRecordButton() {
-        onView(
-            withId(R.id.start_record)
-        )
-        //.perform(
-        //     click()
-        //)
-        // .check(
-        //     matches(isDisplayed())
-        // )
-    }
 }
