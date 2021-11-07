@@ -22,7 +22,6 @@ object Settings {
       const val CONTENT_TITTLE: String = "DataRecorder"
       const val CONTENT_TEXT: String = "Your screen is being recorded and saved to your phone."
       const val FOREGROUND_ID: Int = 1
-      var isRecorderStart: Boolean = false
    }
 
    object InlineButtonSettings {
