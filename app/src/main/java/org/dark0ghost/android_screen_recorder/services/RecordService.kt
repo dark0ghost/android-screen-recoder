@@ -12,7 +12,6 @@ import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.os.*
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE

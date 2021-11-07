@@ -17,7 +17,6 @@ import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.START_COLOR
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.STOP_COLOR
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
-import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.nowColor
 
 class ButtonService: Service() {
     private var colorBound = true
