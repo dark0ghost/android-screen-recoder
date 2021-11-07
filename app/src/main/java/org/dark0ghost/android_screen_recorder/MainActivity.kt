@@ -285,7 +285,8 @@ class MainActivity : AppCompatActivity() {
             shutdown()
         }
         speechStreamService?.stop()
-        stopService(intentButtonService)
+        if (::intentButtonService.isInitialized) // check for AndroidTest (android test not start onCreate)
+            stopService(intentButtonService)
     }
 
     override fun onRequestPermissionsResult(

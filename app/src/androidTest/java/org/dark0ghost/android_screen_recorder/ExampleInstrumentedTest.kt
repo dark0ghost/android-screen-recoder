@@ -21,10 +21,10 @@ import org.junit.Rule
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    @get:Rule
+    /*@get:Rule
     val activityActivityTestRule: ActivityTestRule<MainActivity> = ActivityTestRule(
         MainActivity::class.java
-    )
+    )*/
 
     @Test
     fun useAppContext() {
