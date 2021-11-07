@@ -162,11 +162,8 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.RECORD_AUDIO,
         )
         var checkPermission = permissionCheckRecordAudio != PackageManager.PERMISSION_GRANTED
-        Log.e(
-            "check permission",
-            (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P).toString()
-        )
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val permissionCheckForegroundService =
                 ContextCompat.checkSelfPermission(
                     applicationContext,
@@ -178,7 +175,6 @@ class MainActivity : AppCompatActivity() {
             )
             checkPermission =
                 permissionCheckRecordAudio != PackageManager.PERMISSION_GRANTED || permissionCheckForegroundService != PackageManager.PERMISSION_GRANTED
-            Log.e("check permission", checkPermission.toString())
         }
         if (checkPermission) {
             ActivityCompat.requestPermissions(
@@ -233,7 +229,7 @@ class MainActivity : AppCompatActivity() {
                 }
             )
             if (boundInlineButton) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && !Settings.canDrawOverlays(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !Settings.canDrawOverlays(
                         this
                     )
                 ) {
@@ -273,7 +269,7 @@ class MainActivity : AppCompatActivity() {
         // Bind to Service
         RecordService.intent(this).also {
             bindService(it, connection, BIND_AUTO_CREATE)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 startForegroundService(it)
                 return
             }

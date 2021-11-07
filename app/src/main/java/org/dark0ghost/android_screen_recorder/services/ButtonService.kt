@@ -18,6 +18,7 @@ import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.START_COLOR
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.STOP_COLOR
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
+import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.nowColor
 
 class ButtonService: Service() {
     private var colorBound = true
@@ -53,7 +54,6 @@ class ButtonService: Service() {
         params.y = 500 // service position
         params.gravity = Gravity.TOP or Gravity.END
         windowManager.addView(topView, params)
-
         buttonStartRecorder.setOnClickListener { _ ->
             Log.i("buttonStartRecorder", "callback is start")
             callbackForStartRecord()
