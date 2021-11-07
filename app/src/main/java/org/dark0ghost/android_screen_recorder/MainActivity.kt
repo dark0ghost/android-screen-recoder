@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startRecord() {
         try {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 recognizeMicrophone()
             }
             recordService.apply {

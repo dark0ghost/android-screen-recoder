@@ -12,6 +12,7 @@ import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.os.*
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
@@ -28,7 +29,7 @@ import java.io.File
 import java.io.IOException
 
 
-open class RecordService: Service() {
+class RecordService: Service() {
     private val binder = RecordBinder()
 
     private var virtualDisplay: VirtualDisplay? = null
@@ -111,9 +112,10 @@ open class RecordService: Service() {
         }
     }
 
-    open var running = false
+    var running = false
+    private set
 
-    var mediaProjection: MediaProjection? = null
+    @Volatile var mediaProjection: MediaProjection? = null
 
     fun setConfig(width1: Int, height1: Int, dpi1: Int) {
         width = width1
