@@ -28,7 +28,7 @@ import java.io.File
 import java.io.IOException
 
 
-open class RecordService: Service() {
+class RecordService: Service() {
     private val binder = RecordBinder()
 
     private var virtualDisplay: VirtualDisplay? = null
@@ -111,9 +111,10 @@ open class RecordService: Service() {
         }
     }
 
-    open var running = false
+    var running: Boolean = false
+    private set
 
-    var mediaProjection: MediaProjection? = null
+    @Volatile var mediaProjection: MediaProjection? = null
 
     fun setConfig(width1: Int, height1: Int, dpi1: Int) {
         width = width1

@@ -91,7 +91,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaProjectionMain: MediaProjection
     private lateinit var startRecorder: Button
     private lateinit var recordService: RecordService
-    private lateinit var buttonService: ButtonService
     private lateinit var buttonStartInlineButton: Button
     private lateinit var intentButtonService: Intent
 
@@ -162,11 +161,8 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.RECORD_AUDIO,
         )
         var checkPermission = permissionCheckRecordAudio != PackageManager.PERMISSION_GRANTED
-        Log.e(
-            "check permission",
-            (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P).toString()
-        )
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val permissionCheckForegroundService =
                 ContextCompat.checkSelfPermission(
                     applicationContext,
@@ -178,7 +174,6 @@ class MainActivity : AppCompatActivity() {
             )
             checkPermission =
                 permissionCheckRecordAudio != PackageManager.PERMISSION_GRANTED || permissionCheckForegroundService != PackageManager.PERMISSION_GRANTED
-            Log.e("check permission", checkPermission.toString())
         }
         if (checkPermission) {
             ActivityCompat.requestPermissions(
@@ -194,7 +189,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startRecord() {
         try {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 recognizeMicrophone()
             }
             recordService.apply {
@@ -221,7 +216,6 @@ class MainActivity : AppCompatActivity() {
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         setUiState(BaseState.START)
 
-        buttonService = ButtonService()
         buttonStartInlineButton = findViewById(R.id.start_inline_button)
 
         buttonStartInlineButton.setOnClickListener {
@@ -233,7 +227,8 @@ class MainActivity : AppCompatActivity() {
                 }
             )
             if (boundInlineButton) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P && !Settings.canDrawOverlays(
+                boundInlineButton = false
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !Settings.canDrawOverlays(
                         this
                     )
                 ) {
@@ -246,7 +241,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 intentButtonService = ButtonService.intent(this)
                 startService(intentButtonService)
-                boundInlineButton = false
                 return@setOnClickListener
             }
             stopService(intentButtonService)
@@ -273,7 +267,7 @@ class MainActivity : AppCompatActivity() {
         // Bind to Service
         RecordService.intent(this).also {
             bindService(it, connection, BIND_AUTO_CREATE)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 startForegroundService(it)
                 return
             }
@@ -289,7 +283,8 @@ class MainActivity : AppCompatActivity() {
             shutdown()
         }
         speechStreamService?.stop()
-        stopService(intentButtonService)
+        if (::intentButtonService.isInitialized) // check for AndroidTest (android test not start onCreate)
+            stopService(intentButtonService)
     }
 
     override fun onRequestPermissionsResult(
