@@ -50,33 +50,33 @@ class ButtonService: Service() {
         }
         params.x = 10
         params.y = 500 // service position
-        params.gravity =  Gravity.END or Gravity.TOP
+        params.gravity = Gravity.START or Gravity.TOP
         windowManager.addView(topView, params)
-        buttonStartRecorder.setOnClickListener { _ ->
-            Log.i("buttonStartRecorder", "callback is start")
-            callbackForStartRecord()
-            if (colorBound) {
-                buttonStartRecorder.setBackgroundColor(START_COLOR)
-                colorBound = false
-                Log.i("buttonStartRecorder", "start recorder")
+        buttonStartRecorder.apply {
+            setOnClickListener { _ ->
+                Log.i("buttonStartRecorder", "callback is start")
+                callbackForStartRecord()
+                if (colorBound) {
+                    buttonStartRecorder.setBackgroundColor(START_COLOR)
+                    colorBound = false
+                    Log.i("buttonStartRecorder", "start recorder")
+                    return@setOnClickListener
+                }
+                buttonStartRecorder.setBackgroundColor(STOP_COLOR)
+                colorBound = true
+                Log.i("buttonStartRecorder", "stop recorder")
                 return@setOnClickListener
             }
-            buttonStartRecorder.setBackgroundColor(STOP_COLOR)
-            colorBound = true
-            Log.i("buttonStartRecorder", "stop recorder")
-            return@setOnClickListener
-        }
-
-        buttonStartRecorder.setOnTouchListener { _, motionEvent ->
-            if (motionEvent.action == MotionEvent.ACTION_MOVE) {
-                params.y = motionEvent.rawY.toInt()
-                params.x = motionEvent.rawX.toInt()
-                Log.e("change position", "x: ${params.x}, y: ${params.y}")
-                windowManager.updateViewLayout(topView, params)
+            setOnTouchListener { _, motionEvent ->
+                if (motionEvent.action == MotionEvent.ACTION_MOVE) {
+                    params.y = motionEvent.rawY.toInt()
+                    params.x = (motionEvent.rawX).toInt()
+                    Log.e("change position", "x: ${params.x}, y: ${params.y}")
+                    windowManager.updateViewLayout(topView, params)
+                }
+                return@setOnTouchListener false
             }
-            return@setOnTouchListener true
         }
-
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

@@ -91,7 +91,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaProjectionMain: MediaProjection
     private lateinit var startRecorder: Button
     private lateinit var recordService: RecordService
-    private lateinit var buttonService: ButtonService
     private lateinit var buttonStartInlineButton: Button
     private lateinit var intentButtonService: Intent
 
@@ -217,7 +216,6 @@ class MainActivity : AppCompatActivity() {
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         setUiState(BaseState.START)
 
-        buttonService = ButtonService()
         buttonStartInlineButton = findViewById(R.id.start_inline_button)
 
         buttonStartInlineButton.setOnClickListener {
@@ -229,6 +227,7 @@ class MainActivity : AppCompatActivity() {
                 }
             )
             if (boundInlineButton) {
+                boundInlineButton = false
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !Settings.canDrawOverlays(
                         this
                     )
@@ -242,7 +241,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 intentButtonService = ButtonService.intent(this)
                 startService(intentButtonService)
-                boundInlineButton = false
                 return@setOnClickListener
             }
             stopService(intentButtonService)
