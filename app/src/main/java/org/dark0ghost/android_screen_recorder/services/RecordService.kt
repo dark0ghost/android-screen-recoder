@@ -112,7 +112,7 @@ class RecordService: Service() {
         }
     }
 
-    var running = false
+    var running: Boolean = false
     private set
 
     @Volatile var mediaProjection: MediaProjection? = null
