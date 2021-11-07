@@ -31,8 +31,6 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradlew
       run: ./gradlew build --stacktrace
-    - name: Check with virtual device
-      run:  ./gradlew pixel5api30GroupCheck
     - name: Android Github Action
       uses: Vukan-Markovic/Github-Android-Action@1.2
     - name: Build Debug APK
