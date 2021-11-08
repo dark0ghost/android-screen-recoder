@@ -11,12 +11,13 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.RelativeLayout
-import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
+import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.START_COLOR
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.STOP_COLOR
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
+
 
 class ButtonService: Service() {
     private var colorBound = true
@@ -67,15 +68,42 @@ class ButtonService: Service() {
                 Log.i("buttonStartRecorder", "stop recorder")
                 return@setOnClickListener
             }
-            setOnTouchListener { _, motionEvent ->
-                if (motionEvent.action == MotionEvent.ACTION_MOVE) {
-                    params.y = motionEvent.rawY.toInt()
-                    params.x = (motionEvent.rawX).toInt()
-                    Log.e("change position", "x: ${params.x}, y: ${params.y}")
-                    windowManager.updateViewLayout(topView, params)
-                }
-                return@setOnTouchListener false
+
+            setOnTouchListener(object : View.OnTouchListener {
+                private val paramsF = params
+                private var initialX = 0
+                private var initialY = 0
+                private var initialTouchX = 0f
+                private var initialTouchY = 0f
+
+                /**
+                 * Called when a touch event is dispatched to a view. This allows listeners to
+                 * get a chance to respond before the target view.
+                 *
+                 * @param v The view the touch event has been dispatched to.
+                 * @param event The MotionEvent object containing full information about
+                 * the event.
+                 * @return True if the listener has consumed the event, false otherwise.
+                 */
+                override fun onTouch(v: View, event: MotionEvent): Boolean {
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            initialX = paramsF.x
+                            initialY = paramsF.y
+                            initialTouchX = event.rawX
+                            initialTouchY = event.rawY
+                        }
+
+                        MotionEvent.ACTION_MOVE -> {
+                            paramsF.x = initialX +  (event.rawX - initialTouchX).toInt()
+                            paramsF.y = initialY +   (event.rawY - initialTouchY).toInt()
+                            windowManager.updateViewLayout(topView, paramsF)
+                        }
+
+                    }
+                    return false
             }
+            )
         }
     }
 
