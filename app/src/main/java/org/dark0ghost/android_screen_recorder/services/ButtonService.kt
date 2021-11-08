@@ -95,13 +95,14 @@ class ButtonService: Service() {
                         }
 
                         MotionEvent.ACTION_MOVE -> {
-                            paramsF.x = initialX +  (event.rawX - initialTouchX).toInt()
-                            paramsF.y = initialY +   (event.rawY - initialTouchY).toInt()
+                            paramsF.x = initialX + (event.rawX - initialTouchX).toInt()
+                            paramsF.y = initialY + (event.rawY - initialTouchY).toInt()
                             windowManager.updateViewLayout(topView, paramsF)
                         }
 
                     }
                     return false
+                }
             }
             )
         }
