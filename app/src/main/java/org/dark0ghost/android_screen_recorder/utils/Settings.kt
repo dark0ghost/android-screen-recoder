@@ -34,5 +34,6 @@ object Settings {
 
    object MainActivitySettings {
       const val FILE_NAME_FORMAT: String = "yyyy-MM-dd-HH-mm-ss-SSS"
+      const val SUBTITLES_FORMAT: String = "hh:mm:ss"
    }
 }

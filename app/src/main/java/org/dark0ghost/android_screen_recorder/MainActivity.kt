@@ -26,6 +26,7 @@ import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.FILE_NAME_FORMAT
+import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.SUBTITLES_FORMAT
 import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
 import org.vosk.LogLevel
@@ -45,9 +46,7 @@ class MainActivity : AppCompatActivity() {
             setUiState(BaseState.DONE)
             val textFile = File(
                 getOutputDirectory(),
-                SimpleDateFormat(
-                    FILE_NAME_FORMAT, Locale.US
-                ).format(System.currentTimeMillis()) + ".txt"
+                "${SimpleDateFormat(FILE_NAME_FORMAT, Locale.US).format(System.currentTimeMillis())}.srt"
             )
             textFile.writeText(buffer.toString())
             Log.e("File/OnFinalResult", textFile.absoluteFile.toString())
@@ -58,6 +57,19 @@ class MainActivity : AppCompatActivity() {
             if (speechStreamService != null) {
                 speechStreamService = null
             }
+        }
+        .setCallbackOnResult {
+            Log.e(
+                "File/OnResult",
+                SimpleDateFormat(SUBTITLES_FORMAT, Locale.US).format(System.currentTimeMillis())
+            )
+            val template = """
+            
+                
+            $it
+                
+            """.trimIndent()
+            this@setCallbackOnResult.buffer.add(template)
         }
         .build()
     private val connection: ServiceConnection = object : ServiceConnection {
@@ -243,7 +255,11 @@ class MainActivity : AppCompatActivity() {
                 startService(intentButtonService)
                 return@setOnClickListener
             }
-            stopService(intentButtonService)
+            try {
+                stopService(intentButtonService)
+            } catch (e: java.lang.IllegalArgumentException) {
+
+            }
             boundInlineButton = true
             return@setOnClickListener
         }
