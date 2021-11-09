@@ -1,11 +1,9 @@
 package org.dark0ghost.android_screen_recorder.utils
 
-import android.graphics.Color
-import android.util.Log
-
 object Settings {
    object AudioRecordSettings {
       const val PERMISSIONS_REQUEST_RECORD_AUDIO: Int = 1
+      const val SIMPLE_RATE: Float = 16000.0f
    }
 
    object MediaRecordSettings {
@@ -27,13 +25,18 @@ object Settings {
    object InlineButtonSettings {
       const val WIDTH: Int = 400
       const val HEIGHT: Int = 400
-      const val START_COLOR: Int = Color.RED
-      const val STOP_COLOR: Int = Color.BLUE
-      var callbackForStartRecord: () -> Unit = { Log.e("InlineButtonSettings", "fn not init") }
+      const val START_COLOR: Int = android.graphics.Color.RED
+      const val STOP_COLOR: Int = android.graphics.Color.BLUE
+      var callbackForStartRecord: () -> Unit =
+         { android.util.Log.e("InlineButtonSettings", "fn not init") }
    }
 
    object MainActivitySettings {
       const val FILE_NAME_FORMAT: String = "yyyy-MM-dd-HH-mm-ss-SSS"
-      const val SUBTITLES_FORMAT: String = "hh:mm:ss"
+      const val HANDLER_DELAY: Long = 1000L
+   }
+
+   object CustomSubtitlesTimerSettings {
+      const val SUBTITLES_FORMAT_PATTERN: String = "HH:mm:ss"
    }
 }
