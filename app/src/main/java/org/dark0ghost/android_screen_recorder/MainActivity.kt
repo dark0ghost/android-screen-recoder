@@ -69,18 +69,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
         .setCallbackOnResult {
-            timer.start()
-            Log.e(
-                "File/OnResult",
-                timer.nowTime
-                )
             val template = """
-            $subtitlesCounter    
+            $subtitlesCounter
+            $oldTime-->${timer.nowTime}    
             $it
                 
             """.trimIndent()
             this@setCallbackOnResult.buffer.add(template)
+            Log.e("File/OnResult", template)
             subtitlesCounter++
+            oldTime = timer.nowTime
+
         }
         .build()
     private val connection: ServiceConnection = object : ServiceConnection {
@@ -135,6 +134,7 @@ class MainActivity : AppCompatActivity() {
                     recordService.apply {
                         mediaProjection = mediaProjectionMain
                         startRecord()
+                        timer.start()
                     }
                 }, HANDLER_DELAY)
             }
