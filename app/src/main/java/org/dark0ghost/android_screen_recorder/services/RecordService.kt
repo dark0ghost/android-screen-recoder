@@ -6,11 +6,15 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.os.*
+import android.util.Log
+import android.view.Display
+import android.view.WindowManager
 import android.widget.Toast
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
@@ -111,6 +115,18 @@ class RecordService: Service() {
         }
     }
 
+    init {
+        val widthP = Resources.getSystem().displayMetrics.widthPixels
+        if(widthP != WIDTH){
+            width = widthP
+        }
+        val heightP = Resources.getSystem().displayMetrics.heightPixels
+        if (heightP != HEIGHT){
+            height = heightP
+        }
+
+        println("$height -- $width")
+    }
     var running: Boolean = false
     private set
 

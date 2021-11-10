@@ -3,6 +3,7 @@ package org.dark0ghost.android_screen_recorder
 import android.Manifest
 import android.app.Activity
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                     ).format(System.currentTimeMillis())
                 }.srt"
             )
-            textFile.writeText(buffer.toString())
+            textFile.writeText(buffer.toString().replace("[","").replace("]",""))
             Log.e("File/OnFinalResult", textFile.absoluteFile.toString())
             buffer.clear()
             subtitlesCounter = 0
@@ -72,8 +73,7 @@ class MainActivity : AppCompatActivity() {
             val template = """
             $subtitlesCounter
             $oldTime-->${timer.nowTime}    
-            $it
-                
+            $it\n   
             """.trimIndent()
             this@setCallbackOnResult.buffer.add(template)
             Log.e("File/OnResult", template)

@@ -5,9 +5,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class CustomSubtitlesTimer {
-    private val dateFormat: SimpleDateFormat = SimpleDateFormat(SUBTITLES_FORMAT_PATTERN, Locale.US).apply {
-        timeZone = TimeZone.getTimeZone("UTC")
-    }
+    private val dateFormat: SimpleDateFormat =
+        SimpleDateFormat(SUBTITLES_FORMAT_PATTERN, Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
 
     private var startTime: Long = System.currentTimeMillis()
 
