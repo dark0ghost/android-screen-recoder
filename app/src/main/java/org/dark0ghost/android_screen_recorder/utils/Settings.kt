@@ -13,6 +13,7 @@ object Settings {
       const val SERVICE_THREAD_NAME: String = "service_thread"
       const val WIDTH: Int = 1920
       const val HEIGHT: Int = 1080
+      const val IGNORE_SIZE_DISPLAY: Boolean = true
    }
 
    object NotificationSettings {
