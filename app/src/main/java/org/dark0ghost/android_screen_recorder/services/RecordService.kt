@@ -30,6 +30,7 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.NotificationSetting
 import org.dark0ghost.android_screen_recorder.utils.Settings.NotificationSettings.FOREGROUND_ID
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 
 
 class RecordService: Service() {
@@ -91,13 +92,7 @@ class RecordService: Service() {
     }
 
     private fun initRecorder() {
-        mediaRecorder =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                MediaRecorder(this)
-            } else {
-                MediaRecorder()
-            }
-        mediaRecorder.apply {
+        mediaRecorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
@@ -144,7 +139,11 @@ class RecordService: Service() {
         }
         initRecorder()
         createVirtualDisplay()
-        mediaRecorder.start()
+        try {
+            mediaRecorder.start()
+        }catch (e: Exception){
+          e.printStackTrace()
+        }
         running = true
         return true
     }
