@@ -1,5 +1,7 @@
 package org.dark0ghost.android_screen_recorder.utils
 
+import android.media.MediaRecorder
+
 object Settings {
    object AudioRecordSettings {
       const val PERMISSIONS_REQUEST_RECORD_AUDIO: Int = 1
@@ -14,6 +16,7 @@ object Settings {
       const val WIDTH: Int = 1920
       const val HEIGHT: Int = 1080
       const val IGNORE_SIZE_DISPLAY: Boolean = true
+      const val AUDIO_Encoder = MediaRecorder.AudioEncoder.AMR_NB
    }
 
    object NotificationSettings {

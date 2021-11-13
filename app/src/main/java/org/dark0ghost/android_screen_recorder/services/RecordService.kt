@@ -16,6 +16,7 @@ import android.util.Log
 import android.widget.Toast
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.AUDIO_Encoder
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.HEIGHT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.IGNORE_SIZE_DISPLAY
@@ -103,7 +104,7 @@ class RecordService: Service() {
                 setOutputFile("${getsDirectory()}${System.currentTimeMillis()}.mp4")
                 setVideoSize(width, height)
                 setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                setAudioEncoder(AUDIO_Encoder)
                 setVideoEncodingBitRate(BIT_RATE)
                 setVideoFrameRate(VIDEO_FRAME_RATE)
                 try {
@@ -111,11 +112,14 @@ class RecordService: Service() {
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
+                catch (e: SecurityException) {
+                    e.printStackTrace()
+                }
             }
     }
 
     init {
-        if(!IGNORE_SIZE_DISPLAY) {
+        if (!IGNORE_SIZE_DISPLAY) {
             val widthP = Resources.getSystem().displayMetrics.widthPixels
             if (widthP != WIDTH) {
                 width = widthP
@@ -126,10 +130,12 @@ class RecordService: Service() {
             }
         }
     }
-    var running: Boolean = false
-    private set
 
-    @Volatile var mediaProjection: MediaProjection? = null
+    var running: Boolean = false
+        private set
+
+    @Volatile
+    var mediaProjection: MediaProjection? = null
 
     fun setConfig(width1: Int, height1: Int, dpi1: Int) {
         width = width1
@@ -143,11 +149,7 @@ class RecordService: Service() {
         }
         initRecorder()
         createVirtualDisplay()
-        try {
-            mediaRecorder.start()
-        }catch (e: Exception){
-          e.printStackTrace()
-        }
+        mediaRecorder.start()
         running = true
         return true
     }

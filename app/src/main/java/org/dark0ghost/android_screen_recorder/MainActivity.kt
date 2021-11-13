@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                     ).format(System.currentTimeMillis())
                 }.srt"
             )
-            textFile.writeText(buffer.toString().replace("[","").replace("]",""))
+            textFile.writeText(buffer.toString().replace("[", "").replace("]", ""))
             Log.e("File/OnFinalResult", textFile.absoluteFile.toString())
             buffer.clear()
             subtitlesCounter = 0
