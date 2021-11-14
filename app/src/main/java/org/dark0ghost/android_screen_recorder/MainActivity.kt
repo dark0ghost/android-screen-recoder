@@ -23,9 +23,12 @@ import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.services.RecordService
 import org.dark0ghost.android_screen_recorder.services.RecordService.RecordBinder
 import org.dark0ghost.android_screen_recorder.states.BaseState
+import org.dark0ghost.android_screen_recorder.time.CustomSubtitlesTimer
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
+import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.SIMPLE_RATE
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.FILE_NAME_FORMAT
+import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.HANDLER_DELAY
 import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
 import org.vosk.LogLevel
@@ -45,13 +48,19 @@ class MainActivity : AppCompatActivity() {
             setUiState(BaseState.DONE)
             val textFile = File(
                 getOutputDirectory(),
-                SimpleDateFormat(
-                    FILE_NAME_FORMAT, Locale.US
-                ).format(System.currentTimeMillis()) + ".txt"
+                "${
+                    SimpleDateFormat(
+                        FILE_NAME_FORMAT,
+                        Locale.US
+                    ).format(System.currentTimeMillis())
+                }.srt"
             )
-            textFile.writeText(buffer.toString())
+            textFile.writeText(buffer.toString().replace("[", "").replace("]", ""))
             Log.e("File/OnFinalResult", textFile.absoluteFile.toString())
             buffer.clear()
+            subtitlesCounter = 0
+            timer.stop()
+            oldTime = "00:00:00"
         }
         .setCallbackOnTimeout {
             setUiState(BaseState.DONE)
@@ -59,9 +68,20 @@ class MainActivity : AppCompatActivity() {
                 speechStreamService = null
             }
         }
+        .setCallbackOnResult {
+            val template = """
+            $subtitlesCounter
+            $oldTime-->${timer.nowTime}    
+            $it\n   
+            """.trimIndent()
+            this@setCallbackOnResult.buffer.add(template)
+            Log.e("File/OnResult", template)
+            subtitlesCounter++
+            oldTime = timer.nowTime
+
+        }
         .build()
     private val connection: ServiceConnection = object : ServiceConnection {
-
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val metrics = resources.displayMetrics
             val binder = service as RecordBinder
@@ -86,6 +106,8 @@ class MainActivity : AppCompatActivity() {
             startRecordInLauncher(result)
         }
 
+    private val timer: CustomSubtitlesTimer = CustomSubtitlesTimer()
+
     private lateinit var model: org.vosk.Model
     private lateinit var projectionManager: MediaProjectionManager
     private lateinit var mediaProjectionMain: MediaProjection
@@ -99,6 +121,8 @@ class MainActivity : AppCompatActivity() {
 
     private var mBound: Boolean = false
     private var boundInlineButton: Boolean = true
+    private var subtitlesCounter: Long = 1L
+    private var oldTime: String = "00:00:00"
 
     private fun startRecordInLauncher(result: ActivityResult) {
         result.data?.let { data ->
@@ -109,8 +133,9 @@ class MainActivity : AppCompatActivity() {
                     recordService.apply {
                         mediaProjection = mediaProjectionMain
                         startRecord()
+                        timer.start()
                     }
-                }, 1000)
+                }, HANDLER_DELAY)
             }
         }
     }
@@ -146,8 +171,8 @@ class MainActivity : AppCompatActivity() {
         }
         setUiState(BaseState.MIC)
         try {
-            val rec = Recognizer(model, 16000.0f)
-            speechService = SpeechService(rec, 16000.0f)
+            val rec = Recognizer(model, SIMPLE_RATE)
+            speechService = SpeechService(rec, SIMPLE_RATE)
             speechService?.startListening(rListener)
         } catch (e: IOException) {
             e.printStackTrace()
@@ -243,7 +268,11 @@ class MainActivity : AppCompatActivity() {
                 startService(intentButtonService)
                 return@setOnClickListener
             }
-            stopService(intentButtonService)
+            try {
+                stopService(intentButtonService)
+            } catch (e: java.lang.IllegalArgumentException) {
+
+            }
             boundInlineButton = true
             return@setOnClickListener
         }
@@ -267,7 +296,7 @@ class MainActivity : AppCompatActivity() {
         // Bind to Service
         RecordService.intent(this).also {
             bindService(it, connection, BIND_AUTO_CREATE)
-            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(it)
                 return
             }
