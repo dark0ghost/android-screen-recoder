@@ -111,8 +111,7 @@ class RecordService: Service() {
                     prepare()
                 } catch (e: IOException) {
                     e.printStackTrace()
-                }
-                catch (e: SecurityException) {
+                } catch (e: SecurityException) {
                     e.printStackTrace()
                 }
             }
