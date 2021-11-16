@@ -36,8 +36,6 @@ class RecordService: Service() {
     private val binder = RecordBinder()
 
     private var virtualDisplay: VirtualDisplay? = null
-    private var width = WIDTH
-    private var height = HEIGHT
     private var dpi = 0
 
     private lateinit var mediaRecorder: MediaRecorder
@@ -47,8 +45,8 @@ class RecordService: Service() {
             mediaProjection?.let {
                 virtualDisplay = it.createVirtualDisplay(
                     "MainScreen",
-                    width,
-                    height,
+                    WIDTH,
+                    HEIGHT,
                     dpi,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                     mediaRecorder.surface,
@@ -97,12 +95,13 @@ class RecordService: Service() {
         } else {
             MediaRecorder()
         }
-            .apply {
+
+        mediaRecorder.apply {
                 setAudioSource(MediaRecorder.AudioSource.MIC)
                 setVideoSource(MediaRecorder.VideoSource.SURFACE)
                 setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
                 setOutputFile("${getsDirectory()}${System.currentTimeMillis()}.mp4")
-                setVideoSize(width, height)
+                setVideoSize(WIDTH, HEIGHT)
                 setVideoEncoder(MediaRecorder.VideoEncoder.H264)
                 setAudioEncoder(AUDIO_Encoder)
                 setVideoEncodingBitRate(BIT_RATE)
@@ -114,19 +113,6 @@ class RecordService: Service() {
                 } catch (e: SecurityException) {
                     e.printStackTrace()
                 }
-            }
-    }
-
-    init {
-        if (!IGNORE_SIZE_DISPLAY) {
-            val widthP = Resources.getSystem().displayMetrics.widthPixels
-            if (widthP != WIDTH) {
-                width = widthP
-            }
-            val heightP = Resources.getSystem().displayMetrics.heightPixels
-            if (heightP != HEIGHT) {
-                height = heightP
-            }
         }
     }
 
@@ -136,9 +122,7 @@ class RecordService: Service() {
     @Volatile
     var mediaProjection: MediaProjection? = null
 
-    fun setConfig(width1: Int, height1: Int, dpi1: Int) {
-        width = width1
-        height = height1
+    fun setConfig(dpi1: Int) {
         dpi = dpi1
     }
 

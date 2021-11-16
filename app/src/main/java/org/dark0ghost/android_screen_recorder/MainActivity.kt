@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             val metrics = resources.displayMetrics
             val binder = service as RecordBinder
             recordService = binder.getRecordService()
-            recordService.setConfig(metrics.widthPixels, metrics.heightPixels, metrics.densityDpi)
+            recordService.setConfig(metrics.densityDpi)
             Log.d("onServiceConnected", "init recordService{${recordService.hashCode()}}")
             mBound = true
         }
