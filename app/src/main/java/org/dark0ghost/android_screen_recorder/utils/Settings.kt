@@ -13,9 +13,9 @@ object Settings {
       const val VIDEO_FRAME_RATE: Int = 60
       const val NAME_DIR: String = "ScreenRecord"
       const val SERVICE_THREAD_NAME: String = "service_thread"
-      const val WIDTH: Int = 1920
-      const val HEIGHT: Int = 1080
-      const val IGNORE_SIZE_DISPLAY: Boolean = true
+      const val WIDTH: Int = 1080
+      const val HEIGHT: Int = 1920
+      const val IGNORE_SIZE_DISPLAY: Boolean = false
       const val AUDIO_Encoder = MediaRecorder.AudioEncoder.AMR_NB
    }
 
