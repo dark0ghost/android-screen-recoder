@@ -11,12 +11,16 @@ object Settings {
    object MediaRecordSettings {
       const val BIT_RATE: Int = 5 * 1024 * 1024
       const val VIDEO_FRAME_RATE: Int = 60
-      const val NAME_DIR: String = "ScreenRecord"
+      const val NAME_DIR_VIDEO: String = "ScreenRecord"
+      const val NAME_DIR_SUBTITLE: String = "Subtitle"
       const val SERVICE_THREAD_NAME: String = "service_thread"
       const val WIDTH: Int = 1080
       const val HEIGHT: Int = 1920
-      const val IGNORE_SIZE_DISPLAY: Boolean = false
-      const val AUDIO_Encoder = MediaRecorder.AudioEncoder.AMR_NB
+      const val AUDIO_ENCODER: Int = MediaRecorder.AudioEncoder.AMR_NB
+      const val VIDEO_ENCODER: Int = MediaRecorder.VideoEncoder.H264
+      const val OUTPUT_FORMAT: Int = MediaRecorder.OutputFormat.THREE_GPP
+      const val VIDEO_SOURCE: Int = MediaRecorder.VideoSource.SURFACE
+      const val AUDIO_SOURCE: Int = MediaRecorder.AudioSource.MIC
    }
 
    object NotificationSettings {

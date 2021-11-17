@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.listeners.RListener
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.services.RecordService
@@ -29,6 +30,7 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.FILE_NAME_FORMAT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.HANDLER_DELAY
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
 import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
 import org.vosk.LogLevel
@@ -42,12 +44,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
-    private val rListener: RListener = RListener.Builder()
+class MainActivity : GetsDirectory, AppCompatActivity() {
+    private val rListener: RListener = RListener
+        .Builder()
         .setCallbackOnFinalResult {
             setUiState(BaseState.DONE)
             val textFile = File(
-                getOutputDirectory(),
+                getsDirectory(),
                 "${
                     SimpleDateFormat(
                         FILE_NAME_FORMAT,
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             val metrics = resources.displayMetrics
             val binder = service as RecordBinder
             recordService = binder.getRecordService()
-            recordService.setConfig(metrics.densityDpi)
+            recordService.setDpi(metrics.densityDpi)
             Log.d("onServiceConnected", "init recordService{${recordService.hashCode()}}")
             mBound = true
         }
@@ -106,8 +109,6 @@ class MainActivity : AppCompatActivity() {
             startRecordInLauncher(result)
         }
 
-    private val timer: CustomSubtitlesTimer = CustomSubtitlesTimer()
-
     private lateinit var model: org.vosk.Model
     private lateinit var projectionManager: MediaProjectionManager
     private lateinit var mediaProjectionMain: MediaProjection
@@ -123,10 +124,14 @@ class MainActivity : AppCompatActivity() {
     private var boundInlineButton: Boolean = true
     private var subtitlesCounter: Long = 1L
     private var oldTime: String = "00:00:00"
+    private val timer: CustomSubtitlesTimer = CustomSubtitlesTimer()
 
     private fun startRecordInLauncher(result: ActivityResult) {
         result.data?.let { data ->
             if (result.resultCode == Activity.RESULT_OK) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    recognizeMicrophone()
+                }
                 Handler(Looper.getMainLooper()).postDelayed({
                     mediaProjectionMain =
                         projectionManager.getMediaProjection(result.resultCode, data)
@@ -138,15 +143,6 @@ class MainActivity : AppCompatActivity() {
                 }, HANDLER_DELAY)
             }
         }
-    }
-
-    private fun getOutputDirectory(): File {
-        val mediaDir = externalMediaDirs.firstOrNull()?.let {
-            File(it, packageName.replace("org.dark0ghost.", "")).apply {
-                mkdirs()
-            }
-        }
-        return if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
     }
 
     private fun initModel() {
@@ -163,12 +159,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun recognizeMicrophone() {
-        speechService?.let {
-            setUiState(BaseState.DONE)
-            it.stop()
-            speechService = null
-            return
-        }
         setUiState(BaseState.MIC)
         try {
             val rec = Recognizer(model, SIMPLE_RATE)
@@ -176,6 +166,15 @@ class MainActivity : AppCompatActivity() {
             speechService?.startListening(rListener)
         } catch (e: IOException) {
             e.printStackTrace()
+        }
+    }
+
+    private fun stopMicrophone() {
+        speechService?.let {
+            setUiState(BaseState.DONE)
+            it.stop()
+            speechService = null
+            return
         }
     }
 
@@ -214,12 +213,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun startRecord() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                recognizeMicrophone()
-            }
             recordService.apply {
                 if (running) {
                     Log.i("startRecord", "running is true")
+                    stopMicrophone()
                     stopRecord()
                     return
                 }
@@ -232,6 +229,27 @@ class MainActivity : AppCompatActivity() {
             Log.e("startRecorder", "recordService: $e")
         }
     }
+
+    // GetsDirectory
+
+    override fun getsDirectory(): String {
+        val rootDir = "${getExternalFilesDir("media")!!.absolutePath}/${NAME_DIR_SUBTITLE}/"
+        val file = File(rootDir)
+        if (!file.exists()) {
+            Log.e(
+                "getsDirectory/mkdirs", if (file.mkdirs()) {
+                    "path is created"
+                } else {
+                    "path isn't create"
+                }
+            )
+        }
+        Log.e("getsDirectory", rootDir)
+        return rootDir
+    }
+
+    // End GetsDirectory
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
