@@ -101,11 +101,21 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if(::recordService.isInitialized) {
+                if (!recordService.isNotificationForegroundStarted) {
+                    recordService.startForegroundNotification()
+                }
+            }
             startRecordInLauncher(result)
         }
 
     private val resultButtonLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if(::recordService.isInitialized) {
+                if (!recordService.isNotificationForegroundStarted) {
+                    recordService.startForegroundNotification()
+                }
+            }
             startRecordInLauncher(result)
         }
 
@@ -305,7 +315,6 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         LibVosk.setLogLevel(LogLevel.INFO)
 
         checkPermissionsOrInitialize()
-
         resultLauncher.launch(this@MainActivity.intent)
     }
 

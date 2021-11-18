@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
@@ -13,6 +14,9 @@ import android.media.projection.MediaProjection
 import android.os.*
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
@@ -43,7 +47,7 @@ class RecordService: GetsDirectory, Service() {
     private var dpi: Int = 0
 
     private lateinit var notification: Notification
-    private lateinit var notificationManager: NotificationManager
+    private lateinit var notificationManager: NotificationManagerCompat
     private lateinit var mediaRecorder: MediaRecorder
 
     private fun createVirtualDisplay() {
@@ -65,16 +69,22 @@ class RecordService: GetsDirectory, Service() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel(): NotificationChannel =
+        NotificationChannel(CHANNEL_ID, CONTENT_TEXT, NotificationManager.IMPORTANCE_DEFAULT)
+
     private fun initNotification(): Notification {
         val notificationBuilder =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Notification.Builder(this, CHANNEL_ID).apply {
+                NotificationCompat.Builder(this, CHANNEL_ID).apply {
                     setContentTitle(CONTENT_TITTLE)
                     setContentText(CONTENT_TEXT)
                     setSmallIcon(R.drawable.ic_notification_custom)
                 }
             } else {
-                Notification.Builder(this).apply {
+                // If earlier version channel ID is not used
+                // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
+                NotificationCompat.Builder(this, "").apply {
                     setContentTitle(CONTENT_TITTLE)
                     setContentText(CONTENT_TEXT)
                     setSmallIcon(R.drawable.ic_stat_cast_connected)
@@ -110,10 +120,15 @@ class RecordService: GetsDirectory, Service() {
         }
     }
 
-    private fun stopNotification() = notificationManager.cancel(FOREGROUND_ID)
+    private fun stopNotification() {
+        notificationManager.cancel(FOREGROUND_ID)
+        stopForeground(true)
+    }
 
-    private fun notifyMassage() =  notificationManager.notify(FOREGROUND_ID, notification)
+    private fun notifyMassage() = notificationManager.notify(FOREGROUND_ID, notification)
 
+    var isNotificationForegroundStarted: Boolean = true
+        private set
 
     var running: Boolean = false
         private set
@@ -123,6 +138,22 @@ class RecordService: GetsDirectory, Service() {
 
     fun setDpi(dpi1: Int) {
         dpi = dpi1
+    }
+
+    fun startForegroundNotification(){
+        Log.d("foreground notification", "start foreground service")
+        isNotificationForegroundStarted = true
+        if (!isNotificationForegroundStarted) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(
+                    FOREGROUND_ID,
+                    notification,
+                    FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                )
+            }
+            startForeground(FOREGROUND_ID, notification)
+            isNotificationForegroundStarted = true
+        }
     }
 
     fun startRecord(): Boolean {
@@ -142,6 +173,7 @@ class RecordService: GetsDirectory, Service() {
             return false
         }
         stopNotification()
+        isNotificationForegroundStarted = false
         running = false
         mediaRecorder.apply {
             stop()
@@ -187,13 +219,26 @@ class RecordService: GetsDirectory, Service() {
     override fun onBind(intent: Intent): IBinder = binder
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        notification = initNotification()
-        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel =
-                NotificationChannel(CHANNEL_ID, CONTENT_TEXT, NotificationManager.IMPORTANCE_HIGH)
-            notificationManager.createNotificationChannel(notificationChannel)
+            notification = initNotification()
+            notificationManager = NotificationManagerCompat.from(this@RecordService)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notificationManager.createNotificationChannel(
+                    createNotificationChannel()
+                )
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(
+                    FOREGROUND_ID,
+                    notification,
+                    FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                )
+                return START_NOT_STICKY
+            }
+            startForeground(FOREGROUND_ID, notification)
+            return START_NOT_STICKY
         }
+        notification = Notification()
         startForeground(FOREGROUND_ID, notification)
         return START_NOT_STICKY
     }
