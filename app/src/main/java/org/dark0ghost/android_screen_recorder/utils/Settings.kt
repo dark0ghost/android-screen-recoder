@@ -21,13 +21,29 @@ object Settings {
       const val OUTPUT_FORMAT: Int = MediaRecorder.OutputFormat.THREE_GPP
       const val VIDEO_SOURCE: Int = MediaRecorder.VideoSource.SURFACE
       const val AUDIO_SOURCE: Int = MediaRecorder.AudioSource.MIC
+      const val EXTRA_COMMAND_KEY = "COMMAND_KEY"
+      const val ACTION_START_SERVICE = "ACTION_START_SERVICE"
+      const val ACTION_SETUP_RECORDER = "ACTION_SETUP_RECORDER"
+      const val ACTION_SETUP_MEDIA_PROJECTION = "ACTION_SETUP_MEDIA_PROJECTION"
+      const val ACTION_START_RECORDING = "ACTION_START_RECORDING"
+      const val ACTION_STOP_RECORDING = "ACTION_STOP_RECORDING"
+      const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
+      const val COMMAND_SETUP_RECORDER = 0
+      const val COMMAND_SETUP_MEDIA_PROJECTION = 1
+      const val COMMAND_START_RECORDING = 2
+      const val COMMAND_STOP_RECORDING = 3
+      const val COMMAND_START_SERVICE = 4
+      const val COMMAND_STOP_SERVICE = 5
+      const val ATTR_RECORD_PARAMS = "screen_record_params"
+      const val ATTR_MEDIA_PROJECTION_PARAMS = "media_projection_params"
+      const val ATTR_DESTROY_MEDIA_PROJECTION = "destroy_media_projection"
    }
 
    object NotificationSettings {
       const val CHANNEL_ID: String = "recorder"
       const val CONTENT_TITTLE: String = "DataRecorder"
       const val CONTENT_TEXT: String = "Your screen is being recorded and saved to your phone."
-      const val FOREGROUND_ID: Int = 1
+      const val NOTIFICATION_FOREGROUND_ID: Int = 1
    }
 
    object InlineButtonSettings {

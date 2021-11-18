@@ -1,5 +1,7 @@
 package org.dark0ghost.android_screen_recorder.utils
 
+import android.app.NotificationManager
+import android.content.Context
 import org.dark0ghost.android_screen_recorder.states.BaseState
 
 internal fun setUiState(state: BaseState) {
@@ -20,4 +22,10 @@ internal fun setUiState(state: BaseState) {
 
         }
     }
+}
+
+fun closeServiceNotification(context: Context, id: Int) {
+    val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    notificationManager.cancel(id)
 }

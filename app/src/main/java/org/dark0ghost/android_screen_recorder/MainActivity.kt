@@ -88,7 +88,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val metrics = resources.displayMetrics
             val binder = service as RecordBinder
-            recordService = binder.getRecordService()
+            recordService = binder.service
             recordService.setDpi(metrics.densityDpi)
             Log.d("onServiceConnected", "init recordService{${recordService.hashCode()}}")
             mBound = true
@@ -101,21 +101,11 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if(::recordService.isInitialized) {
-                if (!recordService.isNotificationForegroundStarted) {
-                    recordService.startForegroundNotification()
-                }
-            }
             startRecordInLauncher(result)
         }
 
     private val resultButtonLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if(::recordService.isInitialized) {
-                if (!recordService.isNotificationForegroundStarted) {
-                    recordService.startForegroundNotification()
-                }
-            }
             startRecordInLauncher(result)
         }
 
@@ -217,8 +207,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             )
             return
         }
-
-        initModel()
+       initModel()
     }
 
     private fun startRecord() {
