@@ -139,7 +139,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
                         projectionManager.getMediaProjection(result.resultCode, data)
                     recordService.apply {
                         mediaProjection = mediaProjectionMain
-                        startRecord()
+                        //startRecord()
                         timer.start()
                     }
                 }, HANDLER_DELAY)

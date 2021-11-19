@@ -15,11 +15,12 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.PackageManagerCompat.LOG_TAG
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
+import org.dark0ghost.android_screen_recorder.interfaces.Prng
 import org.dark0ghost.android_screen_recorder.states.RecordingState
+import org.dark0ghost.android_screen_recorder.utils.ObjectRandom
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_RECORDING
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_SERVICE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_STOP_SERVICE
@@ -47,15 +48,18 @@ import java.io.IOException
 
 class RecordService: GetsDirectory, Service() {
     private val binder = RecordBinder()
+    private val prng: Prng = ObjectRandom()
 
     private var virtualDisplay: VirtualDisplay? = null
 
     private var dpi: Int = 0
+    private var notificationId: Int = 0
     private var recordingState: RecordingState = RecordingState.IDLE
 
     private lateinit var notification: Notification
     private lateinit var notificationManager: NotificationManagerCompat
     private lateinit var mediaRecorder: MediaRecorder
+    private lateinit var  projectionManager: MediaProjectionManager
 
     private fun createVirtualDisplay() {
         try {
@@ -192,8 +196,8 @@ class RecordService: GetsDirectory, Service() {
     }
 
     private fun recorderStartServiceWithId(startId: Int) {
-        Log.d("recorderStartServiceWithId", "startService() startId = $startId")
-        notificationId = NotificationUtils.generateNotificationId()
+        Log.d("StartServiceWithId", "startService() startId = $startId")
+        notificationId = prng.randomNumber(0, Int.MAX_VALUE)
         val startIntent = Intent(this, this::class.java)
         startIntent.action = ACTION_START_RECORDING
         val startPendingIntent = PendingIntent.getService(
@@ -305,6 +309,9 @@ class RecordService: GetsDirectory, Service() {
         when (action) {
             ACTION_START_SERVICE -> {
                 recorderStartServiceWithId(startId)
+            }
+            ACTION_START_RECORDING -> {
+                startRecord()
             }
             ACTION_STOP_SERVICE -> {
                 closeServiceNotification(this, NOTIFICATION_FOREGROUND_ID)

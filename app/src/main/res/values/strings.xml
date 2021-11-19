@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">screen recorder</string>
     <string name="button">start record</string>
+    <string name="start_record">Start record</string>
+    <string name="stop_record">Stop record</string>
+    <string name="close">Close</string>
 </resources>
