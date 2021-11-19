@@ -1,9 +1,6 @@
 package org.dark0ghost.android_screen_recorder.services
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
@@ -11,20 +8,26 @@ import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
 import android.os.*
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.PackageManagerCompat.LOG_TAG
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.states.RecordingState
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_RECORDING
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_SERVICE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_STOP_SERVICE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.AUDIO_ENCODER
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.AUDIO_SOURCE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.COMMAND_START_RECORDING
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.COMMAND_STOP_SERVICE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.HEIGHT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_VIDEO
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.OUTPUT_FORMAT
@@ -188,7 +191,34 @@ class RecordService: GetsDirectory, Service() {
         }
     }
 
-
+    private fun recorderStartServiceWithId(startId: Int) {
+        Log.d("recorderStartServiceWithId", "startService() startId = $startId")
+        notificationId = NotificationUtils.generateNotificationId()
+        val startIntent = Intent(this, this::class.java)
+        startIntent.action = ACTION_START_RECORDING
+        val startPendingIntent = PendingIntent.getService(
+            this, COMMAND_START_RECORDING, startIntent, 0
+        )
+        val closeIntent = Intent(this, this::class.java)
+        closeIntent.action = ACTION_STOP_SERVICE
+        val closePendingIntent = PendingIntent.getService(
+            this, COMMAND_STOP_SERVICE, closeIntent, 0
+        )
+        startForeground(
+            notificationId,
+            createServiceNotificationBuilder(applicationContext)?.addAction(
+                R.drawable.ic_stop,
+                getString(R.string.stop_record),
+                startPendingIntent
+            )?.addAction(
+                R.drawable.ic_close,
+                getString(R.string.close),
+                closePendingIntent
+            )?.build()
+        )
+        projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        updateServiceNotification(applicationContext)
+    }
 
 
     var running: Boolean = false
@@ -273,6 +303,9 @@ class RecordService: GetsDirectory, Service() {
         }
         Log.d("onStartCommand()", "onStartCommand() action:$action")
         when (action) {
+            ACTION_START_SERVICE -> {
+                recorderStartServiceWithId(startId)
+            }
             ACTION_STOP_SERVICE -> {
                 closeServiceNotification(this, NOTIFICATION_FOREGROUND_ID)
                 stopForeground(true)

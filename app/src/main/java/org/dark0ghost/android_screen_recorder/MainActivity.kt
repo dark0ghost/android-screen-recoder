@@ -30,6 +30,8 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.FILE_NAME_FORMAT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.HANDLER_DELAY
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.COMMAND_START_SERVICE
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.EXTRA_COMMAND_KEY
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
 import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
@@ -219,7 +221,12 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
                     stopRecord()
                     return
                 }
-                val captureIntent = projectionManager.createScreenCaptureIntent()
+                val captureIntent = projectionManager.createScreenCaptureIntent().apply {
+                    putExtra(
+                        EXTRA_COMMAND_KEY,
+                        COMMAND_START_SERVICE
+                    )
+                }
                 Log.d("start captureIntent", resultButtonLauncher.hashCode().toString())
                 resultButtonLauncher.launch(captureIntent)
                 return
