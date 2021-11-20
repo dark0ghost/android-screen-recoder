@@ -1,5 +1,6 @@
 package org.dark0ghost.android_screen_recorder.utils
 
+import android.Manifest
 import android.media.MediaRecorder
 
 object Settings {
@@ -62,5 +63,22 @@ object Settings {
 
    object CustomSubtitlesTimerSettings {
       const val SUBTITLES_FORMAT_PATTERN: String = "HH:mm:ss"
+   }
+
+   object RecorderControllerSettings {
+      const val SERVICE_STARTING_TIMEOUT_MS = 15_000L
+   }
+
+   object PermissionsSettings {
+      val READ_WRITE_PERMISSIONS = arrayOf(
+         Manifest.permission.WRITE_EXTERNAL_STORAGE,
+         Manifest.permission.READ_EXTERNAL_STORAGE
+      )
+      val CAMERA_PERMISSIONS = arrayOf(
+         Manifest.permission.CAMERA
+      )
+      val RECORD_AUDIO_PERMISSIONS = arrayOf(
+         Manifest.permission.RECORD_AUDIO
+      )
    }
 }

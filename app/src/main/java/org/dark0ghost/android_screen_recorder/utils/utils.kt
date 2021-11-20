@@ -1,7 +1,14 @@
 package org.dark0ghost.android_screen_recorder.utils
 
+import android.app.Activity
 import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.media.projection.MediaProjectionManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
 import org.dark0ghost.android_screen_recorder.states.BaseState
 
 internal fun setUiState(state: BaseState) {
@@ -28,4 +35,39 @@ fun closeServiceNotification(context: Context, id: Int) {
     val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancel(id)
+}
+
+fun isPermissionsGranted(permissions: Map<String, Boolean>): Boolean {
+    var granted = true
+    for (permission in permissions) {
+        granted = granted && permission.value
+        if (!granted) break
+    }
+    return granted
+}
+
+fun getScreenCaptureIntent(context: Context): Intent {
+    val projectionManager = context.getSystemService(Service.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+    return projectionManager.createScreenCaptureIntent()
+}
+
+fun isPermissionGranted(activity: Activity, permission: String): Boolean {
+    val result = if (Build.VERSION.SDK_INT >= 23) {
+        activity.checkSelfPermission(permission)
+    } else {
+        ActivityCompat.checkSelfPermission(activity, permission)
+    }
+    return result == PackageManager.PERMISSION_GRANTED
+}
+
+fun isPermissionsGranted(activity: Activity, permissions: Array<String>): Boolean {
+    var permissionsGranted = true
+    for (permission in permissions) {
+        permissionsGranted = permissionsGranted && isPermissionGranted(activity, permission)
+        if (!permissionsGranted) {
+            break
+        }
+    }
+    PackageManager.PERMISSION_DENIED
+    return permissionsGranted
 }
