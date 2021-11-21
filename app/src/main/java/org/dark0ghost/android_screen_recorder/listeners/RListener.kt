@@ -6,9 +6,9 @@ import kotlinx.serialization.json.Json
 import org.dark0ghost.android_screen_recorder.data_class.TextFromVoice
 import org.vosk.android.RecognitionListener
 
-open class RListener(private var callbackOnTimeout: RListener.() -> Unit, private var callbackOnResult: RListener.(String) -> Unit, private var callbackOnFinalResult: RListener.() -> Unit): RecognitionListener {
+class RListener(private var callbackOnTimeout: RListener.() -> Unit, private var callbackOnResult: RListener.(String) -> Unit, private var callbackOnFinalResult: RListener.() -> Unit): RecognitionListener {
 
-    open val buffer: MutableList<String> = mutableListOf()
+    val buffer: MutableList<String> = mutableListOf()
 
     override fun onPartialResult(p0: String) {
         val obj = Json.decodeFromString<TextFromVoice>(p0)

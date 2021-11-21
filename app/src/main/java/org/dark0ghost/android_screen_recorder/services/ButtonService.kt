@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.RelativeLayout
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
+import org.dark0ghost.android_screen_recorder.states.ClickState
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.START_COLOR
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.STOP_COLOR
@@ -20,7 +21,6 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSetting
 
 
 class ButtonService: Service() {
-    private var colorBound = true
 
     private lateinit var windowManager: WindowManager
     private lateinit var params: WindowManager.LayoutParams
@@ -56,17 +56,19 @@ class ButtonService: Service() {
         buttonStartRecorder.apply {
             setOnClickListener { _ ->
                 Log.i("buttonStartRecorder", "callback is start")
-                callbackForStartRecord()
-                if (colorBound) {
-                    buttonStartRecorder.setBackgroundColor(START_COLOR)
-                    colorBound = false
-                    Log.i("buttonStartRecorder", "start recorder")
-                    return@setOnClickListener
+                when(val state = callbackForStartRecord()){
+                    ClickState.IsClicked -> {
+                        buttonStartRecorder.setBackgroundColor(START_COLOR)
+                        Log.i("buttonStartRecorder", "start recorder")
+                        return@setOnClickListener
+                    }
+                    ClickState.NotClicked -> {
+                        buttonStartRecorder.setBackgroundColor(STOP_COLOR)
+                        Log.i("buttonStartRecorder", "stop recorder")
+                        return@setOnClickListener
+                    }
+                    else -> Log.e("clickButton", "isStartRecord have state:$state, this is ok?")
                 }
-                buttonStartRecorder.setBackgroundColor(STOP_COLOR)
-                colorBound = true
-                Log.i("buttonStartRecorder", "stop recorder")
-                return@setOnClickListener
             }
 
             setOnTouchListener(object : View.OnTouchListener {
