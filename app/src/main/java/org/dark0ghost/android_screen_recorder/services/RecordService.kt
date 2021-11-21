@@ -23,11 +23,13 @@ import org.dark0ghost.android_screen_recorder.states.RecordingState
 import org.dark0ghost.android_screen_recorder.utils.ObjectRandom
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_RECORDING
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_SERVICE
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_STOP_RECORDING
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_STOP_SERVICE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.AUDIO_ENCODER
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.AUDIO_SOURCE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.COMMAND_START_RECORDING
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.COMMAND_STOP_RECORDING
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.COMMAND_STOP_SERVICE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.HEIGHT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_VIDEO
@@ -49,8 +51,16 @@ import java.io.IOException
 class RecordService: GetsDirectory, Service() {
     private val binder = RecordBinder()
     private val prng: Prng = ObjectRandom()
+    private val mediaProjectionCallback: MediaProjection.Callback =
+        object : MediaProjection.Callback() {
+            override fun onStop() {
+                super.onStop()
+                stopRecord()
+            }
+        }
 
     private var virtualDisplay: VirtualDisplay? = null
+    private var mediaProjection: MediaProjection? = null
 
     private var dpi: Int = 0
     private var notificationId: Int = 0
@@ -84,7 +94,7 @@ class RecordService: GetsDirectory, Service() {
     private fun createNotificationChannel(): NotificationChannel =
         NotificationChannel(CHANNEL_ID, CONTENT_TEXT, NotificationManager.IMPORTANCE_DEFAULT)
 
-    private fun initNotification(): Notification {
+    private fun initNotification(): NotificationCompat.Builder {
         val notificationBuilder =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationCompat.Builder(this, CHANNEL_ID).apply {
@@ -101,7 +111,7 @@ class RecordService: GetsDirectory, Service() {
                     setSmallIcon(R.drawable.ic_stat_cast_connected)
                 }
             }
-        return notificationBuilder.build()
+        return notificationBuilder
     }
 
     private fun initRecorder() {
@@ -148,51 +158,84 @@ class RecordService: GetsDirectory, Service() {
         return notificationBuilder
     }
 
-    private fun createFullNotification(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notification = initNotification()
-            notificationManager = NotificationManagerCompat.from(this@RecordService)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                notificationManager.createNotificationChannel(
-                    createNotificationChannel()
-                )
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                startForeground(
-                    NOTIFICATION_FOREGROUND_ID,
-                    notification,
-                    FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
-                )
-                return
-            }
-            startForeground(NOTIFICATION_FOREGROUND_ID, notification)
-            return
-        }
-        notification = Notification()
-        startForeground(NOTIFICATION_FOREGROUND_ID, notification)
-    }
-
     private fun updateServiceNotification(
         context: Context
     ) {
+        val startIntent = Intent(this, this::class.java)
+        startIntent.action = ACTION_START_RECORDING
+        val startPendingIntent = PendingIntent.getService(
+            context, COMMAND_START_RECORDING, startIntent, 0
+        )
+        val stopIntent = Intent(this, this::class.java)
+        stopIntent.action = ACTION_STOP_RECORDING
+        val stopPendingIntent = PendingIntent.getService(
+            context, COMMAND_STOP_RECORDING, stopIntent, 0
+        )
+        val closeIntent = Intent(this, this::class.java)
+        closeIntent.action = ACTION_STOP_SERVICE
+        val closePendingIntent = PendingIntent.getService(
+            context, COMMAND_STOP_SERVICE, closeIntent, 0
+        )
+        Log.d("update notification", "state: $recordingState")
         when (recordingState) {
             RecordingState.IDLE -> {
-                val notifications = initNotification()
+                val builder = initNotification()
+                builder.addAction(
+                    R.drawable.ic_record,
+                    getString(R.string.start_record),
+                    startPendingIntent
+                )
+                builder.addAction(
+                    R.drawable.ic_close,
+                    getString(R.string.close),
+                    closePendingIntent
+                )
                 val notificationManager =
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.notify(NOTIFICATION_FOREGROUND_ID, notifications)
+                notificationManager.notify(NOTIFICATION_FOREGROUND_ID, builder.build())
             }
             RecordingState.PREPARED -> {
-                val notifications = initNotification()
+                val builder = initNotification().apply {
+                    addAction(
+                        R.drawable.ic_record,
+                        getString(R.string.start_record),
+                        startPendingIntent
+                    )
+                    addAction(
+                        R.drawable.ic_close,
+                        getString(R.string.close),
+                        closePendingIntent
+                    )
+                }
                 val notificationManager =
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.notify(NOTIFICATION_FOREGROUND_ID, notifications)
+                notificationManager.notify(NOTIFICATION_FOREGROUND_ID, builder.build())
             }
             RecordingState.RECORDING -> {
-                val notifications = initNotification()
-                notificationManager.notify(NOTIFICATION_FOREGROUND_ID, notifications)
+                val builder = initNotification().apply {
+                    addAction(
+                        R.drawable.ic_stop,
+                        getString(R.string.stop_record),
+                        stopPendingIntent
+                    )
+                    addAction(
+                        R.drawable.ic_close,
+                        getString(R.string.close),
+                        closePendingIntent
+                    )
+                }
+                val notificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.notify(NOTIFICATION_FOREGROUND_ID, builder.build())
             }
         }
+    }
+
+    private fun destroyMediaProjection() {
+        Log.d("destroyMediaProjection", "destroy")
+        mediaProjection?.unregisterCallback(mediaProjectionCallback)
+        mediaProjection?.stop()
+        mediaProjection = null
     }
 
     private fun recorderStartServiceWithId(startId: Int) {
@@ -228,8 +271,14 @@ class RecordService: GetsDirectory, Service() {
     var running: Boolean = false
         private set
 
-    @Volatile
-    var mediaProjection: MediaProjection? = null
+    fun setupMediaProjection(params: MediaProjection) {
+        mediaProjection = params
+        mediaProjection?.registerCallback(mediaProjectionCallback, null)
+    }
+
+    fun isMediaProjectionConfigured(): Boolean {
+        return mediaProjection != null
+    }
 
     fun setDpi(dpi1: Int) {
         dpi = dpi1
@@ -263,6 +312,7 @@ class RecordService: GetsDirectory, Service() {
         }
         virtualDisplay?.release()
         mediaProjection?.stop()
+        destroyMediaProjection()
         return true
     }
 
@@ -305,7 +355,7 @@ class RecordService: GetsDirectory, Service() {
         } else {
             return START_NOT_STICKY
         }
-        Log.d("onStartCommand()", "onStartCommand() action:$action")
+        Log.d("onStartCommand", "action: $action")
         when (action) {
             ACTION_START_SERVICE -> {
                 recorderStartServiceWithId(startId)
@@ -318,7 +368,6 @@ class RecordService: GetsDirectory, Service() {
                 stopForeground(true)
             }
         }
-        //createFullNotification()
         return START_NOT_STICKY
     }
 

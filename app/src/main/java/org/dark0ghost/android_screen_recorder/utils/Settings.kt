@@ -2,6 +2,7 @@ package org.dark0ghost.android_screen_recorder.utils
 
 import android.Manifest
 import android.media.MediaRecorder
+import org.dark0ghost.android_screen_recorder.states.ClickState
 
 object Settings {
    object AudioRecordSettings {
@@ -52,8 +53,11 @@ object Settings {
       const val HEIGHT: Int = 400
       const val START_COLOR: Int = android.graphics.Color.RED
       const val STOP_COLOR: Int = android.graphics.Color.BLUE
-      var callbackForStartRecord: () -> Unit =
-         { android.util.Log.e("InlineButtonSettings", "fn not init") }
+      var callbackForStartRecord: () -> ClickState =
+         callback@{
+            android.util.Log.e("InlineButtonSettings", "fn not init")
+            return@callback ClickState.NotUsed
+         }
    }
 
    object MainActivitySettings {
@@ -73,9 +77,6 @@ object Settings {
       val READ_WRITE_PERMISSIONS = arrayOf(
          Manifest.permission.WRITE_EXTERNAL_STORAGE,
          Manifest.permission.READ_EXTERNAL_STORAGE
-      )
-      val CAMERA_PERMISSIONS = arrayOf(
-         Manifest.permission.CAMERA
       )
       val RECORD_AUDIO_PERMISSIONS = arrayOf(
          Manifest.permission.RECORD_AUDIO

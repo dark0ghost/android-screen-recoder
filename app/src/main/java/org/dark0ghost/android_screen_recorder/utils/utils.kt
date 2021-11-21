@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import org.dark0ghost.android_screen_recorder.states.BaseState
 
@@ -63,11 +64,11 @@ fun isPermissionGranted(activity: Activity, permission: String): Boolean {
 fun isPermissionsGranted(activity: Activity, permissions: Array<String>): Boolean {
     var permissionsGranted = true
     for (permission in permissions) {
-        permissionsGranted = permissionsGranted && isPermissionGranted(activity, permission)
+        permissionsGranted =  isPermissionGranted(activity, permission)
+        Log.d("sPermissionsGranted", "permissionsGranted: $permissionsGranted")
         if (!permissionsGranted) {
             break
         }
     }
-    PackageManager.PERMISSION_DENIED
     return permissionsGranted
 }

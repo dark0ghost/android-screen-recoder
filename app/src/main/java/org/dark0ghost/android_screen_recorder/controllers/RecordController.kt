@@ -8,7 +8,6 @@ import android.media.projection.MediaProjection
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import android.view.WindowManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeout
@@ -24,9 +23,6 @@ import java.io.File
 class RecordController(private val context: Context): GetsDirectory {
     private var recordService: RecordService? = null
 
-    private var mBound: Boolean = false
-
-
     private val connection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val metrics = context.resources.displayMetrics
@@ -35,11 +31,9 @@ class RecordController(private val context: Context): GetsDirectory {
                 setDpi(metrics.densityDpi)
             }
             Log.d("onServiceConnected", "init recordService{${recordService.hashCode()}}")
-            mBound = true
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
-            mBound = false
             this@RecordController.recordService = null
         }
     }
@@ -52,14 +46,16 @@ class RecordController(private val context: Context): GetsDirectory {
     val isMediaProjectionConfigured: Boolean
     get(){
         recordService?.let{
-           return it.mediaProjection != null
+           return it.isMediaProjectionConfigured()
         }
         return false
     }
 
     suspend fun startService(): Boolean {
+        Log.d("startService", "start")
         if (connected) return true
-        val intent = Intent(context, this::class.java).apply {
+        Log.d("startService", "not connected")
+        val intent = Intent(context, RecordService::class.java).apply {
             action = ACTION_START_SERVICE
             putExtra(
                 EXTRA_COMMAND_KEY,
@@ -73,7 +69,7 @@ class RecordController(private val context: Context): GetsDirectory {
         }
         try {
             context.bindService(
-                Intent(context, this::class.java),
+                Intent(context, RecordService::class.java),
                 connection,
                 Context.BIND_AUTO_CREATE
             )
@@ -92,8 +88,13 @@ class RecordController(private val context: Context): GetsDirectory {
         }
     }
 
-    fun setupMediaProjection(params: MediaProjection) {
-        recordService?.mediaProjection = params
+    fun setupMediaProjection(localMediaProjection: MediaProjection) {
+        recordService?.let{
+            it.setupMediaProjection(localMediaProjection)
+            Log.d("setupMediaProjection", "is setup")
+            return
+        }
+        Log.d("setupMediaProjection", "not setup")
     }
 
     fun startRecording() {
@@ -104,7 +105,19 @@ class RecordController(private val context: Context): GetsDirectory {
         recordService?.stopRecord()
     }
 
+    fun stopService(): Boolean {
+        if (!connected) return true
+        try {
+            context.unbindService(connection)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+        context.stopService(Intent(context, RecordService::class.java))
+        return true
+    }
+
     fun close() {
+        stopService()
         context.unbindService(connection)
     }
 
