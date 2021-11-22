@@ -5,6 +5,9 @@ import android.media.MediaRecorder
 import org.dark0ghost.android_screen_recorder.states.ClickState
 
 object Settings {
+   object DebugSettings{
+      const val DEBUG_MODE: Boolean = false
+   }
    object AudioRecordSettings {
       const val PERMISSIONS_REQUEST_RECORD_AUDIO: Int = 1
       const val SIMPLE_RATE: Float = 16000.0f
@@ -25,20 +28,13 @@ object Settings {
       const val AUDIO_SOURCE: Int = MediaRecorder.AudioSource.MIC
       const val EXTRA_COMMAND_KEY = "COMMAND_KEY"
       const val ACTION_START_SERVICE = "ACTION_START_SERVICE"
-      const val ACTION_SETUP_RECORDER = "ACTION_SETUP_RECORDER"
-      const val ACTION_SETUP_MEDIA_PROJECTION = "ACTION_SETUP_MEDIA_PROJECTION"
       const val ACTION_START_RECORDING = "ACTION_START_RECORDING"
       const val ACTION_STOP_RECORDING = "ACTION_STOP_RECORDING"
       const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
-      const val COMMAND_SETUP_RECORDER = 0
-      const val COMMAND_SETUP_MEDIA_PROJECTION = 1
       const val COMMAND_START_RECORDING = 2
       const val COMMAND_STOP_RECORDING = 3
       const val COMMAND_START_SERVICE = 4
       const val COMMAND_STOP_SERVICE = 5
-      const val ATTR_RECORD_PARAMS = "screen_record_params"
-      const val ATTR_MEDIA_PROJECTION_PARAMS = "media_projection_params"
-      const val ATTR_DESTROY_MEDIA_PROJECTION = "destroy_media_projection"
    }
 
    object NotificationSettings {
@@ -62,7 +58,6 @@ object Settings {
 
    object MainActivitySettings {
       const val FILE_NAME_FORMAT: String = "yyyy-MM-dd-HH-mm-ss-SSS"
-      const val HANDLER_DELAY: Long = 1000L
    }
 
    object CustomSubtitlesTimerSettings {
@@ -74,10 +69,6 @@ object Settings {
    }
 
    object PermissionsSettings {
-      val READ_WRITE_PERMISSIONS = arrayOf(
-         Manifest.permission.WRITE_EXTERNAL_STORAGE,
-         Manifest.permission.READ_EXTERNAL_STORAGE
-      )
       val RECORD_AUDIO_PERMISSIONS = arrayOf(
          Manifest.permission.RECORD_AUDIO
       )

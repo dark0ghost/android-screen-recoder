@@ -1,9 +1,11 @@
 package org.dark0ghost.android_screen_recorder.services
 
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
@@ -14,13 +16,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.interfaces.Prng
 import org.dark0ghost.android_screen_recorder.states.RecordingState
 import org.dark0ghost.android_screen_recorder.utils.ObjectRandom
+import org.dark0ghost.android_screen_recorder.utils.Settings.DebugSettings.DEBUG_MODE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_RECORDING
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_SERVICE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_STOP_RECORDING
@@ -66,10 +68,8 @@ class RecordService: GetsDirectory, Service() {
     private var notificationId: Int = 0
     private var recordingState: RecordingState = RecordingState.IDLE
 
-    private lateinit var notification: Notification
-    private lateinit var notificationManager: NotificationManagerCompat
     private lateinit var mediaRecorder: MediaRecorder
-    private lateinit var  projectionManager: MediaProjectionManager
+    private lateinit var projectionManager: MediaProjectionManager
 
     private fun createVirtualDisplay() {
         try {
@@ -140,6 +140,7 @@ class RecordService: GetsDirectory, Service() {
             }
         }
     }
+
     private fun createServiceNotificationBuilder(context: Context): NotificationCompat.Builder {
 
         val notificationBuilder =
@@ -153,7 +154,7 @@ class RecordService: GetsDirectory, Service() {
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel( createNotificationChannel())
+            notificationManager.createNotificationChannel(createNotificationChannel())
         }
         return notificationBuilder
     }
@@ -253,15 +254,15 @@ class RecordService: GetsDirectory, Service() {
         )
         startForeground(
             notificationId,
-            createServiceNotificationBuilder(applicationContext)?.addAction(
+            createServiceNotificationBuilder(applicationContext).addAction(
                 R.drawable.ic_stop,
                 getString(R.string.stop_record),
                 startPendingIntent
-            )?.addAction(
+            ).addAction(
                 R.drawable.ic_close,
                 getString(R.string.close),
                 closePendingIntent
-            )?.build()
+            ).build()
         )
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         updateServiceNotification(applicationContext)
@@ -330,8 +331,10 @@ class RecordService: GetsDirectory, Service() {
                 }
             )
         }
-        Toast.makeText(applicationContext, rootDir, Toast.LENGTH_SHORT).show()
-        Log.e("getsDirectory", rootDir)
+        if (DEBUG_MODE) {
+            Toast.makeText(applicationContext, rootDir, Toast.LENGTH_SHORT).show()
+        }
+        Log.d("getsDirectory", rootDir)
         return rootDir
     }
 

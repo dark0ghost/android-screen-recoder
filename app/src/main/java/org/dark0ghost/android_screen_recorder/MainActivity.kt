@@ -31,7 +31,6 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.FILE_NAME_FORMAT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
-import org.dark0ghost.android_screen_recorder.utils.Settings.PermissionsSettings.READ_WRITE_PERMISSIONS
 import org.dark0ghost.android_screen_recorder.utils.Settings.PermissionsSettings.RECORD_AUDIO_PERMISSIONS
 import org.dark0ghost.android_screen_recorder.utils.getScreenCaptureIntent
 import org.dark0ghost.android_screen_recorder.utils.isPermissionsGranted
@@ -63,7 +62,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
                 }.srt"
             )
             textFile.writeText(buffer.toString().replace("[", "").replace("]", ""))
-            Log.e("File/OnFinalResult", textFile.absoluteFile.toString())
+            Log.d("File/OnFinalResult", textFile.absoluteFile.toString())
             buffer.clear()
             subtitlesCounter = 0
             timer.stop()
@@ -82,10 +81,9 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             $it\n   
             """.trimIndent()
             this@setCallbackOnResult.buffer.add(template)
-            Log.e("File/OnResult", template)
+            Log.d("File/OnResult", template)
             subtitlesCounter++
             oldTime = timer.nowTime
-
         }
         .build()
 
@@ -169,7 +167,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         Log.d("initService", "init")
         serviceController = RecordController(this)
         lifecycleScope.launch {
-            while(isActive && !serviceController.connected) {
+            while (isActive && !serviceController.connected) {
                 Log.d("initService", "start service")
                 serviceController.startService()
             }
@@ -224,7 +222,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             )
             return
         }
-       initModel()
+        initModel()
     }
 
     private fun startRecording() {
@@ -256,6 +254,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             Log.d("tryStartRecording", serviceController.isMediaProjectionConfigured.toString())
             if (permissionsGranted && serviceController.isMediaProjectionConfigured) {
                 Log.d("tryStartRecording", "start record")
+                timer.start()
                 startRecording()
             } else if (!permissionsGranted) {
                 Log.d("tryStartRecording", "get permissions")
@@ -281,7 +280,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
                 }
             )
         }
-        Log.e("getsDirectory", rootDir)
+        Log.i("getsDirectory", rootDir)
         return rootDir
     }
 
@@ -340,7 +339,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
 
         startRecorder = findViewById(R.id.start_record)
         startRecorder.setOnClickListener {
-           clickButton()
+            clickButton()
         }
 
         LibVosk.setLogLevel(LogLevel.INFO)

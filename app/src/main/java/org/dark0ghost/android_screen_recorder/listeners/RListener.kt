@@ -12,18 +12,18 @@ class RListener(private var callbackOnTimeout: RListener.() -> Unit, private var
 
     override fun onPartialResult(p0: String) {
         val obj = Json.decodeFromString<TextFromVoice>(p0)
-        Log.e("word/onPartialResult", obj.toString())
+        Log.d("word/onPartialResult", obj.toString())
     }
 
     override fun onResult(p0: String) {
         val obj = Json.decodeFromString<TextFromVoice>(p0)
         callbackOnResult(obj.text)
-        Log.e("word/onResult", obj.toString())
+        Log.d("word/onResult", obj.toString())
     }
 
     override fun onFinalResult(p0: String) {
         val obj = Json.decodeFromString<TextFromVoice>(p0)
-        Log.e("word/onFinalResult", obj.toString())
+        Log.d("word/onFinalResult", obj.toString())
         callbackOnFinalResult()
     }
 
