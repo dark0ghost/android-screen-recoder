@@ -334,7 +334,7 @@ class RecordService: GetsDirectory, Service() {
         if (DEBUG_MODE) {
             Toast.makeText(applicationContext, rootDir, Toast.LENGTH_SHORT).show()
         }
-        Log.d("getsDirectory", rootDir)
+        Log.i("getsDirectory", "${this::class.simpleName}: $rootDir")
         return rootDir
     }
 

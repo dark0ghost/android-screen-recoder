@@ -249,9 +249,9 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             if (!isActive) return@launch
 
             val permissions =
-                RECORD_AUDIO_PERMISSIONS //+ READ_WRITE_PERMISSIONS
+                RECORD_AUDIO_PERMISSIONS
             val permissionsGranted = isPermissionsGranted(this@MainActivity, permissions)
-            Log.d("tryStartRecording", serviceController.isMediaProjectionConfigured.toString())
+            Log.d("tryStartRecording", "isMediaProjectionConfigured:${serviceController.isMediaProjectionConfigured}")
             if (permissionsGranted && serviceController.isMediaProjectionConfigured) {
                 Log.d("tryStartRecording", "start record")
                 timer.start()
@@ -280,7 +280,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
                 }
             )
         }
-        Log.i("getsDirectory", rootDir)
+        Log.i("getsDirectory", "${this::class.simpleName}: $rootDir")
         return rootDir
     }
 
