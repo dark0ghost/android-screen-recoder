@@ -207,7 +207,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             }.srt"
         )
         if (subtitleResult.isSuccess) {
-            return subtitleResult.getOrThrow()//getOrDefault(textFile)
+            return subtitleResult.getOrDefault(textFile)
         }
         subtitleResult = Result.success(textFile)
         return textFile
