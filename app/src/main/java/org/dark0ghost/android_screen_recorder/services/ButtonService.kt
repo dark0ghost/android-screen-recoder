@@ -56,7 +56,7 @@ class ButtonService: Service() {
         buttonStartRecorder.apply {
             setOnClickListener { _ ->
                 Log.i("buttonStartRecorder", "callback is start")
-                when(val state = callbackForStartRecord()){
+                when (val state = callbackForStartRecord()) {
                     ClickState.IsClicked -> {
                         buttonStartRecorder.setBackgroundColor(START_COLOR)
                         Log.i("buttonStartRecorder", "start recorder")
