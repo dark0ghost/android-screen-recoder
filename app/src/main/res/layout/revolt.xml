@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000">
-    <Button
+    android:layout_height="match_parent">
+
+    <ImageButton
         android:id="@+id/grub"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/rounded_button"
-        android:contentDescription="@string/button">
-    </Button>
+        android:layout_alignParentBottom="true"
+        android:background="@null"
+        android:contentDescription="@string/button"
+        android:src="@drawable/recording" />
 </RelativeLayout>

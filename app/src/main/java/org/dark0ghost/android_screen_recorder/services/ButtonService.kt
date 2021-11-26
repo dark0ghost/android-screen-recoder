@@ -9,14 +9,14 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.*
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.RelativeLayout
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.states.ClickState
 import org.dark0ghost.android_screen_recorder.utils.Settings
-import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.START_COLOR
-import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.STOP_COLOR
+import org.dark0ghost.android_screen_recorder.utils.Settings.GlobalRecorderSettings.isButtonClicked
+import org.dark0ghost.android_screen_recorder.utils.Settings.GlobalRecorderSettings.recordingState
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 
 
@@ -25,7 +25,7 @@ class ButtonService: Service() {
     private lateinit var windowManager: WindowManager
     private lateinit var params: WindowManager.LayoutParams
     private lateinit var topView: RelativeLayout
-    private lateinit var buttonStartRecorder: Button
+    private lateinit var buttonStartRecorder: ImageButton
 
     override fun onCreate() {
         super.onCreate();
@@ -58,17 +58,26 @@ class ButtonService: Service() {
                 Log.i("buttonStartRecorder", "callback is start")
                 when (val state = callbackForStartRecord()) {
                     ClickState.IsClicked -> {
-                        buttonStartRecorder.setBackgroundColor(START_COLOR)
+                        while(isButtonClicked != ClickState.IsClicked){Thread.sleep(10)}
+                        Log.e("setOnClickListener", recordingState.toString())
+                        if (recordingState == RecordButtonState.Started)
+                            buttonStartRecorder.setImageResource(R.drawable.pause)
+                        isButtonClicked = ClickState.NotUsed
                         Log.i("buttonStartRecorder", "start recorder")
                         return@setOnClickListener
                     }
                     ClickState.NotClicked -> {
-                        buttonStartRecorder.setBackgroundColor(STOP_COLOR)
+                        while(isButtonClicked != ClickState.IsClicked){Thread.sleep(10)}
+                        Log.e("setOnClickListener", recordingState.toString())
+                        if (recordingState == RecordButtonState.Stopped)
+                            buttonStartRecorder.setImageResource(R.drawable.recording)
+                        isButtonClicked = ClickState.NotUsed
                         Log.i("buttonStartRecorder", "stop recorder")
                         return@setOnClickListener
                     }
                     else -> Log.e("clickButton", "isStartRecord have state:$state, this is ok?")
                 }
+                setBackgroundResource(R.drawable.krugliye_ugli)
             }
 
             setOnTouchListener(object : View.OnTouchListener {

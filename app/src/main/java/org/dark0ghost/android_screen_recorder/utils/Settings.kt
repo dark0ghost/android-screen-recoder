@@ -47,8 +47,6 @@ object Settings {
    object InlineButtonSettings {
       const val WIDTH: Int = 400
       const val HEIGHT: Int = 400
-      const val START_COLOR: Int = android.graphics.Color.RED
-      const val STOP_COLOR: Int = android.graphics.Color.BLUE
       var callbackForStartRecord: () -> ClickState =
          callback@{
             android.util.Log.e("InlineButtonSettings", "fn not init")
