@@ -41,6 +41,7 @@ import org.vosk.Recognizer
 import org.vosk.android.SpeechService
 import org.vosk.android.SpeechStreamService
 import org.vosk.android.StorageService
+import java.io.BufferedWriter
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -52,17 +53,9 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         .Builder()
         .setCallbackOnFinalResult {
             setUiState(BaseState.DONE)
-            val textFile = File(
-                getsDirectory(),
-                "${
-                    SimpleDateFormat(
-                        FILE_NAME_FORMAT,
-                        Locale.US
-                    ).format(System.currentTimeMillis())
-                }.srt"
-            )
-            textFile.writeText(buffer.toString().replace("[", "").replace("]", ""))
-            Log.d("File/OnFinalResult", textFile.absoluteFile.toString())
+            val file = createSubtitleFileOrDefault()
+            Log.d("File/OnFinalResult", file.absoluteFile.toString())
+            cleanSubtitleFile()
             buffer.clear()
             subtitlesCounter = 0
             timer.stop()
@@ -74,13 +67,15 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
                 speechStreamService = null
             }
         }
-        .setCallbackOnResult {
+        .setCallbackOnResult { it ->
             val template = """
             $subtitlesCounter
             $oldTime-->${timer.nowTime}    
             $it\n   
             """.trimIndent()
             this@setCallbackOnResult.buffer.add(template)
+            val file = createSubtitleFileOrDefault()
+            file.bufferedWriter().writeLn(template)
             Log.d("File/OnResult", template)
             subtitlesCounter++
             oldTime = timer.nowTime
@@ -114,6 +109,8 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         }
     }
 
+    private val exceptionForResultFile = Exception("file not created")
+
     private lateinit var model: org.vosk.Model
     private lateinit var projectionManager: MediaProjectionManager
     private lateinit var startRecorder: Button
@@ -126,9 +123,11 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
 
     private var boundInlineButton: Boolean = true
     private var subtitlesCounter: Long = 1L
+    private var subtitleResult: Result<File> = Result.failure(exceptionForResultFile)
     private var oldTime: String = "00:00:00"
     private val timer: CustomSubtitlesTimer = CustomSubtitlesTimer()
     private var isStartRecord: ClickState = ClickState.NotClicked
+
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -193,6 +192,28 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         }
     }
 
+    private fun cleanSubtitleFile(){
+        subtitleResult = Result.failure(exceptionForResultFile)
+    }
+
+    private fun createSubtitleFileOrDefault(): File {
+        val textFile = File(
+            getsDirectory(),
+            "${
+                SimpleDateFormat(
+                    FILE_NAME_FORMAT,
+                    Locale.US
+                ).format(System.currentTimeMillis())
+            }.srt"
+        )
+        if (subtitleResult.isSuccess) {
+            return subtitleResult.getOrDefault(textFile)
+        }
+        subtitleResult = Result.success(textFile)
+        return textFile
+    }
+
+
     private fun checkPermissionsOrInitialize() {
         val permissionCheckRecordAudio =
             ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.RECORD_AUDIO)
@@ -249,9 +270,12 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             if (!isActive) return@launch
 
             val permissions =
-                RECORD_AUDIO_PERMISSIONS //+ READ_WRITE_PERMISSIONS
+                RECORD_AUDIO_PERMISSIONS
             val permissionsGranted = isPermissionsGranted(this@MainActivity, permissions)
-            Log.d("tryStartRecording", serviceController.isMediaProjectionConfigured.toString())
+            Log.d(
+                "tryStartRecording",
+                "isMediaProjectionConfigured:${serviceController.isMediaProjectionConfigured}"
+            )
             if (permissionsGranted && serviceController.isMediaProjectionConfigured) {
                 Log.d("tryStartRecording", "start record")
                 timer.start()
@@ -280,7 +304,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
                 }
             )
         }
-        Log.i("getsDirectory", rootDir)
+        Log.i("getsDirectory", "${this::class.simpleName}: $rootDir")
         return rootDir
     }
 
@@ -370,6 +394,13 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
                 return
             }
             finish()
+        }
+    }
+
+    companion object {
+        fun BufferedWriter.writeLn(line: String) {
+            this.write(line)
+            this.newLine()
         }
     }
 }
