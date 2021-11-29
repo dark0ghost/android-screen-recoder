@@ -30,7 +30,6 @@ class ButtonService: Service() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         val nullParent: ViewGroup? = null
         topView = LayoutInflater.from(this).inflate(R.layout.revolt, nullParent) as RelativeLayout
-        topView.visibility = View.VISIBLE
         buttonStartRecorder = topView.findViewById(R.id.grub)
         params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams(
