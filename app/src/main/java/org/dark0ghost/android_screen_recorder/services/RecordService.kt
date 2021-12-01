@@ -27,6 +27,7 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_SERVICE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_STOP_RECORDING
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_STOP_SERVICE
+import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ATTR_DESTROY_MEDIA_PROJECTION
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.AUDIO_ENCODER
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.AUDIO_SOURCE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
@@ -125,12 +126,12 @@ class RecordService: GetsDirectory, Service() {
             setAudioSource(AUDIO_SOURCE)
             setVideoSource(VIDEO_SOURCE)
             setOutputFormat(OUTPUT_FORMAT)
-            setOutputFile("${getsDirectory()}${System.currentTimeMillis()}.mp4")
             setVideoSize(WIDTH, HEIGHT)
             setVideoEncoder(VIDEO_ENCODER)
             setAudioEncoder(AUDIO_ENCODER)
             setVideoEncodingBitRate(BIT_RATE)
             setVideoFrameRate(VIDEO_FRAME_RATE)
+            setOutputFile("${getsDirectory()}${System.currentTimeMillis()}.mp4")
             try {
                 prepare()
             } catch (e: IOException) {
@@ -287,6 +288,7 @@ class RecordService: GetsDirectory, Service() {
 
 
     fun startRecord(): Boolean {
+        Log.d("$this:startRecord", "start record")
         if (mediaProjection == null || running) {
             return false
         }
@@ -365,6 +367,11 @@ class RecordService: GetsDirectory, Service() {
             }
             ACTION_START_RECORDING -> {
                 startRecord()
+            }
+            ACTION_STOP_RECORDING -> {
+                val destroyMediaProjection =
+                    intent.getBooleanExtra(ATTR_DESTROY_MEDIA_PROJECTION, false)
+                        //recorder.stopRecording(destroyMediaProjection)
             }
             ACTION_STOP_SERVICE -> {
                 closeServiceNotification(this, NOTIFICATION_FOREGROUND_ID)

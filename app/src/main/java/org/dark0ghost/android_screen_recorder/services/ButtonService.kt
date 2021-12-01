@@ -60,7 +60,7 @@ class ButtonService: Service() {
                         return@setOnClickListener
                     }
                     ClickState.NotClicked -> {
-                        buttonStartRecorder.setImageResource(R.drawable.recording)
+                        buttonStartRecorder.setImageResource(R.drawable.recording_64)
                         Log.i("buttonStartRecorder", "stop recorder")
                         return@setOnClickListener
                     }

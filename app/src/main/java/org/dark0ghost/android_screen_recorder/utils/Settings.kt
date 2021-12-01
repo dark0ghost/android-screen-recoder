@@ -31,6 +31,7 @@ object Settings {
       const val ACTION_START_RECORDING = "ACTION_START_RECORDING"
       const val ACTION_STOP_RECORDING = "ACTION_STOP_RECORDING"
       const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
+      const val ATTR_DESTROY_MEDIA_PROJECTION = "destroy_media_projection"
       const val COMMAND_START_RECORDING = 2
       const val COMMAND_STOP_RECORDING = 3
       const val COMMAND_START_SERVICE = 4
@@ -45,8 +46,8 @@ object Settings {
    }
 
    object InlineButtonSettings {
-      const val WIDTH: Int = 400
-      const val HEIGHT: Int = 400
+      const val WIDTH: Int = 200
+      const val HEIGHT: Int = 200
       var callbackForStartRecord: () -> ClickState =
          callback@{
             android.util.Log.e("InlineButtonSettings", "fn not init")
