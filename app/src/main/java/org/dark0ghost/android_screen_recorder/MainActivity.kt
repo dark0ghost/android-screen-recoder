@@ -247,7 +247,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
     }
 
     private fun startRecording() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             recognizeMicrophone()
         }
         serviceController.startRecording()
