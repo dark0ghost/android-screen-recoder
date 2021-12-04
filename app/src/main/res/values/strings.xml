@@ -4,4 +4,7 @@
     <string name="start_record">Start record</string>
     <string name="stop_record">Stop record</string>
     <string name="close">Close</string>
+    <string name="compose_shortcut_short_label1">button</string>
+    <string name="compose_shortcut_long_label1">inline button</string>
+    <string name="compose_disabled_message1">button disabled</string>
 </resources>
