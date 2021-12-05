@@ -24,6 +24,7 @@ class RecordController(private val context: Context): GetsDirectory {
     private var recordService: RecordService? = null
 
     private val connection: ServiceConnection = object : ServiceConnection {
+
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val metrics = context.resources.displayMetrics
             val binder = service as RecordService.RecordBinder
@@ -36,6 +37,17 @@ class RecordController(private val context: Context): GetsDirectory {
         override fun onServiceDisconnected(arg0: ComponentName) {
             this@RecordController.recordService = null
         }
+    }
+
+    private fun stopService(): Boolean {
+        if (!connected) return true
+        try {
+            context.unbindService(connection)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+        context.stopService(Intent(context, RecordService::class.java))
+        return true
     }
 
     val connected: Boolean
@@ -55,7 +67,7 @@ class RecordController(private val context: Context): GetsDirectory {
         Log.d("startService", "start")
         if (connected) return true
         Log.d("startService", "not connected")
-        val intent = Intent(context, RecordService::class.java).apply {
+        val intent = RecordService.intent(context).apply {
             action = ACTION_START_SERVICE
             putExtra(
                 EXTRA_COMMAND_KEY,
@@ -69,7 +81,7 @@ class RecordController(private val context: Context): GetsDirectory {
         }
         try {
             context.bindService(
-                Intent(context, RecordService::class.java),
+                RecordService.intent(context),
                 connection,
                 Context.BIND_AUTO_CREATE
             )
@@ -105,20 +117,8 @@ class RecordController(private val context: Context): GetsDirectory {
         recordService?.stopRecord()
     }
 
-    fun stopService(): Boolean {
-        if (!connected) return true
-        try {
-            context.unbindService(connection)
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
-        context.stopService(Intent(context, RecordService::class.java))
-        return true
-    }
-
     fun close() {
         stopService()
-        context.unbindService(connection)
     }
 
     // GetsDirectory
