@@ -30,6 +30,10 @@
             <meta-data android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
+
+        <activity
+            android:name="org.dark0ghost.android_screen_recorder.shortcuts.ComposeActivity">
+        </activity>
         <service
             android:name="org.dark0ghost.android_screen_recorder.services.RecordService"
             android:enabled="true"
