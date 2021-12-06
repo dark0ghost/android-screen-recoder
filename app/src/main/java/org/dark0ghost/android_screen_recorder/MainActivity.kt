@@ -20,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.dark0ghost.android_screen_recorder.controllers.RecordController
+import org.dark0ghost.android_screen_recorder.controllers.SpeechController
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.listeners.RListener
 import org.dark0ghost.android_screen_recorder.services.ButtonService
@@ -117,6 +118,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
     private lateinit var buttonStartInlineButton: Button
     private lateinit var intentButtonService: Intent
     private lateinit var serviceController: RecordController
+    private lateinit var speechController: SpeechController
 
     private var speechService: SpeechService? = null
     private var speechStreamService: SpeechStreamService? = null
@@ -165,10 +167,12 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
     private fun initService() {
         Log.d("initService", "init")
         serviceController = RecordController(this)
+        speechController = SpeechController(this)
         lifecycleScope.launch {
             while (isActive && !serviceController.connected) {
                 Log.d("initService", "start service")
                 serviceController.startService()
+                speechController.startService()
             }
         }
     }
@@ -192,7 +196,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         }
     }
 
-    private fun cleanSubtitleFile(){
+    private fun cleanSubtitleFile() {
         subtitleResult = Result.failure(exceptionForResultFile)
     }
 

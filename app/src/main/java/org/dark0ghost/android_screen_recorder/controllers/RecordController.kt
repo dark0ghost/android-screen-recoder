@@ -11,6 +11,7 @@ import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeout
+import org.dark0ghost.android_screen_recorder.interfaces.Controller
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.services.RecordService
 import org.dark0ghost.android_screen_recorder.utils.Settings
@@ -20,7 +21,7 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings
 import org.dark0ghost.android_screen_recorder.utils.Settings.RecorderControllerSettings.SERVICE_STARTING_TIMEOUT_MS
 import java.io.File
 
-class RecordController(private val context: Context): GetsDirectory {
+class RecordController(private val context: Context): GetsDirectory, Controller {
     private var recordService: RecordService? = null
 
     private val connection: ServiceConnection = object : ServiceConnection {
@@ -39,7 +40,41 @@ class RecordController(private val context: Context): GetsDirectory {
         }
     }
 
-    private fun stopService(): Boolean {
+    val isMediaProjectionConfigured: Boolean
+    get(){
+        recordService?.let{
+           return it.isMediaProjectionConfigured()
+        }
+        return false
+    }
+
+    fun setupMediaProjection(localMediaProjection: MediaProjection) {
+        recordService?.let{
+            it.setupMediaProjection(localMediaProjection)
+            Log.d("setupMediaProjection", "is setup")
+            return
+        }
+        Log.d("setupMediaProjection", "not setup")
+    }
+
+    fun startRecording() {
+        recordService?.startRecord()
+    }
+
+    fun stopRecording() {
+        recordService?.stopRecord()
+    }
+
+    fun close() {
+        stopService()
+    }
+
+    override val connected: Boolean
+        get() {
+            return recordService != null
+        }
+
+    override fun stopService(): Boolean {
         if (!connected) return true
         try {
             context.unbindService(connection)
@@ -50,23 +85,10 @@ class RecordController(private val context: Context): GetsDirectory {
         return true
     }
 
-    val connected: Boolean
-        get() {
-            return recordService != null
-        }
-
-    val isMediaProjectionConfigured: Boolean
-    get(){
-        recordService?.let{
-           return it.isMediaProjectionConfigured()
-        }
-        return false
-    }
-
-    suspend fun startService(): Boolean {
-        Log.d("startService", "start")
+    override suspend fun startService(): Boolean {
+        Log.d("$this:startService", "start")
         if (connected) return true
-        Log.d("startService", "not connected")
+        Log.d("$this:startService", "not connected")
         val intent = RecordService.intent(context).apply {
             action = ACTION_START_SERVICE
             putExtra(
@@ -98,27 +120,6 @@ class RecordController(private val context: Context): GetsDirectory {
         } catch (ex: Exception) {
             false
         }
-    }
-
-    fun setupMediaProjection(localMediaProjection: MediaProjection) {
-        recordService?.let{
-            it.setupMediaProjection(localMediaProjection)
-            Log.d("setupMediaProjection", "is setup")
-            return
-        }
-        Log.d("setupMediaProjection", "not setup")
-    }
-
-    fun startRecording() {
-        recordService?.startRecord()
-    }
-
-    fun stopRecording() {
-        recordService?.stopRecord()
-    }
-
-    fun close() {
-        stopService()
     }
 
     // GetsDirectory

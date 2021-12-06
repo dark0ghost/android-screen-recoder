@@ -10,6 +10,7 @@ import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import org.dark0ghost.android_screen_recorder.interfaces.Controller
 import org.dark0ghost.android_screen_recorder.states.BaseState
 
 internal fun setUiState(state: BaseState) {
