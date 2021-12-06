@@ -11,6 +11,7 @@ import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeout
+import org.dark0ghost.android_screen_recorder.interfaces.Controller
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.services.RecordService
 import org.dark0ghost.android_screen_recorder.utils.Settings
@@ -20,10 +21,11 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings
 import org.dark0ghost.android_screen_recorder.utils.Settings.RecorderControllerSettings.SERVICE_STARTING_TIMEOUT_MS
 import java.io.File
 
-class RecordController(private val context: Context): GetsDirectory {
+class RecordController(private val context: Context): GetsDirectory, Controller {
     private var recordService: RecordService? = null
 
     private val connection: ServiceConnection = object : ServiceConnection {
+
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val metrics = context.resources.displayMetrics
             val binder = service as RecordService.RecordBinder
@@ -38,11 +40,6 @@ class RecordController(private val context: Context): GetsDirectory {
         }
     }
 
-    val connected: Boolean
-        get() {
-            return recordService != null
-        }
-
     val isMediaProjectionConfigured: Boolean
     get(){
         recordService?.let{
@@ -51,11 +48,48 @@ class RecordController(private val context: Context): GetsDirectory {
         return false
     }
 
-    suspend fun startService(): Boolean {
-        Log.d("startService", "start")
+    fun setupMediaProjection(localMediaProjection: MediaProjection) {
+        recordService?.let{
+            it.setupMediaProjection(localMediaProjection)
+            Log.d("setupMediaProjection", "is setup")
+            return
+        }
+        Log.d("setupMediaProjection", "not setup")
+    }
+
+    override val connected: Boolean
+        get() {
+            return recordService != null
+        }
+
+    override fun startRecording() {
+        recordService?.startRecord()
+    }
+
+    override fun stopRecording() {
+        recordService?.stopRecord()
+    }
+
+    override fun close() {
+        stopService()
+    }
+
+    override fun stopService(): Boolean {
+        if (!connected) return true
+        try {
+            context.unbindService(connection)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+        context.stopService(Intent(context, RecordService::class.java))
+        return true
+    }
+
+    override suspend fun startService(): Boolean {
+        Log.d("$this:startService", "start")
         if (connected) return true
-        Log.d("startService", "not connected")
-        val intent = Intent(context, RecordService::class.java).apply {
+        Log.d("$this:startService", "not connected")
+        val intent = RecordService.intent(context).apply {
             action = ACTION_START_SERVICE
             putExtra(
                 EXTRA_COMMAND_KEY,
@@ -69,7 +103,7 @@ class RecordController(private val context: Context): GetsDirectory {
         }
         try {
             context.bindService(
-                Intent(context, RecordService::class.java),
+                RecordService.intent(context),
                 connection,
                 Context.BIND_AUTO_CREATE
             )
@@ -86,39 +120,6 @@ class RecordController(private val context: Context): GetsDirectory {
         } catch (ex: Exception) {
             false
         }
-    }
-
-    fun setupMediaProjection(localMediaProjection: MediaProjection) {
-        recordService?.let{
-            it.setupMediaProjection(localMediaProjection)
-            Log.d("setupMediaProjection", "is setup")
-            return
-        }
-        Log.d("setupMediaProjection", "not setup")
-    }
-
-    fun startRecording() {
-        recordService?.startRecord()
-    }
-
-    fun stopRecording() {
-        recordService?.stopRecord()
-    }
-
-    fun stopService(): Boolean {
-        if (!connected) return true
-        try {
-            context.unbindService(connection)
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
-        context.stopService(Intent(context, RecordService::class.java))
-        return true
-    }
-
-    fun close() {
-        stopService()
-        context.unbindService(connection)
     }
 
     // GetsDirectory

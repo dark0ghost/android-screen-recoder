@@ -27,6 +27,12 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+
+        <activity
+            android:name="org.dark0ghost.android_screen_recorder.shortcuts.ComposeActivity">
         </activity>
         <service
             android:name="org.dark0ghost.android_screen_recorder.services.RecordService"
@@ -38,6 +44,12 @@
 
         <service
             android:name="org.dark0ghost.android_screen_recorder.services.ButtonService"
+            android:enabled="true"
+            android:exported="false"
+            />
+
+        <service
+            android:name="org.dark0ghost.android_screen_recorder.services.SpeechService"
             android:enabled="true"
             android:exported="false"
             />

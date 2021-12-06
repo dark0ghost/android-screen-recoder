@@ -72,4 +72,8 @@ object Settings {
          Manifest.permission.RECORD_AUDIO
       )
    }
+
+   object Model{
+      lateinit var model: org.vosk.Model
+   }
 }
