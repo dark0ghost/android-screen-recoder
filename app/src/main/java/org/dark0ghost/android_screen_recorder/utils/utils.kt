@@ -11,6 +11,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import org.dark0ghost.android_screen_recorder.interfaces.Controller
+import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.states.BaseState
 
 internal fun setUiState(state: BaseState) {
@@ -72,4 +73,12 @@ fun isPermissionsGranted(activity: Activity, permissions: Array<String>): Boolea
         }
     }
     return permissionsGranted
+}
+
+fun<T: Recordable> startRecordable(recordable: Recordable){
+    recordable.startRecording()
+}
+
+fun<T: Recordable> stopRecordable(recordable: Recordable){
+    recordable.stopRecording()
 }

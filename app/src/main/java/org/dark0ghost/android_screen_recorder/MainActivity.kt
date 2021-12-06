@@ -22,66 +22,24 @@ import kotlinx.coroutines.launch
 import org.dark0ghost.android_screen_recorder.controllers.RecordController
 import org.dark0ghost.android_screen_recorder.controllers.SpeechController
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
-import org.dark0ghost.android_screen_recorder.listeners.RListener
+import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.states.ClickState
-import org.dark0ghost.android_screen_recorder.time.CustomSubtitlesTimer
+import org.dark0ghost.android_screen_recorder.utils.*
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
-import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.SIMPLE_RATE
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
-import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.FILE_NAME_FORMAT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
 import org.dark0ghost.android_screen_recorder.utils.Settings.PermissionsSettings.RECORD_AUDIO_PERMISSIONS
-import org.dark0ghost.android_screen_recorder.utils.getScreenCaptureIntent
-import org.dark0ghost.android_screen_recorder.utils.isPermissionsGranted
-import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
 import org.vosk.LogLevel
-import org.vosk.Recognizer
-import org.vosk.android.SpeechService
-import org.vosk.android.SpeechStreamService
 import org.vosk.android.StorageService
 import java.io.BufferedWriter
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class MainActivity : GetsDirectory, AppCompatActivity() {
-    private val rListener: RListener = RListener
-        .Builder()
-        .setCallbackOnFinalResult {
-            setUiState(BaseState.DONE)
-            val file = createSubtitleFileOrDefault()
-            Log.d("File/OnFinalResult", file.absoluteFile.toString())
-            cleanSubtitleFile()
-            buffer.clear()
-            subtitlesCounter = 0
-            timer.stop()
-            oldTime = "00:00:00"
-        }
-        .setCallbackOnTimeout {
-            setUiState(BaseState.DONE)
-            if (speechStreamService != null) {
-                speechStreamService = null
-            }
-        }
-        .setCallbackOnResult { it ->
-            val template = """
-            $subtitlesCounter
-            $oldTime-->${timer.nowTime}    
-            $it\n   
-            """.trimIndent()
-            this@setCallbackOnResult.buffer.add(template)
-            val file = createSubtitleFileOrDefault()
-            file.bufferedWriter().writeLn(template)
-            Log.d("File/OnResult", template)
-            subtitlesCounter++
-            oldTime = timer.nowTime
-        }
-        .build()
 
     private val permissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -110,7 +68,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         }
     }
 
-    private val exceptionForResultFile = Exception("file not created")
+    private var isStartRecord: ClickState = ClickState.NotClicked
 
     private lateinit var model: org.vosk.Model
     private lateinit var projectionManager: MediaProjectionManager
@@ -119,17 +77,9 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
     private lateinit var intentButtonService: Intent
     private lateinit var serviceController: RecordController
     private lateinit var speechController: SpeechController
-
-    private var speechService: SpeechService? = null
-    private var speechStreamService: SpeechStreamService? = null
+    private lateinit var listRecordable: List<Recordable>
 
     private var boundInlineButton: Boolean = true
-    private var subtitlesCounter: Long = 1L
-    private var subtitleResult: Result<File> = Result.failure(exceptionForResultFile)
-    private var oldTime: String = "00:00:00"
-    private val timer: CustomSubtitlesTimer = CustomSubtitlesTimer()
-    private var isStartRecord: ClickState = ClickState.NotClicked
-
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -137,42 +87,25 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             setUiState(BaseState.READY)
         }
         StorageService.unpack(
-            this@MainActivity, "model_ru", "models", callbackModelInit
+            this, "model_ru", "models", callbackModelInit
         ) { exception: IOException ->
             Log.e("init-model-fn", "Failed to unpack the model ${exception.printStackTrace()}")
         }
         Log.d("initModel", "run complete")
     }
 
-    private fun recognizeMicrophone() {
-        setUiState(BaseState.MIC)
-        try {
-            val rec = Recognizer(model, SIMPLE_RATE)
-            speechService = SpeechService(rec, SIMPLE_RATE)
-            speechService?.startListening(rListener)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun stopMicrophone() {
-        speechService?.let {
-            setUiState(BaseState.DONE)
-            it.stop()
-            speechService = null
-            return
-        }
-    }
-
     private fun initService() {
         Log.d("initService", "init")
         serviceController = RecordController(this)
         speechController = SpeechController(this)
+        listRecordable = listOf<Recordable>(speechController, serviceController)
         lifecycleScope.launch {
-            while (isActive && !serviceController.connected) {
+            while (isActive && (!serviceController.connected || !speechController.connected)) {
                 Log.d("initService", "start service")
-                serviceController.startService()
-                speechController.startService()
+                if (!serviceController.connected)
+                    serviceController.startService()
+                if (!speechController.connected)
+                    speechController.startService()
             }
         }
     }
@@ -195,28 +128,6 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             else -> Log.e("clickButton", "isStartRecord have state:$isStartRecord, this is ok?")
         }
     }
-
-    private fun cleanSubtitleFile() {
-        subtitleResult = Result.failure(exceptionForResultFile)
-    }
-
-    private fun createSubtitleFileOrDefault(): File {
-        val textFile = File(
-            getsDirectory(),
-            "${
-                SimpleDateFormat(
-                    FILE_NAME_FORMAT,
-                    Locale.US
-                ).format(System.currentTimeMillis())
-            }.srt"
-        )
-        if (subtitleResult.isSuccess) {
-            return subtitleResult.getOrDefault(textFile)
-        }
-        subtitleResult = Result.success(textFile)
-        return textFile
-    }
-
 
     private fun checkPermissionsOrInitialize() {
         val permissionCheckRecordAudio =
@@ -250,18 +161,13 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         initModel()
     }
 
-    private fun startRecording() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            recognizeMicrophone()
-        }
-        serviceController.startRecording()
+    private fun startRecording() = listRecordable.forEach {
+        startRecordable<Recordable>(it)
     }
 
-    private fun stopRecording() {
-        serviceController.stopRecording()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            stopMicrophone()
-        }
+
+    private fun stopRecording() = listRecordable.forEach {
+        stopRecordable<Recordable>(it)
     }
 
     private fun tryStartRecording() {
@@ -282,7 +188,6 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             )
             if (permissionsGranted && serviceController.isMediaProjectionConfigured) {
                 Log.d("tryStartRecording", "start record")
-                timer.start()
                 startRecording()
             } else if (!permissionsGranted) {
                 Log.d("tryStartRecording", "get permissions")
@@ -377,12 +282,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        speechService?.apply {
-            stop()
-            shutdown()
-        }
         serviceController.close()
-        speechStreamService?.stop()
         if (::intentButtonService.isInitialized) // check for AndroidTest (android test not start onCreate)
             stopService(intentButtonService)
     }

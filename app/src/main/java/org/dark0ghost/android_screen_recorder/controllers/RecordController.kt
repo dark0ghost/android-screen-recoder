@@ -57,22 +57,22 @@ class RecordController(private val context: Context): GetsDirectory, Controller 
         Log.d("setupMediaProjection", "not setup")
     }
 
-    fun startRecording() {
-        recordService?.startRecord()
-    }
-
-    fun stopRecording() {
-        recordService?.stopRecord()
-    }
-
-    fun close() {
-        stopService()
-    }
-
     override val connected: Boolean
         get() {
             return recordService != null
         }
+
+    override fun startRecording() {
+        recordService?.startRecord()
+    }
+
+    override fun stopRecording() {
+        recordService?.stopRecord()
+    }
+
+    override fun close() {
+        stopService()
+    }
 
     override fun stopService(): Boolean {
         if (!connected) return true

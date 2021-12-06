@@ -11,6 +11,7 @@ import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.time.CustomSubtitlesTimer
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.setUiState
+import org.vosk.Model
 import org.vosk.Recognizer
 import org.vosk.android.SpeechStreamService
 import java.io.File
@@ -18,7 +19,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class SpeechManager(private val context: Context): GetsDirectory {
+class SpeechManager(private val context: Context, private val model: Model): GetsDirectory {
 
     private val rListener: RListener = RListener
         .Builder()
@@ -62,8 +63,6 @@ class SpeechManager(private val context: Context): GetsDirectory {
     private var subtitlesCounter: Long = 1L
     private var subtitleResult: Result<File> = Result.failure(exceptionForResultFile)
     private var oldTime: String = "00:00:00"
-
-    private lateinit var model: org.vosk.Model
 
     private fun cleanSubtitleFile(){
         subtitleResult = Result.failure(exceptionForResultFile)
@@ -112,6 +111,7 @@ class SpeechManager(private val context: Context): GetsDirectory {
     fun start() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             recognizeMicrophone()
+            timer.start()
         }
     }
 

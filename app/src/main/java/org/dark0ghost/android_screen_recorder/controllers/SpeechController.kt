@@ -30,24 +30,23 @@ class SpeechController(private val context: Context) : Controller {
 
     private var speechService: SpeechService? = null
 
-    fun startRecording() {
-        speechService?.start()
-    }
-
-    fun stopRecording() {
-        speechService?.stop()
-    }
-
-    fun close() {
-        speechService?.close()
-        stopService()
-    }
-
-
     override val connected: Boolean
         get() {
             return speechService != null
         }
+
+    override fun startRecording() {
+        speechService?.start()
+    }
+
+    override fun stopRecording() {
+        speechService?.stop()
+    }
+
+    override fun close() {
+        speechService?.close()
+        stopService()
+    }
 
     override fun stopService(): Boolean {
         if (!connected) return true
