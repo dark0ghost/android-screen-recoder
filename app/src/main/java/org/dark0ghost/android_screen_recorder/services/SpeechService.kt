@@ -5,52 +5,28 @@ import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.manager.SpeechManager
-import org.dark0ghost.android_screen_recorder.states.BaseState
-import org.dark0ghost.android_screen_recorder.utils.setUiState
-import org.vosk.Model
-import org.vosk.android.StorageService
-import java.io.IOException
+import org.dark0ghost.android_screen_recorder.utils.Settings.Model.model
 
 class SpeechService: Service() {
     private val binder: SpeechBinder = SpeechBinder()
+
     private lateinit var speechManager: SpeechManager
 
-    private lateinit var model: Model
-
-    private fun initModel() {
-        val callbackModelInit = { models: org.vosk.Model ->
-            model = models
-            setUiState(BaseState.READY)
-        }
-        StorageService.unpack(
-            this, "model_ru", "models", callbackModelInit
-        ) { exception: IOException ->
-            Log.e("init-model-fn", "Failed to unpack the model ${exception.printStackTrace()}")
-        }
-        Log.d("initModel", "run complete")
-    }
-
     fun start() {
-        if (!::speechManager.isInitialized) {
-            initModel()
+        if(!::speechManager.isInitialized){
             speechManager = SpeechManager(this, model)
         }
         speechManager.start()
     }
 
     fun stop() {
-        if (::speechManager.isInitialized) {
-            speechManager.stop()
-        }
+        speechManager.stop()
     }
 
     fun close() {
-        if (::speechManager.isInitialized) {
-            speechManager.close()
-        }
+        speechManager.close()
     }
 
     /**

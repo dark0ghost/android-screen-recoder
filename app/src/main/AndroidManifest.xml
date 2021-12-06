@@ -47,6 +47,12 @@
             android:enabled="true"
             android:exported="false"
             />
+
+        <service
+            android:name="org.dark0ghost.android_screen_recorder.services.SpeechService"
+            android:enabled="true"
+            android:exported="false"
+            />
     </application>
 
 </manifest>

@@ -30,6 +30,7 @@ import org.dark0ghost.android_screen_recorder.utils.*
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
+import org.dark0ghost.android_screen_recorder.utils.Settings.Model.model
 import org.dark0ghost.android_screen_recorder.utils.Settings.PermissionsSettings.RECORD_AUDIO_PERMISSIONS
 import org.vosk.LibVosk
 import org.vosk.LogLevel
@@ -70,7 +71,6 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
 
     private var isStartRecord: ClickState = ClickState.NotClicked
 
-    private lateinit var model: org.vosk.Model
     private lateinit var projectionManager: MediaProjectionManager
     private lateinit var startRecorder: Button
     private lateinit var buttonStartInlineButton: Button
@@ -102,6 +102,8 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         lifecycleScope.launch {
             while (isActive && (!serviceController.connected || !speechController.connected)) {
                 Log.d("initService", "start service")
+                println(serviceController.connected)
+                println(speechController.connected)
                 if (!serviceController.connected)
                     serviceController.startService()
                 if (!speechController.connected)
