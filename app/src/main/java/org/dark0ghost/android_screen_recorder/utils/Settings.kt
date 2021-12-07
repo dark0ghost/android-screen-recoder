@@ -5,9 +5,10 @@ import android.media.MediaRecorder
 import org.dark0ghost.android_screen_recorder.states.ClickState
 
 object Settings {
-   object DebugSettings{
+   object DebugSettings {
       const val DEBUG_MODE: Boolean = false
    }
+
    object AudioRecordSettings {
       const val PERMISSIONS_REQUEST_RECORD_AUDIO: Int = 1
       const val SIMPLE_RATE: Float = 16000.0f
@@ -53,6 +54,8 @@ object Settings {
             android.util.Log.e("InlineButtonSettings", "fn not init")
             return@callback ClickState.NotUsed
          }
+
+      var isStartButton: Boolean = false
    }
 
    object MainActivitySettings {
@@ -73,7 +76,7 @@ object Settings {
       )
    }
 
-   object Model{
+   object Model {
       lateinit var model: org.vosk.Model
    }
 }

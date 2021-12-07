@@ -15,7 +15,7 @@ class SpeechService: Service() {
     private lateinit var speechManager: SpeechManager
 
     fun start() {
-        if(!::speechManager.isInitialized){
+        if (!::speechManager.isInitialized) {
             speechManager = SpeechManager(this, model)
         }
         speechManager.start()

@@ -29,6 +29,7 @@ import org.dark0ghost.android_screen_recorder.states.ClickState
 import org.dark0ghost.android_screen_recorder.utils.*
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
+import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
 import org.dark0ghost.android_screen_recorder.utils.Settings.Model.model
 import org.dark0ghost.android_screen_recorder.utils.Settings.PermissionsSettings.RECORD_AUDIO_PERMISSIONS
@@ -78,8 +79,6 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
     private lateinit var serviceController: RecordController
     private lateinit var speechController: SpeechController
     private lateinit var listRecordable: List<Recordable>
-
-    private var boundInlineButton: Boolean = true
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -234,14 +233,14 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
 
         buttonStartInlineButton.setOnClickListener {
             Log.d(
-                "buttonStartInlineButton", if (boundInlineButton) {
+                "buttonStartInlineButton", if (isStartButton) {
                     "build button"
                 } else {
                     "deleted button"
                 }
             )
-            if (boundInlineButton) {
-                boundInlineButton = false
+            if (isStartButton) {
+                isStartButton = false
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !Settings.canDrawOverlays(
                         this
                     )
@@ -262,7 +261,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
             } catch (e: java.lang.IllegalArgumentException) {
 
             }
-            boundInlineButton = true
+            isStartButton = true
             return@setOnClickListener
         }
         initService()
