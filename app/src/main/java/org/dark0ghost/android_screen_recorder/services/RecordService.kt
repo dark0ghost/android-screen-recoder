@@ -257,7 +257,7 @@ class RecordService: GetsDirectory, Service() {
             notificationId,
             createServiceNotificationBuilder(applicationContext).addAction(
                 R.drawable.ic_stop,
-                getString(R.string.stop_record),
+                getString(R.string.start_record),
                 startPendingIntent
             ).addAction(
                 R.drawable.ic_close,
@@ -266,7 +266,7 @@ class RecordService: GetsDirectory, Service() {
             ).build()
         )
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        updateServiceNotification(applicationContext)
+        //updateServiceNotification(applicationContext)
     }
 
 
@@ -290,6 +290,7 @@ class RecordService: GetsDirectory, Service() {
     fun startRecord(): Boolean {
         Log.d("$this:startRecord", "start record")
         if (mediaProjection == null || running) {
+            Log.e("$this:mediaProjection", "is null")
             return false
         }
         initRecorder()
@@ -309,7 +310,11 @@ class RecordService: GetsDirectory, Service() {
         updateServiceNotification(this)
         running = false
         mediaRecorder.apply {
-            stop()
+            try {
+                stop()
+            } catch (e: RuntimeException) {
+                return true
+            }
             reset()
             release()
         }
@@ -360,7 +365,7 @@ class RecordService: GetsDirectory, Service() {
         } else {
             return START_NOT_STICKY
         }
-        Log.d("onStartCommand", "action: $action")
+        Log.e("onStartCommand", "action: $action")
         when (action) {
             ACTION_START_SERVICE -> {
                 recorderStartServiceWithId(startId)

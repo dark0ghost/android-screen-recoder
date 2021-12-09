@@ -22,11 +22,13 @@ class SpeechService: Service() {
     }
 
     fun stop() {
-        speechManager.stop()
+        if (::speechManager.isInitialized)
+            speechManager.stop()
     }
 
     fun close() {
-        speechManager.close()
+        if (::speechManager.isInitialized)
+            speechManager.close()
     }
 
     /**

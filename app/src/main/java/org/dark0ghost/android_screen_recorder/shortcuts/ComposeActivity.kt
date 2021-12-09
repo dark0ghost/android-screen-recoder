@@ -1,6 +1,5 @@
 package org.dark0ghost.android_screen_recorder.shortcuts
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -8,10 +7,12 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import org.dark0ghost.android_screen_recorder.base.BaseRecordable
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 
-class ComposeActivity: Activity() {
+class ComposeActivity: BaseRecordable() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("$this: onCreate","start shortcut")

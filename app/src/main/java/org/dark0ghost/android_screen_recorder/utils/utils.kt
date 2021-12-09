@@ -75,10 +75,10 @@ fun isPermissionsGranted(activity: Activity, permissions: Array<String>): Boolea
     return permissionsGranted
 }
 
-fun<T: Recordable> startRecordable(recordable: Recordable){
+fun<T: Recordable> startRecordable(recordable: T){
     recordable.startRecording()
 }
 
-fun<T: Recordable> stopRecordable(recordable: Recordable){
+fun<T: Recordable> stopRecordable(recordable: T){
     recordable.stopRecording()
 }

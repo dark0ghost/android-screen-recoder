@@ -1,6 +1,7 @@
 package org.dark0ghost.android_screen_recorder
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
@@ -71,11 +72,11 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
     }
 
     private var isStartRecord: ClickState = ClickState.NotClicked
+    private lateinit var intentButtonService: Intent
 
     private lateinit var projectionManager: MediaProjectionManager
     private lateinit var startRecorder: Button
     private lateinit var buttonStartInlineButton: Button
-    private lateinit var intentButtonService: Intent
     private lateinit var serviceController: RecordController
     private lateinit var speechController: SpeechController
     private lateinit var listRecordable: List<Recordable>
@@ -163,12 +164,12 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
     }
 
     private fun startRecording() = listRecordable.forEach {
-        startRecordable<Recordable>(it)
+        startRecordable(it)
     }
 
 
     private fun stopRecording() = listRecordable.forEach {
-        stopRecordable<Recordable>(it)
+        stopRecordable(it)
     }
 
     private fun tryStartRecording() {
@@ -225,6 +226,8 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
+
+        intentButtonService = ButtonService.intent(this)
 
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         setUiState(BaseState.START)
@@ -284,8 +287,7 @@ class MainActivity : GetsDirectory, AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         serviceController.close()
-        if (::intentButtonService.isInitialized) // check for AndroidTest (android test not start onCreate)
-            stopService(intentButtonService)
+        stopService(intentButtonService)
     }
 
     override fun onRequestPermissionsResult(
