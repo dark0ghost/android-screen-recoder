@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import org.dark0ghost.android_screen_recorder.interfaces.Controller
 import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.states.BaseState
+import java.io.BufferedWriter
 
 internal fun setUiState(state: BaseState) {
     when (state) {
@@ -81,4 +82,9 @@ fun<T: Recordable> startRecordable(recordable: T){
 
 fun<T: Recordable> stopRecordable(recordable: T){
     recordable.stopRecording()
+}
+
+fun BufferedWriter.writeLn(line: String) {
+    this.write(line)
+    this.newLine()
 }

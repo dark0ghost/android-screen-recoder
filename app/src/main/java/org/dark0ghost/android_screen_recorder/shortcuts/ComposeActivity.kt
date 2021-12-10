@@ -9,6 +9,7 @@ import android.util.Log
 import android.widget.Toast
 import org.dark0ghost.android_screen_recorder.base.BaseRecordable
 import org.dark0ghost.android_screen_recorder.services.ButtonService
+import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 
 class ComposeActivity: BaseRecordable() {
@@ -16,6 +17,7 @@ class ComposeActivity: BaseRecordable() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("$this: onCreate","start shortcut")
+        initService()
         if(!isStartButton) {
             val intentButtonService: Intent
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !Settings.canDrawOverlays(
@@ -38,6 +40,10 @@ class ComposeActivity: BaseRecordable() {
             this,
             "button now started", Toast.LENGTH_SHORT
         ).show()
-        finish()
+        listRecordable = listOf(speechController, serviceController)
+        callbackForStartRecord = callback@{
+            clickButton()
+            return@callback isStartRecord
+        }
     }
 }

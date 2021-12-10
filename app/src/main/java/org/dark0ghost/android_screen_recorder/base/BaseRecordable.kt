@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import org.dark0ghost.android_screen_recorder.controllers.RecordController
 import org.dark0ghost.android_screen_recorder.controllers.SpeechController
 import org.dark0ghost.android_screen_recorder.interfaces.Recordable
+import org.dark0ghost.android_screen_recorder.states.ClickState
 import org.dark0ghost.android_screen_recorder.utils.*
 
 abstract class BaseRecordable: AppCompatActivity() {
@@ -43,10 +44,11 @@ abstract class BaseRecordable: AppCompatActivity() {
         }
     }
 
-    private lateinit var projectionManager: MediaProjectionManager
-    private lateinit var serviceController: RecordController
-    private lateinit var speechController: SpeechController
-    private lateinit var listRecordable: List<Recordable>
+    protected lateinit var projectionManager: MediaProjectionManager
+    protected lateinit var serviceController: RecordController
+    protected lateinit var speechController: SpeechController
+
+    protected lateinit var listRecordable: List<Recordable>
 
     private fun tryStartRecording() {
         lifecycleScope.launch {
@@ -84,5 +86,44 @@ abstract class BaseRecordable: AppCompatActivity() {
 
     private fun stopRecording() = listRecordable.forEach {
         stopRecordable(it)
+    }
+
+    protected var isStartRecord: ClickState = ClickState.NotClicked
+
+    protected fun clickButton() {
+        Log.d("clickButton", "start")
+        when (isStartRecord) {
+            ClickState.NotClicked -> {
+                Log.d("clickButton", "start record")
+                isStartRecord = ClickState.IsClicked
+                tryStartRecording()
+                return
+            }
+            ClickState.IsClicked -> {
+                Log.d("clickButton", "stop record")
+                stopRecording()
+                isStartRecord = ClickState.NotClicked
+                return
+            }
+            else -> Log.e("clickButton", "isStartRecord have state:$isStartRecord, this is ok?")
+        }
+    }
+
+    protected fun initService() {
+        Log.d("initService", "init")
+        serviceController = RecordController(this)
+        speechController = SpeechController(this)
+        listRecordable = listOf<Recordable>(speechController, serviceController)
+        lifecycleScope.launch {
+            while (isActive && (!serviceController.connected || !speechController.connected)) {
+                Log.d("initService", "start service")
+                println(serviceController.connected)
+                println(speechController.connected)
+                if (!serviceController.connected)
+                    serviceController.startService()
+                if (!speechController.connected)
+                    speechController.startService()
+            }
+        }
     }
 }

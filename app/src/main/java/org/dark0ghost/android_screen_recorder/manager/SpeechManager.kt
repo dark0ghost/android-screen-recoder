@@ -4,13 +4,13 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import org.dark0ghost.android_screen_recorder.MainActivity.Companion.writeLn
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.listeners.RListener
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.time.CustomSubtitlesTimer
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.setUiState
+import org.dark0ghost.android_screen_recorder.utils.writeLn
 import org.vosk.Model
 import org.vosk.Recognizer
 import org.vosk.android.SpeechStreamService
