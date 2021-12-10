@@ -30,11 +30,7 @@ object Settings {
       const val EXTRA_COMMAND_KEY = "COMMAND_KEY"
       const val ACTION_START_SERVICE = "ACTION_START_SERVICE"
       const val ACTION_START_RECORDING = "ACTION_START_RECORDING"
-      const val ACTION_STOP_RECORDING = "ACTION_STOP_RECORDING"
       const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
-      const val ATTR_DESTROY_MEDIA_PROJECTION = "destroy_media_projection"
-      const val COMMAND_START_RECORDING = 2
-      const val COMMAND_STOP_RECORDING = 3
       const val COMMAND_START_SERVICE = 4
       const val COMMAND_STOP_SERVICE = 5
    }

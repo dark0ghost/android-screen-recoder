@@ -25,14 +25,10 @@ import org.dark0ghost.android_screen_recorder.utils.ObjectRandom
 import org.dark0ghost.android_screen_recorder.utils.Settings.DebugSettings.DEBUG_MODE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_RECORDING
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_SERVICE
-import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_STOP_RECORDING
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_STOP_SERVICE
-import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ATTR_DESTROY_MEDIA_PROJECTION
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.AUDIO_ENCODER
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.AUDIO_SOURCE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.BIT_RATE
-import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.COMMAND_START_RECORDING
-import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.COMMAND_STOP_RECORDING
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.COMMAND_STOP_SERVICE
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.HEIGHT
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_VIDEO
@@ -165,14 +161,6 @@ class RecordService: GetsDirectory, Service() {
     ) {
         val startIntent = Intent(this, this::class.java)
         startIntent.action = ACTION_START_RECORDING
-        val startPendingIntent = PendingIntent.getService(
-            context, COMMAND_START_RECORDING, startIntent, 0
-        )
-        val stopIntent = Intent(this, this::class.java)
-        stopIntent.action = ACTION_STOP_RECORDING
-        val stopPendingIntent = PendingIntent.getService(
-            context, COMMAND_STOP_RECORDING, stopIntent, 0
-        )
         val closeIntent = Intent(this, this::class.java)
         closeIntent.action = ACTION_STOP_SERVICE
         val closePendingIntent = PendingIntent.getService(
@@ -182,12 +170,7 @@ class RecordService: GetsDirectory, Service() {
         when (recordingState) {
             RecordingState.IDLE -> {
                 val builder = initNotification()
-                builder.addAction(
-                    R.drawable.ic_record,
-                    getString(R.string.start_record),
-                    startPendingIntent
-                )
-                builder.addAction(
+                    .addAction(
                     R.drawable.ic_close,
                     getString(R.string.close),
                     closePendingIntent
@@ -198,11 +181,6 @@ class RecordService: GetsDirectory, Service() {
             }
             RecordingState.PREPARED -> {
                 val builder = initNotification().apply {
-                    addAction(
-                        R.drawable.ic_record,
-                        getString(R.string.start_record),
-                        startPendingIntent
-                    )
                     addAction(
                         R.drawable.ic_close,
                         getString(R.string.close),
@@ -215,11 +193,6 @@ class RecordService: GetsDirectory, Service() {
             }
             RecordingState.RECORDING -> {
                 val builder = initNotification().apply {
-                    addAction(
-                        R.drawable.ic_stop,
-                        getString(R.string.stop_record),
-                        stopPendingIntent
-                    )
                     addAction(
                         R.drawable.ic_close,
                         getString(R.string.close),
@@ -243,11 +216,6 @@ class RecordService: GetsDirectory, Service() {
     private fun recorderStartServiceWithId(startId: Int) {
         Log.d("StartServiceWithId", "startService() startId = $startId")
         notificationId = prng.randomNumber(0, Int.MAX_VALUE)
-        val startIntent = Intent(this, this::class.java)
-        startIntent.action = ACTION_START_RECORDING
-        val startPendingIntent = PendingIntent.getService(
-            this, COMMAND_START_RECORDING, startIntent, 0
-        )
         val closeIntent = Intent(this, this::class.java)
         closeIntent.action = ACTION_STOP_SERVICE
         val closePendingIntent = PendingIntent.getService(
@@ -256,17 +224,12 @@ class RecordService: GetsDirectory, Service() {
         startForeground(
             notificationId,
             createServiceNotificationBuilder(applicationContext).addAction(
-                R.drawable.ic_stop,
-                getString(R.string.start_record),
-                startPendingIntent
-            ).addAction(
                 R.drawable.ic_close,
                 getString(R.string.close),
                 closePendingIntent
             ).build()
         )
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        //updateServiceNotification(applicationContext)
     }
 
 
@@ -372,11 +335,6 @@ class RecordService: GetsDirectory, Service() {
             }
             ACTION_START_RECORDING -> {
                 startRecord()
-            }
-            ACTION_STOP_RECORDING -> {
-                val destroyMediaProjection =
-                    intent.getBooleanExtra(ATTR_DESTROY_MEDIA_PROJECTION, false)
-                        //recorder.stopRecording(destroyMediaProjection)
             }
             ACTION_STOP_SERVICE -> {
                 closeServiceNotification(this, NOTIFICATION_FOREGROUND_ID)
