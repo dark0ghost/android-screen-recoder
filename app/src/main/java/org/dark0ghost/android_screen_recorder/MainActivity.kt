@@ -25,7 +25,6 @@ import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.LibVosk
 import org.vosk.LogLevel
 import org.vosk.android.StorageService
-import java.io.BufferedWriter
 import java.io.File
 import java.io.IOException
 

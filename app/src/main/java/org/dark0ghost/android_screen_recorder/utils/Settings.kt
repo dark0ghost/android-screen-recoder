@@ -27,12 +27,12 @@ object Settings {
       const val OUTPUT_FORMAT: Int = MediaRecorder.OutputFormat.THREE_GPP
       const val VIDEO_SOURCE: Int = MediaRecorder.VideoSource.SURFACE
       const val AUDIO_SOURCE: Int = MediaRecorder.AudioSource.MIC
-      const val EXTRA_COMMAND_KEY = "COMMAND_KEY"
-      const val ACTION_START_SERVICE = "ACTION_START_SERVICE"
-      const val ACTION_START_RECORDING = "ACTION_START_RECORDING"
-      const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
-      const val COMMAND_START_SERVICE = 4
-      const val COMMAND_STOP_SERVICE = 5
+      const val EXTRA_COMMAND_KEY: String = "COMMAND_KEY"
+      const val ACTION_START_SERVICE: String = "ACTION_START_SERVICE"
+      const val ACTION_START_RECORDING: String = "ACTION_START_RECORDING"
+      const val ACTION_STOP_SERVICE: String = "ACTION_STOP_SERVICE"
+      const val COMMAND_START_SERVICE: Int = 4
+      const val COMMAND_STOP_SERVICE: Int = 5
    }
 
    object NotificationSettings {
@@ -67,7 +67,7 @@ object Settings {
    }
 
    object PermissionsSettings {
-      val RECORD_AUDIO_PERMISSIONS = arrayOf(
+      val RECORD_AUDIO_PERMISSIONS: Array<String> = arrayOf(
          Manifest.permission.RECORD_AUDIO
       )
    }
