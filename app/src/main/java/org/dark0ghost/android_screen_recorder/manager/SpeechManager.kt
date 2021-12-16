@@ -4,13 +4,13 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import org.dark0ghost.android_screen_recorder.MainActivity.Companion.writeLn
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.listeners.RListener
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.time.CustomSubtitlesTimer
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.setUiState
+import org.dark0ghost.android_screen_recorder.utils.writeLn
 import org.vosk.Model
 import org.vosk.Recognizer
 import org.vosk.android.SpeechStreamService
@@ -26,7 +26,9 @@ class SpeechManager(private val context: Context, private val model: Model): Get
         .setCallbackOnFinalResult {
             setUiState(BaseState.DONE)
             val file = createSubtitleFileOrDefault()
+            file.bufferedWriter().close()
             Log.d("File/OnFinalResult", file.absoluteFile.toString())
+            Log.d("File/OnFinalResult", file.length().toString())
             cleanSubtitleFile()
             buffer.clear()
             subtitlesCounter = 0

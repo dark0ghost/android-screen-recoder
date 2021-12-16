@@ -15,18 +15,20 @@ class SpeechService: Service() {
     private lateinit var speechManager: SpeechManager
 
     fun start() {
-        if(!::speechManager.isInitialized){
+        if (!::speechManager.isInitialized) {
             speechManager = SpeechManager(this, model)
         }
         speechManager.start()
     }
 
     fun stop() {
-        speechManager.stop()
+        if (::speechManager.isInitialized)
+            speechManager.stop()
     }
 
     fun close() {
-        speechManager.close()
+        if (::speechManager.isInitialized)
+            speechManager.close()
     }
 
     /**

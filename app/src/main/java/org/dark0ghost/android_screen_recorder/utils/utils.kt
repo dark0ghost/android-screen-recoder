@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import org.dark0ghost.android_screen_recorder.interfaces.Controller
 import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.states.BaseState
+import java.io.BufferedWriter
 
 internal fun setUiState(state: BaseState) {
     when (state) {
@@ -75,10 +76,15 @@ fun isPermissionsGranted(activity: Activity, permissions: Array<String>): Boolea
     return permissionsGranted
 }
 
-fun<T: Recordable> startRecordable(recordable: Recordable){
+fun<T: Recordable> startRecordable(recordable: T){
     recordable.startRecording()
 }
 
-fun<T: Recordable> stopRecordable(recordable: Recordable){
+fun<T: Recordable> stopRecordable(recordable: T){
     recordable.stopRecording()
+}
+
+fun BufferedWriter.writeLn(line: String) {
+    write(line)
+    newLine()
 }
