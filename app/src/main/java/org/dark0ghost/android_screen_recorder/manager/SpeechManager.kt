@@ -26,7 +26,9 @@ class SpeechManager(private val context: Context, private val model: Model): Get
         .setCallbackOnFinalResult {
             setUiState(BaseState.DONE)
             val file = createSubtitleFileOrDefault()
+            file.bufferedWriter().close()
             Log.d("File/OnFinalResult", file.absoluteFile.toString())
+            Log.d("File/OnFinalResult", file.length().toString())
             cleanSubtitleFile()
             buffer.clear()
             subtitlesCounter = 0

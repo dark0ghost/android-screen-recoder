@@ -85,6 +85,6 @@ fun<T: Recordable> stopRecordable(recordable: T){
 }
 
 fun BufferedWriter.writeLn(line: String) {
-    this.write(line)
-    this.newLine()
+    write(line)
+    newLine()
 }

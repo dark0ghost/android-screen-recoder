@@ -116,7 +116,7 @@ class MainActivity : GetsDirectory, BaseRecordable() {
 
         buttonStartInlineButton.setOnClickListener {
             Log.d(
-                "buttonStartInlineButton", if (isStartButton) {
+                "buttonStartInlineButton", if (!isStartButton) {
                     "build button"
                 } else {
                     "deleted button"

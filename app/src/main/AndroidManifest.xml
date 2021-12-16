@@ -46,12 +46,14 @@
             android:name="org.dark0ghost.android_screen_recorder.services.ButtonService"
             android:enabled="true"
             android:exported="false"
+            android:foregroundServiceType="mediaProjection"
             />
 
         <service
             android:name="org.dark0ghost.android_screen_recorder.services.SpeechService"
             android:enabled="true"
             android:exported="false"
+            android:foregroundServiceType="mediaProjection"
             />
     </application>
 
