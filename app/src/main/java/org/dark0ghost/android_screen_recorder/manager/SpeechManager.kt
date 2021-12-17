@@ -17,9 +17,11 @@ import org.vosk.Recognizer
 import org.vosk.android.SpeechStreamService
 import java.io.BufferedWriter
 import java.io.File
+import java.io.FileWriter
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class SpeechManager(private val context: Context, private val model: Model): GetsDirectory {
 
@@ -30,17 +32,18 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             val fileData = createSubtitleFileDataOrDefault()
             Log.d("File/OnFinalResult", fileData.file.length().toString())
             Log.d("File/OnFinalResult", "buffer size: ${buffer.size}")
+            Log.d("File/OnFinalResult", "path: ${fileData.file.absolutePath}")
             if (fileData.file.length() == 0L) {
                 val bufferedWriter = fileData.bufferedWriter
-                buffer.forEach { i ->
-                    bufferedWriter.use {
-                        it.writeLn(i)
+                bufferedWriter.use {
+                    buffer.forEach { i ->
+                        it.append(i)
                     }
+                    it.close()
                 }
                 Log.d("File/OnFinalResult", fileData.file.length().toString())
             }
             cleanSubtitleFile()
-            fileData.bufferedWriter.close()
             buffer.clear()
             subtitlesCounter = 0
             timer.stop()
@@ -61,17 +64,18 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             this@setCallbackOnResult.buffer.add(template)
             val fileData = createSubtitleFileDataOrDefault()
             try {
-                fileData.bufferedWriter.use {
-                    it.writeLn(template)
-                }
+                fileData.bufferedWriter.append(template)
+                fileData.bufferedWriter.close()
             } catch (e: IOException) {
                 cleanSubtitleFile()
                 val fileBuffer = createSubtitleFileDataOrDefault()
                 fileBuffer.bufferedWriter.use {
-                    it.writeLn(template)
+                    it.append(template)
                 }
                 e.printStackTrace()
             }
+            Log.d("File/OnResult", "file size: ${fileData.file.length()}")
+            Log.d("File/OnResult", "file path: ${fileData.file.absolutePath}")
             Log.d("File/OnResult", template)
             subtitlesCounter++
             oldTime = timer.nowTime
@@ -85,7 +89,7 @@ class SpeechManager(private val context: Context, private val model: Model): Get
     private var speechStreamService: SpeechStreamService? = null
 
     private var subtitlesCounter: Long = 1L
-    private var subtitleResult: Result<FileBuffer> = Result.failure(exceptionForResultFile)
+    private var subtitleResult: Result<String> = Result.failure(exceptionForResultFile)
     private var oldTime: String = "00:00:00"
 
     private fun cleanSubtitleFile() {
@@ -93,22 +97,26 @@ class SpeechManager(private val context: Context, private val model: Model): Get
     }
 
     private fun createSubtitleFileDataOrDefault(): FileBuffer {
+        val directory = getsDirectory()
+        val dataFormat = SimpleDateFormat(
+            Settings.MainActivitySettings.FILE_NAME_FORMAT,
+            Locale.US
+        ).format(System.currentTimeMillis())
         val textFile = File(
-            getsDirectory(),
-            "${
-                SimpleDateFormat(
-                    Settings.MainActivitySettings.FILE_NAME_FORMAT,
-                    Locale.US
-                ).format(System.currentTimeMillis())
-            }.srt"
+            directory,
+            "$dataFormat.srt"
         )
-        val bufferedWriter: BufferedWriter = textFile.bufferedWriter()
-        val fileBuffer = FileBuffer(textFile, bufferedWriter)
-        if (subtitleResult.isSuccess) {
-            return subtitleResult.getOrDefault(fileBuffer)
+        Log.d("FileDataOrDefault", subtitleResult.isSuccess.toString())
+        Log.d("FileDataOrDefault", subtitleResult.getOrNull().toString())
+        val writer = if (subtitleResult.isSuccess) {
+            FileWriter(subtitleResult.getOrDefault(textFile.absolutePath), true)
+        } else {
+            subtitleResult = Result.success(textFile.absolutePath)
+            FileWriter(textFile, true)
         }
-        subtitleResult = Result.success(fileBuffer)
-        return fileBuffer
+        val bufferedWriter = BufferedWriter(writer)
+        val rFile = File(subtitleResult.getOrDefault(textFile.absolutePath))
+        return FileBuffer(rFile, bufferedWriter)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
