@@ -83,8 +83,3 @@ fun<T: Recordable> startRecordable(recordable: T){
 fun<T: Recordable> stopRecordable(recordable: T){
     recordable.stopRecording()
 }
-
-fun BufferedWriter.writeLn(line: String) {
-    write(line)
-    newLine()
-}

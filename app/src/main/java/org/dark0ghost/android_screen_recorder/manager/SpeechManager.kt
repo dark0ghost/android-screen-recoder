@@ -10,8 +10,8 @@ import org.dark0ghost.android_screen_recorder.listeners.RListener
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.time.CustomSubtitlesTimer
 import org.dark0ghost.android_screen_recorder.utils.Settings
+import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.FILE_NAME_FORMAT
 import org.dark0ghost.android_screen_recorder.utils.setUiState
-import org.dark0ghost.android_screen_recorder.utils.writeLn
 import org.vosk.Model
 import org.vosk.Recognizer
 import org.vosk.android.SpeechStreamService
@@ -99,7 +99,7 @@ class SpeechManager(private val context: Context, private val model: Model): Get
     private fun createSubtitleFileDataOrDefault(): FileBuffer {
         val directory = getsDirectory()
         val dataFormat = SimpleDateFormat(
-            Settings.MainActivitySettings.FILE_NAME_FORMAT,
+            FILE_NAME_FORMAT,
             Locale.US
         ).format(System.currentTimeMillis())
         val textFile = File(
