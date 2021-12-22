@@ -10,12 +10,10 @@ import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import org.dark0ghost.android_screen_recorder.interfaces.Controller
 import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.states.BaseState
-import java.io.BufferedWriter
 
-internal fun setUiState(state: BaseState) {
+fun setUiState(state: BaseState) {
     when (state) {
         BaseState.START -> {
 
