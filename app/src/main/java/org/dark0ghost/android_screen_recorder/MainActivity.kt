@@ -107,7 +107,7 @@ class MainActivity : GetsDirectory, BaseRecordable() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        supportActionBar?.hide()
+        supportActionBar?.hide() ?: Log.e("onCreate", "supportActionBar is null")
 
         intentButtonService = ButtonService.intent(this)
 
