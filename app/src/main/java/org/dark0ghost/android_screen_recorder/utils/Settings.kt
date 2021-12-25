@@ -75,4 +75,9 @@ object Settings {
    object Model {
       lateinit var model: org.vosk.Model
    }
+
+   object ButtonText {
+      const val START_RECORD_TEXT: String = "Start"
+      const val STOP_RECORD_TEXT: String = "Stop"
+   }
 }

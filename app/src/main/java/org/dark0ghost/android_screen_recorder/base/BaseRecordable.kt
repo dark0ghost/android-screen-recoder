@@ -79,12 +79,12 @@ abstract class BaseRecordable: AppCompatActivity() {
         }
     }
 
-    private fun startRecording() = listRecordable.forEach {
+    protected open fun startRecording() = listRecordable.forEach {
         startRecordable(it)
     }
 
 
-    private fun stopRecording() = listRecordable.forEach {
+    protected open fun stopRecording() = listRecordable.forEach {
         stopRecordable(it)
     }
 
