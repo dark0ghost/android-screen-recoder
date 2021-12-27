@@ -82,6 +82,40 @@ class MainActivity : GetsDirectory, BaseRecordable() {
         initModel()
     }
 
+    private fun inlineButton() {
+        Log.d(
+            "buttonStartInlineButton", if (!isStartButton) {
+                "build button"
+            } else {
+                "deleted button"
+            }
+        )
+        if (!isStartButton) {
+            isStartButton = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !Settings.canDrawOverlays(
+                    this
+                )
+            ) {
+                intentButtonService = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+                startActivity(intentButtonService)
+                return
+            }
+            intentButtonService = ButtonService.intent(this)
+            startService(intentButtonService)
+            return
+        }
+        try {
+            stopService(intentButtonService)
+        } catch (e: java.lang.IllegalArgumentException) {
+
+        }
+        isStartButton = true
+        return
+    }
+
 
     // GetsDirectory
 
@@ -108,7 +142,7 @@ class MainActivity : GetsDirectory, BaseRecordable() {
         startRecorderButton.text = STOP_RECORD_TEXT
     }
 
-    override fun stopRecording(){
+    override fun stopRecording() {
         super.stopRecording()
         startRecorderButton.text = START_RECORD_TEXT
     }
@@ -127,37 +161,7 @@ class MainActivity : GetsDirectory, BaseRecordable() {
         buttonStartInlineButton = findViewById(R.id.start_inline_button)
 
         buttonStartInlineButton.setOnClickListener {
-            Log.d(
-                "buttonStartInlineButton", if (!isStartButton) {
-                    "build button"
-                } else {
-                    "deleted button"
-                }
-            )
-            if (isStartButton) {
-                isStartButton = false
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !Settings.canDrawOverlays(
-                        this
-                    )
-                ) {
-                    intentButtonService = Intent(
-                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:$packageName")
-                    )
-                    startActivity(intentButtonService)
-                    return@setOnClickListener
-                }
-                intentButtonService = ButtonService.intent(this)
-                startService(intentButtonService)
-                return@setOnClickListener
-            }
-            try {
-                stopService(intentButtonService)
-            } catch (e: java.lang.IllegalArgumentException) {
-
-            }
-            isStartButton = true
-            return@setOnClickListener
+            inlineButton()
         }
         initService()
 
@@ -168,6 +172,7 @@ class MainActivity : GetsDirectory, BaseRecordable() {
 
         startRecorderButton = findViewById(R.id.start_record)
         startRecorderButton.setOnClickListener {
+            inlineButton()
             clickButton()
         }
 

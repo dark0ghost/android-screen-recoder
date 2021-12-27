@@ -74,6 +74,7 @@ object Settings {
 
    object Model {
       lateinit var model: org.vosk.Model
+      const val MILLIS_WAIT_INIT_MODEL: Long = 1000
    }
 
    object ButtonText {

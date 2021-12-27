@@ -4,10 +4,15 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
+import android.util.Log
 import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.manager.SpeechManager
-import org.dark0ghost.android_screen_recorder.utils.Settings.Model.model
+import org.dark0ghost.android_screen_recorder.utils.Settings.Model.MILLIS_WAIT_INIT_MODEL
+import org.dark0ghost.android_screen_recorder.utils.Settings.Model.model as neuronModel
+
 
 class SpeechService: Service() {
     private val binder: SpeechBinder = SpeechBinder()
@@ -16,7 +21,15 @@ class SpeechService: Service() {
 
     fun start() {
         if (!::speechManager.isInitialized) {
-            speechManager = SpeechManager(this, model)
+            try {
+                speechManager = SpeechManager(this, neuronModel)
+            } catch (e: UninitializedPropertyAccessException) {
+                Log.e("${this::class.java}::start", "wait!!!!")
+                Handler(Looper.getMainLooper()).postDelayed({
+                    start()
+                }, MILLIS_WAIT_INIT_MODEL)
+                return
+            }
         }
         speechManager.start()
     }
@@ -55,7 +68,7 @@ class SpeechService: Service() {
     override fun onBind(intent: Intent?): IBinder = binder
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val action = if (intent.action != null) {
+        if (intent.action != null) {
             intent.action
         } else {
             return START_NOT_STICKY
