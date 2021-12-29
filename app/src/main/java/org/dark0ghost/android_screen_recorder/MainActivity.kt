@@ -35,7 +35,6 @@ class MainActivity : GetsDirectory, BaseRecordable() {
 
     private lateinit var intentButtonService: Intent
     private lateinit var startRecorderButton: Button
-    private lateinit var buttonStartInlineButton: Button
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -158,11 +157,6 @@ class MainActivity : GetsDirectory, BaseRecordable() {
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         setUiState(BaseState.START)
 
-        buttonStartInlineButton = findViewById(R.id.start_inline_button)
-
-        buttonStartInlineButton.setOnClickListener {
-            inlineButton()
-        }
         initService()
 
         callbackForStartRecord = callback@{
