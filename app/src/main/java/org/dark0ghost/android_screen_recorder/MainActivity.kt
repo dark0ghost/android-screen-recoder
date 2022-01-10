@@ -17,6 +17,8 @@ import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
+import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.START_RECORD_TEXT
+import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.STOP_RECORD_TEXT
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
@@ -32,8 +34,7 @@ import java.io.IOException
 class MainActivity : GetsDirectory, BaseRecordable() {
 
     private lateinit var intentButtonService: Intent
-    private lateinit var startRecorder: Button
-    private lateinit var buttonStartInlineButton: Button
+    private lateinit var startRecorderButton: Button
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -80,6 +81,40 @@ class MainActivity : GetsDirectory, BaseRecordable() {
         initModel()
     }
 
+    private fun inlineButton() {
+        Log.d(
+            "buttonStartInlineButton", if (!isStartButton) {
+                "build button"
+            } else {
+                "deleted button"
+            }
+        )
+        if (!isStartButton) {
+            isStartButton = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !Settings.canDrawOverlays(
+                    this
+                )
+            ) {
+                intentButtonService = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+                startActivity(intentButtonService)
+                return
+            }
+            intentButtonService = ButtonService.intent(this)
+            startService(intentButtonService)
+            return
+        }
+        try {
+            stopService(intentButtonService)
+        } catch (e: java.lang.IllegalArgumentException) {
+
+        }
+        isStartButton = true
+        return
+    }
+
 
     // GetsDirectory
 
@@ -101,52 +136,27 @@ class MainActivity : GetsDirectory, BaseRecordable() {
 
     // End GetsDirectory
 
+    override fun startRecording() {
+        super.startRecording()
+        startRecorderButton.text = STOP_RECORD_TEXT
+    }
+
+    override fun stopRecording() {
+        super.stopRecording()
+        startRecorderButton.text = START_RECORD_TEXT
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        supportActionBar?.hide()
+        supportActionBar?.hide() ?: Log.e("onCreate", "supportActionBar is null")
 
         intentButtonService = ButtonService.intent(this)
 
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         setUiState(BaseState.START)
 
-        buttonStartInlineButton = findViewById(R.id.start_inline_button)
-
-        buttonStartInlineButton.setOnClickListener {
-            Log.d(
-                "buttonStartInlineButton", if (!isStartButton) {
-                    "build button"
-                } else {
-                    "deleted button"
-                }
-            )
-            if (isStartButton) {
-                isStartButton = false
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !Settings.canDrawOverlays(
-                        this
-                    )
-                ) {
-                    intentButtonService = Intent(
-                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:$packageName")
-                    )
-                    startActivity(intentButtonService)
-                    return@setOnClickListener
-                }
-                intentButtonService = ButtonService.intent(this)
-                startService(intentButtonService)
-                return@setOnClickListener
-            }
-            try {
-                stopService(intentButtonService)
-            } catch (e: java.lang.IllegalArgumentException) {
-
-            }
-            isStartButton = true
-            return@setOnClickListener
-        }
         initService()
 
         callbackForStartRecord = callback@{
@@ -154,8 +164,9 @@ class MainActivity : GetsDirectory, BaseRecordable() {
             return@callback isStartRecord
         }
 
-        startRecorder = findViewById(R.id.start_record)
-        startRecorder.setOnClickListener {
+        startRecorderButton = findViewById(R.id.start_record)
+        startRecorderButton.setOnClickListener {
+            inlineButton()
             clickButton()
         }
 

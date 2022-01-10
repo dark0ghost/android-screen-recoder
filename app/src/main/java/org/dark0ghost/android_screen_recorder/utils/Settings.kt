@@ -74,5 +74,11 @@ object Settings {
 
    object Model {
       lateinit var model: org.vosk.Model
+      const val MILLIS_WAIT_INIT_MODEL: Long = 1000
+   }
+
+   object ButtonText {
+      const val START_RECORD_TEXT: String = "Start"
+      const val STOP_RECORD_TEXT: String = "Stop"
    }
 }
