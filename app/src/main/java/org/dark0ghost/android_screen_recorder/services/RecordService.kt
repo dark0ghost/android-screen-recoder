@@ -50,6 +50,12 @@ import java.io.IOException
 class RecordService: GetsDirectory, Service() {
     private val binder = RecordBinder()
     private val prng: Prng = ObjectRandom()
+    private val contentText: String
+        get() =
+             resources.getString(CONTENT_TEXT)
+    private val contentTitle: String
+        get() =
+            resources.getString(CONTENT_TITTLE)
     private val mediaProjectionCallback: MediaProjection.Callback =
         object : MediaProjection.Callback() {
             override fun onStop() {
@@ -89,22 +95,22 @@ class RecordService: GetsDirectory, Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(): NotificationChannel =
-        NotificationChannel(CHANNEL_ID, CONTENT_TEXT, NotificationManager.IMPORTANCE_DEFAULT)
+        NotificationChannel(CHANNEL_ID, contentText, NotificationManager.IMPORTANCE_DEFAULT)
 
     private fun initNotification(): NotificationCompat.Builder {
         val notificationBuilder =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationCompat.Builder(this, CHANNEL_ID).apply {
-                    setContentTitle(CONTENT_TITTLE)
-                    setContentText(CONTENT_TEXT)
+                    setContentTitle(contentTitle)
+                    setContentText(contentText)
                     setSmallIcon(R.drawable.ic_notification_custom)
                 }
             } else {
                 // If earlier version channel ID is not used
                 // https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#NotificationCompat.Builder(android.content.Context)
                 NotificationCompat.Builder(this, "").apply {
-                    setContentTitle(CONTENT_TITTLE)
-                    setContentText(CONTENT_TEXT)
+                    setContentTitle(contentTitle)
+                    setContentText(contentText)
                     setSmallIcon(R.drawable.ic_stat_cast_connected)
                 }
             }
@@ -142,8 +148,8 @@ class RecordService: GetsDirectory, Service() {
 
         val notificationBuilder =
             NotificationCompat.Builder(context, CHANNEL_ID).apply {
-                setContentTitle(CONTENT_TITTLE)
-                setContentText(CONTENT_TEXT)
+                setContentTitle(contentTitle)
+                setContentText(contentText)
                 setSmallIcon(R.drawable.ic_notification_custom)
             }
 
@@ -231,7 +237,6 @@ class RecordService: GetsDirectory, Service() {
         )
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     }
-
 
     var running: Boolean = false
         private set
