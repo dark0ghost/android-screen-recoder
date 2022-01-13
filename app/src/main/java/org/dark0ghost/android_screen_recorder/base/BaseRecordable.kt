@@ -3,6 +3,7 @@ package org.dark0ghost.android_screen_recorder.base
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -44,11 +45,14 @@ abstract class BaseRecordable: AppCompatActivity() {
         }
     }
 
+    private lateinit var inlineButton: Button
+
     protected lateinit var projectionManager: MediaProjectionManager
     protected lateinit var serviceController: RecordController
     protected lateinit var speechController: SpeechController
-
     protected lateinit var listRecordable: List<Recordable>
+
+    protected var isStartRecord: ClickState = ClickState.NotClicked
 
     private fun tryStartRecording() {
         lifecycleScope.launch {
@@ -88,8 +92,6 @@ abstract class BaseRecordable: AppCompatActivity() {
         stopRecordable(it)
     }
 
-    protected var isStartRecord: ClickState = ClickState.NotClicked
-
     protected fun clickButton() {
         Log.d("clickButton", "start")
         when (isStartRecord) {
@@ -126,4 +128,5 @@ abstract class BaseRecordable: AppCompatActivity() {
             }
         }
     }
+
 }
