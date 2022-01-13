@@ -2,8 +2,12 @@ package org.dark0ghost.android_screen_recorder.base
 
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
+import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -11,13 +15,14 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.controllers.RecordController
 import org.dark0ghost.android_screen_recorder.controllers.SpeechController
 import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.states.ClickState
 import org.dark0ghost.android_screen_recorder.utils.*
 
-abstract class BaseRecordable: AppCompatActivity() {
+abstract class AbstractBaseRecordable: AppCompatActivity() {
     private val permissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
@@ -45,7 +50,7 @@ abstract class BaseRecordable: AppCompatActivity() {
         }
     }
 
-    private lateinit var inlineButton: Button
+    private lateinit var inlineButton: ImageButton
 
     protected lateinit var projectionManager: MediaProjectionManager
     protected lateinit var serviceController: RecordController
@@ -65,7 +70,7 @@ abstract class BaseRecordable: AppCompatActivity() {
 
             val permissions =
                 Settings.PermissionsSettings.RECORD_AUDIO_PERMISSIONS
-            val permissionsGranted = isPermissionsGranted(this@BaseRecordable, permissions)
+            val permissionsGranted = isPermissionsGranted(this@AbstractBaseRecordable, permissions)
             Log.d(
                 "tryStartRecording",
                 "isMediaProjectionConfigured:${serviceController.isMediaProjectionConfigured}"
@@ -78,18 +83,24 @@ abstract class BaseRecordable: AppCompatActivity() {
                 permissionsLauncher.launch(permissions)
             } else if (!serviceController.isMediaProjectionConfigured) {
                 Log.d("tryStartRecording", "launch")
-                recordScreenLauncher.launch(getScreenCaptureIntent(this@BaseRecordable))
+                recordScreenLauncher.launch(getScreenCaptureIntent(this@AbstractBaseRecordable))
             }
         }
     }
 
-    protected open fun startRecording() = listRecordable.forEach {
-        startRecordable(it)
+    protected open fun startRecording() {
+        inlineButton.setImageResource(R.drawable.pause)
+        listRecordable.forEach {
+            startRecordable(it)
+        }
     }
 
 
-    protected open fun stopRecording() = listRecordable.forEach {
-        stopRecordable(it)
+    protected open fun stopRecording() {
+        inlineButton.setImageResource(R.drawable.recording_64)
+        listRecordable.forEach {
+            stopRecordable(it)
+        }
     }
 
     protected fun clickButton() {
@@ -129,4 +140,10 @@ abstract class BaseRecordable: AppCompatActivity() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val nullParent: ViewGroup? = null
+        val topView = LayoutInflater.from(this).inflate(R.layout.revolt, nullParent) as RelativeLayout
+        inlineButton = topView.findViewById(R.id.grub)
+    }
 }

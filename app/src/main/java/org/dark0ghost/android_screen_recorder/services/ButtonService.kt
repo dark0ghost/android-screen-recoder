@@ -5,8 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.graphics.PixelFormat
-import android.os.Build
-import android.os.IBinder
+import android.os.*
 import android.util.Log
 import android.view.*
 import android.widget.ImageButton
@@ -16,7 +15,6 @@ import org.dark0ghost.android_screen_recorder.interfaces.GetIntent
 import org.dark0ghost.android_screen_recorder.states.ClickState
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
-import org.dark0ghost.android_screen_recorder.utils.stopRecordable
 
 
 class ButtonService: Service() {
@@ -25,9 +23,10 @@ class ButtonService: Service() {
     private lateinit var params: WindowManager.LayoutParams
     private lateinit var topView: RelativeLayout
     private lateinit var buttonStartRecorder: ImageButton
+    private lateinit var handler: Handler
 
     override fun onCreate() {
-        super.onCreate();
+        super.onCreate()
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         val nullParent: ViewGroup? = null
         topView = LayoutInflater.from(this).inflate(R.layout.revolt, nullParent) as RelativeLayout
@@ -56,12 +55,12 @@ class ButtonService: Service() {
                 Log.i("buttonStartRecorder", "callback is start")
                 when (val state = callbackForStartRecord()) {
                     ClickState.IsClicked -> {
-                        buttonStartRecorder.setImageResource(R.drawable.pause)
+                        setImageResource(R.drawable.pause)
                         Log.i("buttonStartRecorder", "start recorder")
                         return@setOnClickListener
                     }
                     ClickState.NotClicked -> {
-                        buttonStartRecorder.setImageResource(R.drawable.recording_64)
+                        setImageResource(R.drawable.recording_64)
                         Log.i("buttonStartRecorder", "stop recorder")
                         return@setOnClickListener
                     }
