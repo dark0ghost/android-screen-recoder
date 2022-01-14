@@ -2,6 +2,7 @@ package org.dark0ghost.android_screen_recorder.utils
 
 import android.Manifest
 import android.media.MediaRecorder
+import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.states.ClickState
 
 object Settings {
@@ -37,8 +38,8 @@ object Settings {
 
    object NotificationSettings {
       const val CHANNEL_ID: String = "recorder"
-      const val CONTENT_TITTLE: String = "DataRecorder"
-      const val CONTENT_TEXT: String = "Your screen is being recorded and saved to your phone."
+      const val CONTENT_TITTLE: Int = R.string.content_tittle
+      const val CONTENT_TEXT: Int = R.string.content_text
       const val NOTIFICATION_FOREGROUND_ID: Int = 1
    }
 
@@ -78,7 +79,7 @@ object Settings {
    }
 
    object ButtonText {
-      const val START_RECORD_TEXT: String = "Start"
-      const val STOP_RECORD_TEXT: String = "Stop"
+      const val START_RECORD_TEXT_ID: Int = R.string.start_record_button_text
+      const val STOP_RECORD_TEXT_ID: Int = R.string.stop_record_button_text
    }
 }

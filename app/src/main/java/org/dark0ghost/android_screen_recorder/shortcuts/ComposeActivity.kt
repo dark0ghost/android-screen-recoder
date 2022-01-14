@@ -7,12 +7,12 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
-import org.dark0ghost.android_screen_recorder.base.BaseRecordable
+import org.dark0ghost.android_screen_recorder.base.AbstractBaseRecordable
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 
-class ComposeActivity: BaseRecordable() {
+class ComposeActivity: AbstractBaseRecordable() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -12,13 +12,13 @@ import android.util.Log
 import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import org.dark0ghost.android_screen_recorder.base.BaseRecordable
+import org.dark0ghost.android_screen_recorder.base.AbstractBaseRecordable
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
-import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.START_RECORD_TEXT
-import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.STOP_RECORD_TEXT
+import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.START_RECORD_TEXT_ID
+import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.STOP_RECORD_TEXT_ID
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
@@ -31,7 +31,7 @@ import java.io.File
 import java.io.IOException
 
 
-class MainActivity : GetsDirectory, BaseRecordable() {
+class MainActivity : GetsDirectory, AbstractBaseRecordable() {
 
     private lateinit var intentButtonService: Intent
     private lateinit var startRecorderButton: Button
@@ -138,12 +138,12 @@ class MainActivity : GetsDirectory, BaseRecordable() {
 
     override fun startRecording() {
         super.startRecording()
-        startRecorderButton.text = STOP_RECORD_TEXT
+        startRecorderButton.text = resources.getText(STOP_RECORD_TEXT_ID)
     }
 
     override fun stopRecording() {
         super.stopRecording()
-        startRecorderButton.text = START_RECORD_TEXT
+        startRecorderButton.text = resources.getText(START_RECORD_TEXT_ID)
     }
 
 
