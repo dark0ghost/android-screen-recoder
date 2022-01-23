@@ -10,12 +10,14 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Button
+import androidx.activity.compose.setContent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.dark0ghost.android_screen_recorder.base.AbstractBaseRecordable
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.states.BaseState
+import org.dark0ghost.android_screen_recorder.ui.MainUI
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.START_RECORD_TEXT_ID
 import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.STOP_RECORD_TEXT_ID
@@ -149,7 +151,9 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContent {
+            MainUI()
+        }
         supportActionBar?.hide() ?: Log.e("onCreate", "supportActionBar is null")
 
         intentButtonService = ButtonService.intent(this)

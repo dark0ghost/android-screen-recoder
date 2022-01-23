@@ -19,8 +19,8 @@ import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.controllers.RecordController
 import org.dark0ghost.android_screen_recorder.controllers.SpeechController
 import org.dark0ghost.android_screen_recorder.interfaces.Recordable
-import org.dark0ghost.android_screen_recorder.states.ClickState
 import org.dark0ghost.android_screen_recorder.utils.*
+import org.dark0ghost.android_screen_recorder.states.ClickState
 
 abstract class AbstractBaseRecordable: AppCompatActivity() {
     private val permissionsLauncher = registerForActivityResult(
