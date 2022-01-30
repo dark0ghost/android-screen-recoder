@@ -2,6 +2,8 @@ package org.dark0ghost.android_screen_recorder.utils
 
 import android.Manifest
 import android.media.MediaRecorder
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.states.ClickState
 
@@ -81,5 +83,9 @@ object Settings {
    object ButtonText {
       const val START_RECORD_TEXT_ID: Int = R.string.start_record_button_text
       const val STOP_RECORD_TEXT_ID: Int = R.string.stop_record_button_text
+   }
+
+   object ComposeSettings {
+      val GRADIENT = Brush.horizontalGradient(listOf(Color(0xff2faf8f), Color(0xFF8cd97f),  Color(0xFFc1eb74)))
    }
 }

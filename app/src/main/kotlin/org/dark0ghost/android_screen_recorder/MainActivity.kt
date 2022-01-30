@@ -11,6 +11,8 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Button
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.dark0ghost.android_screen_recorder.base.AbstractBaseRecordable
@@ -168,11 +170,13 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
             return@callback isStartRecord
         }
 
-        startRecorderButton = findViewById(R.id.start_record)
-        startRecorderButton.setOnClickListener {
+     //   startRecorderButton = findViewById(R.id.start_record)
+      /*  startRecorderButton.setOnClickListener {
             inlineButton()
             clickButton()
         }
+
+       */
 
         LibVosk.setLogLevel(LogLevel.INFO)
 
