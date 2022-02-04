@@ -1,10 +1,12 @@
 package org.dark0ghost.android_screen_recorder.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -15,11 +17,15 @@ import org.dark0ghost.android_screen_recorder.ui.them.CustomDarkTheme
 import org.dark0ghost.android_screen_recorder.utils.GradientButton
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.Settings.ComposeSettings.GRADIENT
+import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 
-@Preview
+@Preview(name = "MainUIPreview", group = "Main",
+    device = "spec:shape=Normal,width=1080,height=1920,unit=px,dpi=640",
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
+)
 @Composable
 fun MainUI() {
-    val isClicked by rememberSaveable {
+    var isClicked by rememberSaveable {
         mutableStateOf(ClickState.NotClicked)
     }
     CustomDarkTheme {
@@ -39,7 +45,9 @@ fun MainUI() {
                 modifier = Modifier
                     .wrapContentWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
+            ){
+                isClicked = callbackForStartRecord()
+            }
         }
     }
 }

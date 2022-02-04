@@ -38,7 +38,7 @@ import java.io.IOException
 class MainActivity : GetsDirectory, AbstractBaseRecordable() {
 
     private lateinit var intentButtonService: Intent
-    private lateinit var startRecorderButton: Button
+    @Deprecated("") private lateinit var startRecorderButton: Button
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -139,16 +139,6 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
     }
 
     // End GetsDirectory
-
-    override fun startRecording() {
-        super.startRecording()
-        startRecorderButton.text = resources.getText(STOP_RECORD_TEXT_ID)
-    }
-
-    override fun stopRecording() {
-        super.stopRecording()
-        startRecorderButton.text = resources.getText(START_RECORD_TEXT_ID)
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
