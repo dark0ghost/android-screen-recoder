@@ -1,4 +1,4 @@
-package org.dark0ghost.android_screen_recorder
+package org.dark0ghost.android_screen_recorder.activity
 
 import android.Manifest
 import android.content.Intent
@@ -11,8 +11,6 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Button
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.dark0ghost.android_screen_recorder.base.AbstractBaseRecordable
@@ -21,8 +19,6 @@ import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.ui.MainUI
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
-import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.START_RECORD_TEXT_ID
-import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.STOP_RECORD_TEXT_ID
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE

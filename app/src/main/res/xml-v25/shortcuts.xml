@@ -10,7 +10,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="org.dark0ghost.android_screen_recorder"
-            android:targetClass="org.dark0ghost.android_screen_recorder.shortcuts.ComposeActivity" />
+            android:targetClass="org.dark0ghost.android_screen_recorder.activity.ComposeActivity" />
         <!-- If your shortcut is associated with multiple intents, include them
              here. The last intent in the list determines what the user sees when
              they launch this shortcut. -->
