@@ -1,4 +1,4 @@
-package org.dark0ghost.android_screen_recorder.activity
+package org.dark0ghost.android_screen_recorder.ui.activity
 
 import android.content.Intent
 import android.net.Uri

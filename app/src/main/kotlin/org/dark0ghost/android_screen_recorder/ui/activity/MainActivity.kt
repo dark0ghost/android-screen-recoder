@@ -1,4 +1,4 @@
-package org.dark0ghost.android_screen_recorder.activity
+package org.dark0ghost.android_screen_recorder.ui.activity
 
 import android.Manifest
 import android.content.Intent
@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.widget.Button
 import androidx.activity.compose.setContent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -17,7 +16,7 @@ import org.dark0ghost.android_screen_recorder.base.AbstractBaseRecordable
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.states.BaseState
-import org.dark0ghost.android_screen_recorder.ui.MainUI
+import org.dark0ghost.android_screen_recorder.ui.composable.MainUI
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
@@ -34,7 +33,6 @@ import java.io.IOException
 class MainActivity : GetsDirectory, AbstractBaseRecordable() {
 
     private lateinit var intentButtonService: Intent
-    @Deprecated("") private lateinit var startRecorderButton: Button
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -140,7 +138,11 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainUI()
+            MainUI {
+                inlineButton()
+                clickButton()
+                isStartRecord
+            }
         }
         supportActionBar?.hide() ?: Log.e("onCreate", "supportActionBar is null")
 
@@ -155,14 +157,6 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
             clickButton()
             return@callback isStartRecord
         }
-
-     //   startRecorderButton = findViewById(R.id.start_record)
-      /*  startRecorderButton.setOnClickListener {
-            inlineButton()
-            clickButton()
-        }
-
-       */
 
         LibVosk.setLogLevel(LogLevel.INFO)
 

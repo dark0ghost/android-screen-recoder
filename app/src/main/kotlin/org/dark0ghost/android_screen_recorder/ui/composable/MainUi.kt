@@ -1,6 +1,7 @@
-package org.dark0ghost.android_screen_recorder.ui
+package org.dark0ghost.android_screen_recorder.ui.composable
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,7 +25,11 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSetting
     uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL
 )
 @Composable
-fun MainUI() {
+fun MainUI(clickButtonCallback: () -> ClickState = {
+    Log.d("default func", "test")
+    ClickState.NotUsed
+}
+) {
     var isClicked by rememberSaveable {
         mutableStateOf(ClickState.NotClicked)
     }
@@ -45,8 +50,8 @@ fun MainUI() {
                 modifier = Modifier
                     .wrapContentWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-            ){
-                isClicked = callbackForStartRecord()
+            ) {
+                isClicked = clickButtonCallback()
             }
         }
     }

@@ -1,4 +1,4 @@
-package org.dark0ghost.android_screen_recorder.ui
+package org.dark0ghost.android_screen_recorder.ui.composable
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
