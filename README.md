@@ -1,7 +1,7 @@
 # Android screen recorder
 [![GitHub code size](https://img.shields.io/github/languages/code-size/dark0ghost/android-screen-recorder?style=flat)](https://github.com/dark0ghost/android-screen-recorder)
 [![SL Scan](https://github.com/dark0ghost/android-screen-recorder/actions/workflows/sl-scan.yml/badge.svg)](https://github.com/dark0ghost/android-screen-recorder/actions/workflows/sl-scan.yml)
-[![CI](https://github.com/dark0ghost/android-screen-recorder/actions/workflows/ci.yml/badge.svg)](https://github.com/dark0ghost/android-screen-recorder/actions/workflows/ci.yml)
+[![Build](https://github.com/dark0ghost/android-screen-recorder/actions/workflows/ci.yml/badge.svg)](https://github.com/dark0ghost/android-screen-recorder/actions/workflows/ci.yml)
 
 
 ## Dependencies
