@@ -1,4 +1,4 @@
-package org.dark0ghost.android_screen_recorder.ui.them
+package org.dark0ghost.android_screen_recorder.ui.theme
 
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize

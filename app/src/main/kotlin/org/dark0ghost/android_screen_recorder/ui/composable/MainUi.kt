@@ -14,11 +14,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dark0ghost.android_screen_recorder.states.ClickState
-import org.dark0ghost.android_screen_recorder.ui.them.CustomDarkTheme
+import org.dark0ghost.android_screen_recorder.ui.theme.CustomDarkTheme
 import org.dark0ghost.android_screen_recorder.utils.GradientButton
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.Settings.ComposeSettings.GRADIENT
-import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 
 @Preview(name = "MainUIPreview", group = "Main",
     device = "spec:shape=Normal,width=1080,height=1920,unit=px,dpi=640",
