@@ -31,7 +31,6 @@ import java.io.IOException
 
 
 class MainActivity : GetsDirectory, AbstractBaseRecordable() {
-
     private lateinit var intentButtonService: Intent
 
     private fun initModel() {
