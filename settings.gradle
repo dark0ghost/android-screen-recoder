@@ -16,6 +16,7 @@ dependencyResolutionManagement {
         maven {
             url 'https://alphacephei.com/maven/'
         }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 }
 rootProject.name = "android-screen-recorder"
