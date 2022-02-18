@@ -21,7 +21,7 @@ import org.dark0ghost.android_screen_recorder.states.ClickState
     uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, apiLevel = 31
 )
 @Composable
-fun RevoltUi(modifier: Modifier  = Modifier,clickState: MutableState<ClickState> = mutableStateOf(ClickState.NotUsed)){
+fun RevoltUi(modifier: Modifier  = Modifier, clickState: MutableState<ClickState> = mutableStateOf(ClickState.NotUsed)){
     Column(
         modifier = modifier
             .fillMaxWidth()
