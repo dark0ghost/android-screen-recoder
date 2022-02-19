@@ -4,9 +4,12 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
@@ -22,17 +25,19 @@ import org.dark0ghost.android_screen_recorder.states.ClickState
 )
 @Composable
 fun RevoltUi(modifier: Modifier  = Modifier, clickState: MutableState<ClickState> = mutableStateOf(ClickState.NotUsed)){
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ) {
-        IconButton(onClick = { }) {
-            Icon(
-                painter = painterResource(id = R.drawable.pause),
-                contentDescription = null
-            )
+        LazyColumn(
+            modifier = modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            item(clickState) {
+                IconButton(onClick = { }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.pause),
+                        contentDescription = null
+                    )
+                }
+            }
         }
-    }
 }
 

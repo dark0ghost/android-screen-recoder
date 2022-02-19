@@ -23,7 +23,6 @@ class ButtonService: Service() {
     private lateinit var params: WindowManager.LayoutParams
     private lateinit var topView: RelativeLayout
     private lateinit var buttonStartRecorder: ImageButton
-    private lateinit var handler: Handler
 
     override fun onCreate() {
         super.onCreate()
