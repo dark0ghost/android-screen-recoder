@@ -225,7 +225,7 @@ class RecordService: GetsDirectory, Service() {
         val closeIntent = Intent(this, this::class.java)
         closeIntent.action = ACTION_STOP_SERVICE
         val closePendingIntent = PendingIntent.getService(
-            this, COMMAND_STOP_SERVICE, closeIntent, 0
+            this, COMMAND_STOP_SERVICE, closeIntent,  PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT // setting the mutability flag
         )
         startForeground(
             notificationId,
