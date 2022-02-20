@@ -9,6 +9,7 @@ import android.os.*
 import android.util.Log
 import android.view.*
 import android.widget.ImageButton
+import androidx.compose.material.Text
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistry
@@ -68,14 +69,14 @@ class ButtonService: Service() {
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        composeView = ComposeView(this).apply {
-
-            setContent {
+        composeView = ComposeView(this)
+        composeView.setContent {
+                Log.e("compose", "compose")
                 RevoltUi {
                     stopService(intent(this@ButtonService))
                 }
             }
-        }
+
 
         val lifecycleOwner = ButtonServiceLifecycleOwner()
         lifecycleOwner.performRestore(null)

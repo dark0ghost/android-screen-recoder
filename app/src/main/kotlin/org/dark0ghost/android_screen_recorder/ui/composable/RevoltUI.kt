@@ -37,7 +37,10 @@ fun RevoltUi(modifier: Modifier  = Modifier, onClick: () -> ClickState = { Click
     ) {
         item(isClicked) {
                 Image(
-                    painter = painterResource(id = R.drawable.recording_64),
+                    painter = painterResource(id = when(isClicked.value){
+                        ClickState.NotClicked -> R.drawable.recording_64
+                        else -> R.drawable.pause
+                    }),
                     contentDescription = null,
                     modifier.combinedClickable(
                         onClick = { isClicked.value = onClick() },
