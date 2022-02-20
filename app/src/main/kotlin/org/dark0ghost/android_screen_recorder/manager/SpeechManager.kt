@@ -47,19 +47,21 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             buffer.clear()
             subtitlesCounter = 0
             timer.stop()
-            oldTime = "00:00:00"
+            oldTime = "00:00:00,000"
         }
         .setCallbackOnTimeout {
             setUiState(BaseState.DONE)
-            if (speechStreamService != null) {
-                speechStreamService = null
+            speechStreamService?.let {
+                speechService = null
             }
         }
         .setCallbackOnResult { it ->
             val template = """
+                
             $subtitlesCounter
-            $oldTime-->${timer.nowTime}    
-            $it\n   
+            $oldTime --> ${timer.nowTime}    
+            $it
+               
             """.trimIndent()
             this@setCallbackOnResult.buffer.add(template)
             val fileData = createSubtitleFileDataOrDefault()
@@ -90,7 +92,7 @@ class SpeechManager(private val context: Context, private val model: Model): Get
 
     private var subtitlesCounter: Long = 1L
     private var subtitleResult: Result<String> = Result.failure(exceptionForResultFile)
-    private var oldTime: String = "00:00:00"
+    private var oldTime: String = "00:00:00,000"
 
     private fun cleanSubtitleFile() {
         subtitleResult = Result.failure(exceptionForResultFile)

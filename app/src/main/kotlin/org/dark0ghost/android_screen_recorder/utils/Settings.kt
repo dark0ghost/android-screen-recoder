@@ -62,7 +62,7 @@ object Settings {
    }
 
    object CustomSubtitlesTimerSettings {
-      const val SUBTITLES_FORMAT_PATTERN: String = "HH:mm:ss"
+      const val SUBTITLES_FORMAT_PATTERN: String = "HH:mm:ss,SSS"
    }
 
    object RecorderControllerSettings {
