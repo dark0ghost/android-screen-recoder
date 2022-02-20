@@ -30,7 +30,7 @@ class ButtonService: Service() {
         val nullParent: ViewGroup? = null
         topView = LayoutInflater.from(this).inflate(R.layout.revolt, nullParent) as RelativeLayout
         buttonStartRecorder = topView.findViewById(R.id.grub)
-        params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        params =
             WindowManager.LayoutParams(
                 Settings.InlineButtonSettings.WIDTH,
                 Settings.InlineButtonSettings.HEIGHT,
@@ -38,13 +38,6 @@ class ButtonService: Service() {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.RGBA_F16
             )
-        } else {
-            WindowManager.LayoutParams(
-                Settings.InlineButtonSettings.WIDTH,
-                Settings.InlineButtonSettings.HEIGHT,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            )
-        }
         params.x = 10
         params.y = 500 // service position
         params.gravity = Gravity.START or Gravity.TOP
