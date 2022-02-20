@@ -45,7 +45,7 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             }
             cleanSubtitleFile()
             buffer.clear()
-            subtitlesCounter = 0
+            subtitlesCounter = 1
             timer.stop()
             oldTime = "00:00:00,000"
         }
@@ -56,11 +56,7 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             }
         }
         .setCallbackOnResult { it ->
-            val template = """$subtitlesCounter
-            $oldTime --> ${timer.nowTime}    
-            $it
-               
-            """.trimIndent()
+            val template = "$subtitlesCounter\n$oldTime --> ${timer.nowTime}\n$it\n"
             this@setCallbackOnResult.buffer.add(template)
             val fileData = createSubtitleFileDataOrDefault()
             try {
