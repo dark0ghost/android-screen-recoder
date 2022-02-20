@@ -56,9 +56,7 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             }
         }
         .setCallbackOnResult { it ->
-            val template = """
-                
-            $subtitlesCounter
+            val template = """$subtitlesCounter
             $oldTime --> ${timer.nowTime}    
             $it
                

@@ -97,14 +97,6 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata:1.1.0'
     implementation 'androidx.compose.runtime:runtime-rxjava2:1.1.0'
 
-    //For DI - Dagger 2
-    def daggerVersion = '2.35.1'
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
-    implementation "com.google.dagger:dagger-android:$daggerVersion"
-    implementation "com.google.dagger:dagger-android-support:$daggerVersion" // if you use the support libraries
-    annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
-
     implementation 'net.java.dev.jna:jna:5.9.0@aar'
     implementation group: 'com.alphacephei', name: 'vosk-android', version: '0.3.31'
     implementation project(':models')
