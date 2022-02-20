@@ -105,7 +105,7 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
         }
         try {
             stopService(intentButtonService)
-        } catch (e: java.lang.IllegalArgumentException) {
+        } catch (_: java.lang.IllegalArgumentException){
 
         }
         isStartButton = true
