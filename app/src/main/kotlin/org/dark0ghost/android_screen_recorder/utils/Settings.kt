@@ -2,10 +2,13 @@ package org.dark0ghost.android_screen_recorder.utils
 
 import android.Manifest
 import android.media.MediaRecorder
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.states.ClickState
+import androidx.compose.runtime.saveable.rememberSaveable
 
 object Settings {
    object DebugSettings {
@@ -87,5 +90,7 @@ object Settings {
 
    object ComposeSettings {
       val GRADIENT = Brush.horizontalGradient(listOf(Color(0xff2faf8f), Color(0xFF8cd97f),  Color(0xFFc1eb74)))
+
+      var isClicked = mutableStateOf(ClickState.NotUsed)
    }
 }

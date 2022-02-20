@@ -7,9 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
-import android.os.Build
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.states.BaseState
 
@@ -42,7 +40,7 @@ fun closeServiceNotification(context: Context, id: Int) {
 fun isPermissionsGranted(permissions: Map<String, Boolean>): Boolean {
     var granted = true
     for (permission in permissions) {
-        granted = granted && permission.value
+        granted = granted  && permission.value
         if (!granted) break
     }
     return granted
