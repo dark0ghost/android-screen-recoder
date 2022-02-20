@@ -54,11 +54,7 @@ fun getScreenCaptureIntent(context: Context): Intent {
 }
 
 fun isPermissionGranted(activity: Activity, permission: String): Boolean {
-    val result = if (Build.VERSION.SDK_INT >= 23) {
-        activity.checkSelfPermission(permission)
-    } else {
-        ActivityCompat.checkSelfPermission(activity, permission)
-    }
+    val result = activity.checkSelfPermission(permission)
     return result == PackageManager.PERMISSION_GRANTED
 }
 

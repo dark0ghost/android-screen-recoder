@@ -97,6 +97,8 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata:1.1.0'
     implementation 'androidx.compose.runtime:runtime-rxjava2:1.1.0'
 
+    implementation "androidx.window:window:1.0.0"
+
     implementation 'net.java.dev.jna:jna:5.9.0@aar'
     implementation group: 'com.alphacephei', name: 'vosk-android', version: '0.3.31'
     implementation project(':models')
@@ -106,4 +108,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.0'
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    implementation "androidx.window:window-testing:1.0.0"
 }
