@@ -72,7 +72,7 @@ class ButtonService: Service() {
         composeView = ComposeView(this)
         composeView.setContent {
                 Log.e("compose", "compose")
-                RevoltUi {
+                RevoltUi(onClick = { callbackForStartRecord() }) {
                     stopService(intent(this@ButtonService))
                 }
             }
