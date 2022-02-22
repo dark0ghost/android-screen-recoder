@@ -1,10 +1,10 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 32
     }
     buildFeatures {
         buildConfig = false
@@ -23,6 +23,12 @@ tasks.register('genUUID') {
     doLast {
         mkdir odir
         ofile.text = uuid
+    }
+}
+
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xmaxerrs" << "500" // or whatever number you want
     }
 }
 

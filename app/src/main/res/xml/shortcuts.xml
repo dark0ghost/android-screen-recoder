@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+<org.dark0ghost.android_screen_recorder.shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:shortcutId="compose"
         android:enabled="true"
@@ -10,12 +10,12 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="org.dark0ghost.android_screen_recorder"
-            android:targetClass="org.dark0ghost.android_screen_recorder.shortcuts.ComposeActivity" />
+            android:targetClass="org.dark0ghost.android_screen_recorder.ui.activity.ComposeActivity" />
         <!-- If your shortcut is associated with multiple intents, include them
              here. The last intent in the list determines what the user sees when
              they launch this shortcut. -->
         <categories android:name="android.shortcut.conversation" />
         <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
     </shortcut>
-    <!-- Specify more shortcuts here. -->
-</shortcuts>
+    <!-- Specify more org.dark0ghost.android_screen_recorder.shortcuts here. -->
+</org.dark0ghost.android_screen_recorder.shortcuts>

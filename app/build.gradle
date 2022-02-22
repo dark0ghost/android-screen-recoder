@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "org.dark0ghost.android_screen_recorder"
-        minSdk 21
+        minSdk 26
         targetSdk 31
         versionCode 1
         versionName "sea"
@@ -37,11 +37,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '17'
+        useIR = true
     }
 
     testOptions {
@@ -51,6 +52,10 @@ android {
     packagingOptions {
         exclude 'META-INF/*'
     }
+
+    buildFeatures {
+        compose true
+    }
 }
 
 dependencies {
@@ -59,20 +64,40 @@ dependencies {
             include: ['*.jar']
     )
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.6.10'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.core:core:1.7.0'
     implementation 'androidx.core:core-google-shortcuts:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.4.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.fragment:fragment-ktx:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.fragment:fragment-ktx:1.4.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
+
+    implementation 'androidx.compose.ui:ui:1.1.0'
+    // Tooling support (Previews, etc.)
+    implementation "androidx.compose.ui:ui-tooling:1.1.0"
+    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+    implementation 'androidx.compose.foundation:foundation:1.1.0'
+    // Material Design
+    implementation 'androidx.compose.material:material:1.1.0'
+    // Material design icons
+    implementation 'androidx.compose.material:material-icons-core:1.1.0'
+    implementation 'androidx.compose.material:material-icons-extended:1.1.0'
+    // Integration with activities
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    // Integration with ViewModels
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
+    // Integration with observables
+    implementation 'androidx.compose.runtime:runtime-livedata:1.1.0'
+    implementation 'androidx.compose.runtime:runtime-rxjava2:1.1.0'
+
+    implementation "androidx.window:window:1.0.0"
 
     implementation 'net.java.dev.jna:jna:5.9.0@aar'
     implementation group: 'com.alphacephei', name: 'vosk-android', version: '0.3.31'
@@ -81,5 +106,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.0'
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    implementation "androidx.window:window-testing:1.0.0"
 }

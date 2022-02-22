@@ -1,4 +1,4 @@
-package org.dark0ghost.android_screen_recorder
+package org.dark0ghost.android_screen_recorder.ui.activity
 
 import android.Manifest
 import android.content.Intent
@@ -9,16 +9,15 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.widget.Button
+import androidx.activity.compose.setContent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.dark0ghost.android_screen_recorder.base.AbstractBaseRecordable
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.services.ButtonService
 import org.dark0ghost.android_screen_recorder.states.BaseState
+import org.dark0ghost.android_screen_recorder.ui.composable.MainUI
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
-import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.START_RECORD_TEXT_ID
-import org.dark0ghost.android_screen_recorder.utils.Settings.ButtonText.STOP_RECORD_TEXT_ID
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
@@ -32,9 +31,7 @@ import java.io.IOException
 
 
 class MainActivity : GetsDirectory, AbstractBaseRecordable() {
-
     private lateinit var intentButtonService: Intent
-    private lateinit var startRecorderButton: Button
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
@@ -108,7 +105,7 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
         }
         try {
             stopService(intentButtonService)
-        } catch (e: java.lang.IllegalArgumentException) {
+        } catch (_: java.lang.IllegalArgumentException){
 
         }
         isStartButton = true
@@ -136,20 +133,16 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
 
     // End GetsDirectory
 
-    override fun startRecording() {
-        super.startRecording()
-        startRecorderButton.text = resources.getText(STOP_RECORD_TEXT_ID)
-    }
-
-    override fun stopRecording() {
-        super.stopRecording()
-        startRecorderButton.text = resources.getText(START_RECORD_TEXT_ID)
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContent {
+            MainUI {
+                inlineButton()
+                clickButton()
+                isStartRecord
+            }
+        }
         supportActionBar?.hide() ?: Log.e("onCreate", "supportActionBar is null")
 
         intentButtonService = ButtonService.intent(this)
@@ -162,12 +155,6 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
         callbackForStartRecord = callback@{
             clickButton()
             return@callback isStartRecord
-        }
-
-        startRecorderButton = findViewById(R.id.start_record)
-        startRecorderButton.setOnClickListener {
-            inlineButton()
-            clickButton()
         }
 
         LibVosk.setLogLevel(LogLevel.INFO)
