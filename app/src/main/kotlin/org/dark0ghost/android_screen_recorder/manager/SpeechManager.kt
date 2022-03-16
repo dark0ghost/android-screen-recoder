@@ -15,10 +15,7 @@ import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.Model
 import org.vosk.Recognizer
 import org.vosk.android.SpeechStreamService
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -93,7 +90,11 @@ class SpeechManager(private val context: Context, private val model: Model): Get
     }
 
     private fun createSubtitleFileDataOrDefault(): FileBuffer {
-        val directory = getsDirectory()
+        val directory = File("/storage/emulated/0/Documents/")
+        Log.e("file create", (!directory.exists()).toString())
+        if (!directory.exists()){
+            directory.mkdirs()
+        }
         val dataFormat = SimpleDateFormat(
             FILE_NAME_FORMAT,
             Locale.US
@@ -108,7 +109,12 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             FileWriter(subtitleResult.getOrDefault(textFile.absolutePath), true)
         } else {
             subtitleResult = Result.success(textFile.absolutePath)
-            FileWriter(textFile, true)
+            try {
+                FileWriter(textFile, true)
+            } catch (e: FileNotFoundException) {
+                Log.e("system", "test", e)
+                FileWriter(textFile, true)
+            }
         }
         val bufferedWriter = BufferedWriter(writer)
         val rFile = File(subtitleResult.getOrDefault(textFile.absolutePath))

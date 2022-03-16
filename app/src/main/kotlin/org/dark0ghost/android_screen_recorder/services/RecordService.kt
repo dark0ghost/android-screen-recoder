@@ -295,7 +295,7 @@ class RecordService: GetsDirectory, Service() {
     // GetsDirectory
 
     override fun getsDirectory(): String {
-        val rootDir = "${getExternalFilesDir("media")!!.absolutePath}/${NAME_DIR_VIDEO}/"
+        val rootDir = "/storage/emulated/0/DCIM/screen_record/"
         val file = File(rootDir)
         if (!file.exists()) {
             Log.e(
