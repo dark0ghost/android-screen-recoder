@@ -1,11 +1,9 @@
 package org.dark0ghost.android_screen_recorder.manager
 
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import org.dark0ghost.android_screen_recorder.data_class.FileBuffer
-import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.listeners.RListener
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.time.CustomSubtitlesTimer
@@ -20,7 +18,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class SpeechManager(private val context: Context, private val model: Model): GetsDirectory {
+class SpeechManager(private val model: Model) {
 
     private val rListener: RListener = RListener
         .Builder()
@@ -166,22 +164,5 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             stop()
             shutdown()
         }
-    }
-
-    override fun getsDirectory(): String {
-        val rootDir =
-            "${context.getExternalFilesDir("media")!!.absolutePath}/${Settings.MediaRecordSettings.NAME_DIR_SUBTITLE}/"
-        val file = File(rootDir)
-        if (!file.exists()) {
-            Log.e(
-                "getsDirectory/mkdirs", if (file.mkdirs()) {
-                    "path is created"
-                } else {
-                    "path isn't create"
-                }
-            )
-        }
-        Log.i("getsDirectory", "${this::class.simpleName}: $rootDir")
-        return rootDir
     }
 }

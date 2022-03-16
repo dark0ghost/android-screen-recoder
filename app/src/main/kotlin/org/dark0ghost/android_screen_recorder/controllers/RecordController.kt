@@ -21,7 +21,7 @@ import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings
 import org.dark0ghost.android_screen_recorder.utils.Settings.RecorderControllerSettings.SERVICE_STARTING_TIMEOUT_MS
 import java.io.File
 
-class RecordController(private val context: Context): GetsDirectory, Controller {
+class RecordController(private val context: Context): Controller {
     private var recordService: RecordService? = null
 
     private val connection: ServiceConnection = object : ServiceConnection {
@@ -121,25 +121,4 @@ class RecordController(private val context: Context): GetsDirectory, Controller 
             false
         }
     }
-
-    // GetsDirectory
-
-    override fun getsDirectory(): String {
-        val rootDir =
-            "${context.getExternalFilesDir("media")!!.absolutePath}/${Settings.MediaRecordSettings.NAME_DIR_SUBTITLE}/"
-        val file = File(rootDir)
-        if (!file.exists()) {
-            Log.e(
-                "getsDirectory/mkdirs", if (file.mkdirs()) {
-                    "path is created"
-                } else {
-                    "path isn't create"
-                }
-            )
-        }
-        Log.e("getsDirectory", rootDir)
-        return rootDir
-    }
-
-    // End GetsDirectory
 }

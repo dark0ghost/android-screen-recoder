@@ -133,7 +133,7 @@ class RecordService: GetsDirectory, Service() {
             setAudioEncoder(AUDIO_ENCODER)
             setVideoEncodingBitRate(BIT_RATE)
             setVideoFrameRate(VIDEO_FRAME_RATE)
-            setOutputFile("${getsDirectory()}${System.currentTimeMillis()}.mp4")
+            setOutputFile("${getsDirectory()}/${System.currentTimeMillis()}.mp4")
             try {
                 prepare()
             } catch (e: IOException) {
@@ -295,7 +295,7 @@ class RecordService: GetsDirectory, Service() {
     // GetsDirectory
 
     override fun getsDirectory(): String {
-        val rootDir = "/storage/emulated/0/DCIM/screen_record/"
+        val rootDir = "/storage/emulated/0/DCIM/screen"//"/storage/emulated/0/${Environment.DIRECTORY_DOWNLOADS}/screen"
         val file = File(rootDir)
         if (!file.exists()) {
             Log.e(
