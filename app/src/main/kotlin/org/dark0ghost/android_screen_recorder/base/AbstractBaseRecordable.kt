@@ -41,7 +41,11 @@ abstract class AbstractBaseRecordable: AppCompatActivity() {
                     activityResult.data ?: Intent()
                 )
             serviceController.setupMediaProjection(mediaProjectionMain)
-            tryStartRecording()
+            try {
+                tryStartRecording()
+            } catch (e : IllegalStateException) {
+                Log.e("recoder", "no record", e)
+            }
         } else {
             Toast.makeText(
                 this,

@@ -22,7 +22,7 @@ class SpeechService: Service() {
     fun start() {
         if (!::speechManager.isInitialized) {
             try {
-                speechManager = SpeechManager(this, neuronModel)
+                speechManager = SpeechManager(neuronModel)
             } catch (e: UninitializedPropertyAccessException) {
                 Log.e("${this::class.java}::start", "wait!!!!")
                 Handler(Looper.getMainLooper()).postDelayed({

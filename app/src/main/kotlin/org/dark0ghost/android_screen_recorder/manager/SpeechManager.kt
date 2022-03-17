@@ -1,11 +1,9 @@
 package org.dark0ghost.android_screen_recorder.manager
 
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import org.dark0ghost.android_screen_recorder.data_class.FileBuffer
-import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
 import org.dark0ghost.android_screen_recorder.listeners.RListener
 import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.time.CustomSubtitlesTimer
@@ -15,15 +13,12 @@ import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.Model
 import org.vosk.Recognizer
 import org.vosk.android.SpeechStreamService
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class SpeechManager(private val context: Context, private val model: Model): GetsDirectory {
+class SpeechManager(private val model: Model) {
 
     private val rListener: RListener = RListener
         .Builder()
@@ -93,7 +88,11 @@ class SpeechManager(private val context: Context, private val model: Model): Get
     }
 
     private fun createSubtitleFileDataOrDefault(): FileBuffer {
-        val directory = getsDirectory()
+        val directory = File("/storage/emulated/0/Documents/")
+        Log.e("file create", (!directory.exists()).toString())
+        if (!directory.exists()){
+            directory.mkdirs()
+        }
         val dataFormat = SimpleDateFormat(
             FILE_NAME_FORMAT,
             Locale.US
@@ -108,7 +107,12 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             FileWriter(subtitleResult.getOrDefault(textFile.absolutePath), true)
         } else {
             subtitleResult = Result.success(textFile.absolutePath)
-            FileWriter(textFile, true)
+            try {
+                FileWriter(textFile, true)
+            } catch (e: FileNotFoundException) {
+                Log.e("system", "test", e)
+                FileWriter(textFile, true)
+            }
         }
         val bufferedWriter = BufferedWriter(writer)
         val rFile = File(subtitleResult.getOrDefault(textFile.absolutePath))
@@ -160,22 +164,5 @@ class SpeechManager(private val context: Context, private val model: Model): Get
             stop()
             shutdown()
         }
-    }
-
-    override fun getsDirectory(): String {
-        val rootDir =
-            "${context.getExternalFilesDir("media")!!.absolutePath}/${Settings.MediaRecordSettings.NAME_DIR_SUBTITLE}/"
-        val file = File(rootDir)
-        if (!file.exists()) {
-            Log.e(
-                "getsDirectory/mkdirs", if (file.mkdirs()) {
-                    "path is created"
-                } else {
-                    "path isn't create"
-                }
-            )
-        }
-        Log.i("getsDirectory", "${this::class.simpleName}: $rootDir")
-        return rootDir
     }
 }

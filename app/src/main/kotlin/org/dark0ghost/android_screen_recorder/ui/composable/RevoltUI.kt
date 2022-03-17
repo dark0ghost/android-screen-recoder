@@ -41,7 +41,7 @@ fun RevoltUi(modifier: Modifier  = Modifier, onClick: () -> ClickState = { Click
         item(clickState) {
                 Image(
                     painter = painterResource(id = when(clickState){
-                        ClickState.NotClicked -> R.drawable.recording_64
+                        ClickState.NotClicked -> R.drawable.recording
                         else -> R.drawable.pause
                     }),
                     contentDescription = null,

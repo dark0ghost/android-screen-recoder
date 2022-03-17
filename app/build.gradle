@@ -25,6 +25,7 @@ android {
         test {
             resources.srcDirs += ['models']
         }
+
         androidTest {
             resources.srcDirs += ['models']
         }

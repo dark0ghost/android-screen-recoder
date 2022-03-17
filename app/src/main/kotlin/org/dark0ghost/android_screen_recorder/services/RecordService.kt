@@ -133,7 +133,7 @@ class RecordService: GetsDirectory, Service() {
             setAudioEncoder(AUDIO_ENCODER)
             setVideoEncodingBitRate(BIT_RATE)
             setVideoFrameRate(VIDEO_FRAME_RATE)
-            setOutputFile("${getsDirectory()}${System.currentTimeMillis()}.mp4")
+            setOutputFile("${getsDirectory()}/${System.currentTimeMillis()}.mp4")
             try {
                 prepare()
             } catch (e: IOException) {
@@ -295,7 +295,7 @@ class RecordService: GetsDirectory, Service() {
     // GetsDirectory
 
     override fun getsDirectory(): String {
-        val rootDir = "${getExternalFilesDir("media")!!.absolutePath}/${NAME_DIR_VIDEO}/"
+        val rootDir = "/storage/emulated/0/${Environment.DIRECTORY_DCIM}/Camera"
         val file = File(rootDir)
         if (!file.exists()) {
             Log.e(
@@ -309,7 +309,7 @@ class RecordService: GetsDirectory, Service() {
         if (DEBUG_MODE) {
             Toast.makeText(applicationContext, rootDir, Toast.LENGTH_SHORT).show()
         }
-        Log.i("getsDirectory", "${this::class.simpleName}: $rootDir")
+        Log.e("getsDirectory", "dir: $rootDir")
         return rootDir
     }
 
