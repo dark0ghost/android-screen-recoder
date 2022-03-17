@@ -295,7 +295,7 @@ class RecordService: GetsDirectory, Service() {
     // GetsDirectory
 
     override fun getsDirectory(): String {
-        val rootDir = "/storage/emulated/0/DCIM/screen"//"/storage/emulated/0/${Environment.DIRECTORY_DOWNLOADS}/screen"
+        val rootDir = "/storage/emulated/0/${Environment.DIRECTORY_DCIM}/Camera"//"/storage/emulated/0/${Environment.DIRECTORY_DOWNLOADS}/screen"
         val file = File(rootDir)
         if (!file.exists()) {
             Log.e(
@@ -309,7 +309,7 @@ class RecordService: GetsDirectory, Service() {
         if (DEBUG_MODE) {
             Toast.makeText(applicationContext, rootDir, Toast.LENGTH_SHORT).show()
         }
-        Log.i("getsDirectory", "${this::class.simpleName}: $rootDir")
+        Log.e("getsDirectory", "dir: $rootDir")
         return rootDir
     }
 
