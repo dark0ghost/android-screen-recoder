@@ -5,11 +5,11 @@
 
 
 ## Dependencies
-|name|version|
-|---|---|
-|Android|10|
-|Kotlin|1.5.31|
-|Vosk|0.3.31|
+| name    | version |
+|---------|---------|
+| Android | 10      |
+| Kotlin  | 1.6.10  |
+| Vosk    | 0.3.31  |
 
 ## About 
 This application records sound and screen and creates subtitles by saving them to a file
