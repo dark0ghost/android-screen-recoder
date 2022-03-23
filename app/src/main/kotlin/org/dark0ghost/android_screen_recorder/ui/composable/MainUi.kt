@@ -48,7 +48,7 @@ fun MainUI(clickButtonCallback: () -> ClickState = {
                     .wrapContentWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                isClicked.value = clickButtonCallback()
+                    isClicked.value = clickButtonCallback()
             }
         }
     }

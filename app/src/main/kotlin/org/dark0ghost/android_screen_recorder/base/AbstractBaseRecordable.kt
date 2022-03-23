@@ -68,7 +68,6 @@ abstract class AbstractBaseRecordable: AppCompatActivity() {
             while (isActive && !serviceController.connected) {
                 Log.d("tryStartRecording", "start service")
                 serviceController.startService()
-                delay(100)
             }
             if (!isActive) return@launch
 

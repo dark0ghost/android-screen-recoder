@@ -1,6 +1,9 @@
 package org.dark0ghost.android_screen_recorder.manager
 
+import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
+import android.os.Environment
 import android.util.Log
 import androidx.annotation.RequiresApi
 import org.dark0ghost.android_screen_recorder.data_class.FileBuffer
@@ -18,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class SpeechManager(private val model: Model) {
+class SpeechManager(private val model: Model, private val context: Context) {
 
     private val rListener: RListener = RListener
         .Builder()
@@ -88,17 +91,23 @@ class SpeechManager(private val model: Model) {
     }
 
     private fun createSubtitleFileDataOrDefault(): FileBuffer {
-        val directory = File("/storage/emulated/0/Documents/")
+        val directory = File("${ContextWrapper(context).getExternalFilesDir(Environment.DIRECTORY_DCIM)}/Subtitle")
         Log.e("file create", (!directory.exists()).toString())
         if (!directory.exists()){
-            directory.mkdirs()
+            Log.e(
+                "getsDirectory/speech", if (directory.mkdirs()) {
+                    "path is created"
+                } else {
+                    "path isn't create"
+                }
+            )
         }
         val dataFormat = SimpleDateFormat(
             FILE_NAME_FORMAT,
             Locale.US
         ).format(System.currentTimeMillis())
         val textFile = File(
-            directory,
+            directory.absolutePath,
             "$dataFormat.srt"
         )
         Log.d("FileDataOrDefault", subtitleResult.isSuccess.toString())
@@ -107,12 +116,7 @@ class SpeechManager(private val model: Model) {
             FileWriter(subtitleResult.getOrDefault(textFile.absolutePath), true)
         } else {
             subtitleResult = Result.success(textFile.absolutePath)
-            try {
-                FileWriter(textFile, true)
-            } catch (e: FileNotFoundException) {
-                Log.e("system", "test", e)
-                FileWriter(textFile, true)
-            }
+            FileWriter(textFile, true)
         }
         val bufferedWriter = BufferedWriter(writer)
         val rFile = File(subtitleResult.getOrDefault(textFile.absolutePath))

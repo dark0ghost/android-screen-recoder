@@ -74,8 +74,8 @@ object Settings {
 
    object PermissionsSettings {
       val RECORD_AUDIO_PERMISSIONS: Array<String> = arrayOf(
-         Manifest.permission.RECORD_AUDIO,
-         Manifest.permission.WRITE_EXTERNAL_STORAGE
+         Manifest.permission.WRITE_EXTERNAL_STORAGE,
+         Manifest.permission.RECORD_AUDIO
       )
    }
 

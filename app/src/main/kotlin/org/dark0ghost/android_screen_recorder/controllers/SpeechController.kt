@@ -36,7 +36,7 @@ class SpeechController(private val context: Context) : Controller {
         }
 
     override fun startRecording() {
-        speechService?.start()
+        speechService?.start(context)
     }
 
     override fun stopRecording() {
