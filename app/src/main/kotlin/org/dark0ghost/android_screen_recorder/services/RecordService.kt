@@ -306,9 +306,6 @@ class RecordService: GetsDirectory, Service() {
                 }
             )
         }
-        if (DEBUG_MODE) {
-            Toast.makeText(applicationContext, rootDir, Toast.LENGTH_SHORT).show()
-        }
         Log.e("getsDirectory", "dir: $rootDir")
         return rootDir
     }

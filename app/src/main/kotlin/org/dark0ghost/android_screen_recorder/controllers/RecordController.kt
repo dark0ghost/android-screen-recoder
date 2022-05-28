@@ -96,29 +96,17 @@ class RecordController(private val context: Context): Controller {
                 COMMAND_START_SERVICE
             )
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
-        }
+        context.startForegroundService(intent)
         try {
             context.bindService(
-                RecordService.intent(context),
+                intent,
                 connection,
                 Context.BIND_AUTO_CREATE
             )
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        return try {
-            withTimeout(SERVICE_STARTING_TIMEOUT_MS) {
-                while (isActive && !connected) {
-                    delay(300L)
-                }
-                return@withTimeout connected
-            }
-        } catch (ex: Exception) {
-            false
-        }
+
+        return true
     }
 }

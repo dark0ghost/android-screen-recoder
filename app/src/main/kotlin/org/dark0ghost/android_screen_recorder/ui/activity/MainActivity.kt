@@ -9,34 +9,49 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import org.dark0ghost.android_screen_recorder.R
 import org.dark0ghost.android_screen_recorder.base.AbstractBaseRecordable
+import org.dark0ghost.android_screen_recorder.controllers.RecordController
+import org.dark0ghost.android_screen_recorder.controllers.SpeechController
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
+import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.services.ButtonService
-import org.dark0ghost.android_screen_recorder.states.BaseState
+import org.dark0ghost.android_screen_recorder.states.ClickState
 import org.dark0ghost.android_screen_recorder.ui.composable.MainUI
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
 import org.dark0ghost.android_screen_recorder.utils.Settings.Model.model
-import org.dark0ghost.android_screen_recorder.utils.setUiState
-import org.vosk.LibVosk
-import org.vosk.LogLevel
+import org.dark0ghost.android_screen_recorder.utils.getScreenCaptureIntent
+import org.dark0ghost.android_screen_recorder.utils.isPermissionsGranted
+import org.dark0ghost.android_screen_recorder.utils.startRecordable
+import org.dark0ghost.android_screen_recorder.utils.stopRecordable
 import org.vosk.android.StorageService
 import java.io.File
 import java.io.IOException
 
 
 class MainActivity : GetsDirectory, AbstractBaseRecordable() {
+
     private lateinit var intentButtonService: Intent
 
     private fun initModel() {
         val callbackModelInit = { models: org.vosk.Model ->
             model = models
-            setUiState(BaseState.READY)
         }
         StorageService.unpack(
             this, "model_ru", "models", callbackModelInit
@@ -44,6 +59,25 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
             Log.e("init-model-fn", "Failed to unpack the model ${exception.printStackTrace()}")
         }
         Log.d("initModel", "run complete")
+    }
+
+    private fun requestPermission() {
+        var arrayPermission = arrayOf(
+            Manifest.permission.RECORD_AUDIO,
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            arrayPermission = arrayOf(
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.FOREGROUND_SERVICE
+            )
+        }
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayPermission,
+            PERMISSIONS_REQUEST_RECORD_AUDIO
+        )
     }
 
     private fun checkPermissionsOrInitialize() {
@@ -133,14 +167,13 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
 
     // End GetsDirectory
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestPermission()
         setContent {
             MainUI {
                 inlineButton()
                 clickButton()
-                isStartRecord
             }
         }
         supportActionBar?.hide() ?: Log.e("onCreate", "supportActionBar is null")
@@ -148,18 +181,15 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
         intentButtonService = ButtonService.intent(this)
 
         projectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        setUiState(BaseState.START)
 
         initService()
 
-        callbackForStartRecord = callback@{
+        callbackForStartRecord = {
             clickButton()
-            return@callback isStartRecord
+            isStartRecord
         }
 
-        LibVosk.setLogLevel(LogLevel.INFO)
-
-        checkPermissionsOrInitialize()
+       checkPermissionsOrInitialize()
     }
 
     override fun onDestroy() {

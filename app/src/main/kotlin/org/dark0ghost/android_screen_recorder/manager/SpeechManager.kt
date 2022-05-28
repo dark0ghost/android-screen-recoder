@@ -12,7 +12,6 @@ import org.dark0ghost.android_screen_recorder.states.BaseState
 import org.dark0ghost.android_screen_recorder.time.CustomSubtitlesTimer
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.Settings.MainActivitySettings.FILE_NAME_FORMAT
-import org.dark0ghost.android_screen_recorder.utils.setUiState
 import org.vosk.Model
 import org.vosk.Recognizer
 import org.vosk.android.SpeechStreamService
@@ -26,11 +25,10 @@ class SpeechManager(private val model: Model, private val context: Context) {
     private val rListener: RListener = RListener
         .Builder()
         .setCallbackOnFinalResult {
-            setUiState(BaseState.DONE)
             val fileData = createSubtitleFileDataOrDefault()
             Log.d("File/OnFinalResult", fileData.file.length().toString())
-            Log.d("File/OnFinalResult", "buffer size: ${buffer.size}")
-            Log.d("File/OnFinalResult", "path: ${fileData.file.absolutePath}")
+            Log.e("File/OnFinalResult", "buffer size: ${buffer.size}")
+            Log.e("File/OnFinalResult", "path: ${fileData.file.absolutePath}")
             if (fileData.file.length() == 0L) {
                 val bufferedWriter = fileData.bufferedWriter
                 bufferedWriter.use {
@@ -48,7 +46,6 @@ class SpeechManager(private val model: Model, private val context: Context) {
             oldTime = "00:00:00,000"
         }
         .setCallbackOnTimeout {
-            setUiState(BaseState.DONE)
             speechStreamService?.let {
                 speechService = null
             }
@@ -68,8 +65,6 @@ class SpeechManager(private val model: Model, private val context: Context) {
                 }
                 e.printStackTrace()
             }
-            Log.d("File/OnResult", "file size: ${fileData.file.length()}")
-            Log.d("File/OnResult", "file path: ${fileData.file.absolutePath}")
             Log.d("File/OnResult", template)
             subtitlesCounter++
             oldTime = timer.nowTime
@@ -125,7 +120,6 @@ class SpeechManager(private val model: Model, private val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun recognizeMicrophone() {
-        setUiState(BaseState.MIC)
         try {
             val rec = Recognizer(model, Settings.AudioRecordSettings.SIMPLE_RATE)
             speechService =
@@ -138,8 +132,8 @@ class SpeechManager(private val model: Model, private val context: Context) {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun stopMicrophone() {
+        Log.e("stop_speech", "stop $speechService")
         speechService?.let {
-            setUiState(BaseState.DONE)
             it.stop()
             speechService = null
             return
@@ -154,13 +148,14 @@ class SpeechManager(private val model: Model, private val context: Context) {
     }
 
     fun stop() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        Log.e("speechManager", "stop")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             stopMicrophone()
         }
     }
 
     fun close() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             stopMicrophone()
         }
         speechStreamService = null

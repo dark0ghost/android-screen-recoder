@@ -52,9 +52,9 @@ object Settings {
       const val WIDTH: Int = 200
       const val HEIGHT: Int = 200
       var callbackForStartRecord: () -> ClickState =
-         callback@{
+         {
             android.util.Log.e("InlineButtonSettings", "fn not init")
-            return@callback ClickState.NotUsed
+            ClickState.NotUsed
          }
 
       var isStartButton: Boolean = false
@@ -69,7 +69,7 @@ object Settings {
    }
 
    object RecorderControllerSettings {
-      const val SERVICE_STARTING_TIMEOUT_MS = 15_000L
+      const val SERVICE_STARTING_TIMEOUT_MS = 50L
    }
 
    object PermissionsSettings {
