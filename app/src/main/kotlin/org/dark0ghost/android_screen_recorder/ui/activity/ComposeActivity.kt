@@ -16,7 +16,7 @@ class ComposeActivity: AbstractBaseRecordable() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("$this: onCreate","start shortcut")
+        Log.d("compose:onCreate","start shortcut")
         initService()
         callbackForStartRecord = callback@{
             clickButton()
@@ -38,7 +38,7 @@ class ComposeActivity: AbstractBaseRecordable() {
                 return
             }
             intentButtonService = ButtonService.intent(this)
-            startService(intentButtonService)
+            startForegroundService(intentButtonService)
             finish()
         }
         Toast.makeText(

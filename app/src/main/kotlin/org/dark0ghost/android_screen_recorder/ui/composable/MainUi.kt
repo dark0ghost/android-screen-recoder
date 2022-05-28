@@ -49,6 +49,7 @@ fun MainUI(clickButtonCallback: () -> ClickState = {
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                     isClicked.value = clickButtonCallback()
+                    Log.e("click", "click")
             }
         }
     }

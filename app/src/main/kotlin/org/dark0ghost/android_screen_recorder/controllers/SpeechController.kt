@@ -20,7 +20,7 @@ class SpeechController(private val context: Context) : Controller {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as SpeechService.SpeechBinder
             speechService = binder.service
-            Log.d("onServiceConnected", "init recordService{${speechService.hashCode()}}")
+            Log.e("onServiceConnected", "init SpeechService{${speechService.hashCode()}}")
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -40,6 +40,7 @@ class SpeechController(private val context: Context) : Controller {
     }
 
     override fun stopRecording() {
+        Log.e("speechService", (speechService == null).toString())
         speechService?.stop()
     }
 
@@ -49,7 +50,7 @@ class SpeechController(private val context: Context) : Controller {
     }
 
     override fun stopService(): Boolean {
-        if (!connected) return true
+
         try {
             context.unbindService(connection)
         } catch (ex: Exception) {
@@ -63,30 +64,19 @@ class SpeechController(private val context: Context) : Controller {
         Log.d("$this:startService", "start")
         if (connected) return true
         Log.d("$this:startService", "not connected")
-        val intent = SpeechService.intent(context)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
+        val intent = SpeechService.intent(context).apply {
+            action = Settings.MediaRecordSettings.ACTION_START_SERVICE
         }
+        context.startService(intent)
         try {
             context.bindService(
-                SpeechService.intent(context),
+                intent,
                 connection,
                 Context.BIND_AUTO_CREATE
             )
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        return try {
-            withTimeout(Settings.RecorderControllerSettings.SERVICE_STARTING_TIMEOUT_MS) {
-                while (isActive && !connected) {
-                    delay(300L)
-                }
-                return@withTimeout connected
-            }
-        } catch (ex: Exception) {
-            false
-        }
+        return true
     }
 }

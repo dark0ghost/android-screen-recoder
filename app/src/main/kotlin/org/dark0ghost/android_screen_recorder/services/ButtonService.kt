@@ -29,23 +29,13 @@ class ButtonService: Service() {
     private lateinit var windowManager: WindowManager
     private lateinit var params: WindowManager.LayoutParams
     private lateinit var composeView: ComposeView
-    private lateinit var buttonStartRecorder: ImageButton
 
     private class ButtonServiceLifecycleOwner: SavedStateRegistryOwner {
         private var mLifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
         private var mSavedStateRegistryController: SavedStateRegistryController = SavedStateRegistryController.create(this)
 
-        @Deprecated("android 25", ReplaceWith("true"))
-        val isInitialized: Boolean
-            get() = true
-
         override fun getLifecycle(): Lifecycle {
             return mLifecycleRegistry
-        }
-
-        @Deprecated("android 25")
-        fun setCurrentState(state: Lifecycle.State) {
-            mLifecycleRegistry.currentState = state
         }
 
         fun handleLifecycleEvent(event: Lifecycle.Event) {
@@ -58,11 +48,6 @@ class ButtonService: Service() {
 
         fun performRestore(savedState: Bundle?) {
             mSavedStateRegistryController.performRestore(savedState)
-        }
-
-        @Deprecated("android 25")
-        fun performSave(outBundle: Bundle) {
-            mSavedStateRegistryController.performSave(outBundle)
         }
     }
 

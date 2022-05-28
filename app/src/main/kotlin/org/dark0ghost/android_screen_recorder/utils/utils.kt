@@ -11,26 +11,6 @@ import android.util.Log
 import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.states.BaseState
 
-fun setUiState(state: BaseState) {
-    when (state) {
-        BaseState.START -> {
-
-        }
-        BaseState.READY -> {
-
-        }
-        BaseState.FILE -> {
-
-        }
-        BaseState.DONE -> {
-
-        }
-        BaseState.MIC -> {
-
-        }
-    }
-}
-
 fun closeServiceNotification(context: Context, id: Int) {
     val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

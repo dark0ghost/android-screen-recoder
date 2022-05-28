@@ -20,28 +20,22 @@ class SpeechService: Service() {
     private lateinit var speechManager: SpeechManager
 
     fun start(context: Context) {
-        if (!::speechManager.isInitialized) {
-            try {
-                speechManager = SpeechManager(neuronModel, context)
-            } catch (e: UninitializedPropertyAccessException) {
-                Log.e("${this::class.java}::start", "wait!!!!")
-                Handler(Looper.getMainLooper()).postDelayed({
-                    start(context)
-                }, MILLIS_WAIT_INIT_MODEL)
-                return
-            }
+        try {
+            speechManager = SpeechManager(neuronModel, context)
+        } catch (e: UninitializedPropertyAccessException) {
+            Log.e("speech::start", "wait!!!!")
+            return
         }
         speechManager.start()
     }
 
     fun stop() {
-        if (::speechManager.isInitialized)
-            speechManager.stop()
+        Log.e("service", "stop speech")
+        speechManager.stop()
     }
 
     fun close() {
-        if (::speechManager.isInitialized)
-            speechManager.close()
+        speechManager.close()
     }
 
     /**

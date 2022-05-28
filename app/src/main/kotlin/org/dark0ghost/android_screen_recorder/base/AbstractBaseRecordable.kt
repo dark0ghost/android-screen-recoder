@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -106,23 +107,24 @@ abstract class AbstractBaseRecordable: AppCompatActivity() {
         }
     }
 
-    protected fun clickButton() {
+    protected fun clickButton(): ClickState {
         Log.d("clickButton", "start")
         when (isStartRecord) {
             ClickState.NotClicked -> {
                 Log.d("clickButton", "start record")
                 isStartRecord = ClickState.IsClicked
                 tryStartRecording()
-                return
+                return ClickState.IsClicked
             }
             ClickState.IsClicked -> {
-                Log.d("clickButton", "stop record")
+                Log.e("clickButton", "stop record")
                 stopRecording()
                 isStartRecord = ClickState.NotClicked
-                return
+                return ClickState.NotClicked
             }
             else -> Log.e("clickButton", "isStartRecord have state:$isStartRecord, this is ok?")
         }
+        return  ClickState.NotUsed
     }
 
     protected fun initService() {
@@ -131,14 +133,12 @@ abstract class AbstractBaseRecordable: AppCompatActivity() {
         speechController = SpeechController(this)
         listRecordable = listOf<Recordable>(speechController, serviceController)
         lifecycleScope.launch {
-            while (isActive && (!serviceController.connected || !speechController.connected)) {
-                Log.d("initService", "start service")
-                println(serviceController.connected)
-                println(speechController.connected)
-                if (!serviceController.connected)
-                    serviceController.startService()
-                if (!speechController.connected)
-                    speechController.startService()
+            Log.d("initService", "start service")
+            if (!serviceController.connected) {
+               serviceController.startService()
+            }
+            if (!speechController.connected) {
+               speechController.startService()
             }
         }
     }
