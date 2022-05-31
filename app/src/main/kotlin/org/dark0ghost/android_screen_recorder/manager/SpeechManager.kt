@@ -141,7 +141,7 @@ class SpeechManager(private val model: Model, private val context: Context) {
     }
 
     fun start() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
             recognizeMicrophone()
             timer.start()
         }

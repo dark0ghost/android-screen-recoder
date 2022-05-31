@@ -20,6 +20,7 @@ fun closeServiceNotification(context: Context, id: Int) {
 fun isPermissionsGranted(permissions: Map<String, Boolean>): Boolean {
     var granted = true
     for (permission in permissions) {
+        println("${permission.key}, ${permission.key}")
         granted = granted  && permission.value
         if (!granted) break
     }
@@ -40,7 +41,7 @@ fun isPermissionsGranted(activity: Activity, permissions: Array<String>): Boolea
     var permissionsGranted = true
     for (permission in permissions) {
         permissionsGranted =  isPermissionGranted(activity, permission)
-        Log.d("sPermissionsGranted", "permissionsGranted: $permissionsGranted")
+        Log.d("sPermissionsGranted", "permissionsGranted: $permissionsGranted - $permission")
         if (!permissionsGranted) {
             break
         }
@@ -48,8 +49,8 @@ fun isPermissionsGranted(activity: Activity, permissions: Array<String>): Boolea
     return permissionsGranted
 }
 
-fun<T: Recordable> startRecordable(recordable: T){
-    recordable.startRecording()
+fun<T: Recordable> startRecordable(recordable: T, data: Intent, resultCode: Int, activity: Activity){
+    recordable.startRecording(data, resultCode, activity)
 }
 
 fun<T: Recordable> stopRecordable(recordable: T){

@@ -31,7 +31,8 @@ class SpeechService: Service() {
 
     fun stop() {
         Log.e("service", "stop speech")
-        speechManager.stop()
+        if(this::speechManager.isInitialized)
+            speechManager.stop()
     }
 
     fun close() {

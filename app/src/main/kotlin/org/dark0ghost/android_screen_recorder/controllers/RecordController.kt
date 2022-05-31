@@ -1,5 +1,6 @@
 package org.dark0ghost.android_screen_recorder.controllers
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -8,11 +9,13 @@ import android.media.projection.MediaProjection
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import com.hbisoft.hbrecorder.HBRecorderListener
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeout
 import org.dark0ghost.android_screen_recorder.interfaces.Controller
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
+import org.dark0ghost.android_screen_recorder.manager.RecorderManager
 import org.dark0ghost.android_screen_recorder.services.RecordService
 import org.dark0ghost.android_screen_recorder.utils.Settings
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.ACTION_START_SERVICE
@@ -57,13 +60,21 @@ class RecordController(private val context: Context): Controller {
         Log.d("setupMediaProjection", "not setup")
     }
 
+    fun setRecorder(context: Context, listener: HBRecorderListener) {
+        recordService?.recorderManager  = RecorderManager(context, listener)
+    }
+
+    fun setActivity(activity: Activity) {
+        recordService?.activity = activity
+    }
+
     override val connected: Boolean
         get() {
             return recordService != null
         }
 
-    override fun startRecording() {
-        recordService?.startRecord()
+    override fun startRecording(data: Intent, resultCode: Int, activity: Activity) {
+        recordService?.startRecord(data, resultCode, activity)
     }
 
     override fun stopRecording() {
