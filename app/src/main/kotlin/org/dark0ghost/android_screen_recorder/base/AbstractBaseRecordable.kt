@@ -1,7 +1,11 @@
 package org.dark0ghost.android_screen_recorder.base
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +15,9 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import com.hbisoft.hbrecorder.HBRecorderListener
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -22,13 +28,31 @@ import org.dark0ghost.android_screen_recorder.controllers.SpeechController
 import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.utils.*
 import org.dark0ghost.android_screen_recorder.states.ClickState
+import org.dark0ghost.android_screen_recorder.ui.activity.MainActivity
 
 abstract class AbstractBaseRecordable: AppCompatActivity() {
     private val permissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
         if (isPermissionsGranted(result)) {
-            tryStartRecording()
+            recordScreenLauncher.launch(getScreenCaptureIntent(this@AbstractBaseRecordable))
+        } else {
+            var arrayPermission = arrayOf(
+                Manifest.permission.RECORD_AUDIO,
+            )
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                arrayPermission = arrayOf(
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.FOREGROUND_SERVICE
+                )
+            }
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayPermission,
+                Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
+            )
         }
     }
 
@@ -42,8 +66,16 @@ abstract class AbstractBaseRecordable: AppCompatActivity() {
                     activityResult.data ?: Intent()
                 )
             serviceController.setupMediaProjection(mediaProjectionMain)
+            serviceController.setRecorder(this as Context, object : HBRecorderListener {
+                override fun HBRecorderOnStart() = Unit
+
+                override fun HBRecorderOnComplete() = Unit
+
+                override fun HBRecorderOnError(errorCode: Int, reason: String?)  = Unit
+            })
+            serviceController.setActivity(this)
             try {
-                tryStartRecording()
+                tryStartRecording(activityResult.data?: Intent(), activityResult.resultCode)
             } catch (e : IllegalStateException) {
                 Log.e("recoder", "no record", e)
             }
@@ -64,7 +96,7 @@ abstract class AbstractBaseRecordable: AppCompatActivity() {
 
     protected var isStartRecord: ClickState = ClickState.NotClicked
 
-    private fun tryStartRecording() {
+    private fun tryStartRecording(data: Intent, resultCode: Int) {
         lifecycleScope.launch {
             while (isActive && !serviceController.connected) {
                 Log.d("tryStartRecording", "start service")
@@ -81,7 +113,7 @@ abstract class AbstractBaseRecordable: AppCompatActivity() {
             )
             if (permissionsGranted && serviceController.isMediaProjectionConfigured) {
                 Log.d("tryStartRecording", "start record")
-                startRecording()
+                startRecording(data, resultCode, this@AbstractBaseRecordable)
             } else if (!permissionsGranted) {
                 Log.d("tryStartRecording", "get permissions")
                 permissionsLauncher.launch(permissions)
@@ -92,10 +124,10 @@ abstract class AbstractBaseRecordable: AppCompatActivity() {
         }
     }
 
-    protected open fun startRecording() {
+    protected open fun startRecording(data: Intent, resultCode: Int, activity: Activity) {
         inlineButton.setImageResource(R.drawable.pause)
         listRecordable.forEach {
-            startRecordable(it)
+            startRecordable(it, data, resultCode, activity)
         }
     }
 
@@ -113,7 +145,7 @@ abstract class AbstractBaseRecordable: AppCompatActivity() {
             ClickState.NotClicked -> {
                 Log.d("clickButton", "start record")
                 isStartRecord = ClickState.IsClicked
-                tryStartRecording()
+                recordScreenLauncher.launch(getScreenCaptureIntent(this@AbstractBaseRecordable))
                 return ClickState.IsClicked
             }
             ClickState.IsClicked -> {

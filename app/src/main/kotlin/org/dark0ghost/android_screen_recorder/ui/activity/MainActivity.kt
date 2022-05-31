@@ -1,6 +1,7 @@
 package org.dark0ghost.android_screen_recorder.ui.activity
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
@@ -9,37 +10,20 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.RelativeLayout
-import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import org.dark0ghost.android_screen_recorder.R
+import com.hbisoft.hbrecorder.HBRecorder
 import org.dark0ghost.android_screen_recorder.base.AbstractBaseRecordable
-import org.dark0ghost.android_screen_recorder.controllers.RecordController
-import org.dark0ghost.android_screen_recorder.controllers.SpeechController
 import org.dark0ghost.android_screen_recorder.interfaces.GetsDirectory
-import org.dark0ghost.android_screen_recorder.interfaces.Recordable
 import org.dark0ghost.android_screen_recorder.services.ButtonService
-import org.dark0ghost.android_screen_recorder.states.ClickState
 import org.dark0ghost.android_screen_recorder.ui.composable.MainUI
 import org.dark0ghost.android_screen_recorder.utils.Settings.AudioRecordSettings.PERMISSIONS_REQUEST_RECORD_AUDIO
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.callbackForStartRecord
 import org.dark0ghost.android_screen_recorder.utils.Settings.InlineButtonSettings.isStartButton
 import org.dark0ghost.android_screen_recorder.utils.Settings.MediaRecordSettings.NAME_DIR_SUBTITLE
 import org.dark0ghost.android_screen_recorder.utils.Settings.Model.model
-import org.dark0ghost.android_screen_recorder.utils.getScreenCaptureIntent
-import org.dark0ghost.android_screen_recorder.utils.isPermissionsGranted
-import org.dark0ghost.android_screen_recorder.utils.startRecordable
-import org.dark0ghost.android_screen_recorder.utils.stopRecordable
+import org.dark0ghost.android_screen_recorder.utils.Settings.PermissionsSettings.RECORD_AUDIO_PERMISSIONS
 import org.vosk.android.StorageService
 import java.io.File
 import java.io.IOException
@@ -96,7 +80,7 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
                 )
             arrayPermission = arrayOf(
                 Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.FOREGROUND_SERVICE
+                Manifest.permission.FOREGROUND_SERVICE,
             )
             checkPermission =
                 permissionCheckRecordAudio != PackageManager.PERMISSION_GRANTED || permissionCheckForegroundService != PackageManager.PERMISSION_GRANTED
@@ -111,6 +95,7 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
         }
         initModel()
     }
+
 
     private fun inlineButton() {
         Log.d(
@@ -169,13 +154,15 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestPermission()
         setContent {
             MainUI {
                 inlineButton()
                 clickButton()
             }
         }
+
+        requestPermission()
+
         supportActionBar?.hide() ?: Log.e("onCreate", "supportActionBar is null")
 
         intentButtonService = ButtonService.intent(this)
@@ -204,11 +191,12 @@ class MainActivity : GetsDirectory, AbstractBaseRecordable() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_RECORD_AUDIO) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED } ) {
                 initModel()
                 return
             }
             finish()
         }
     }
+
 }

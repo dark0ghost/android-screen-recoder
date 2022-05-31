@@ -95,6 +95,8 @@ dependencies {
     // Integration with ViewModels
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
 
+    implementation 'com.github.HBiSoft:HBRecorder:2.0.4'
+
 
     implementation "androidx.window:window:1.0.0"
 

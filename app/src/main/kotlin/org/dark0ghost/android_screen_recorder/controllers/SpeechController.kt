@@ -1,5 +1,6 @@
 package org.dark0ghost.android_screen_recorder.controllers
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -35,7 +36,7 @@ class SpeechController(private val context: Context) : Controller {
             return speechService != null
         }
 
-    override fun startRecording() {
+    override fun startRecording(data: Intent, resultCode: Int, activity: Activity) {
         speechService?.start(context)
     }
 
